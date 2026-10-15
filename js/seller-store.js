@@ -15,24 +15,27 @@
 
             if (sellerId && client) {
                 try {
-                    const { data: profile } = await client
-                        .from("profiles")
-                        .select("*")
-                        .eq("id", sellerId)
+                    const { data: store, error } = await client
+                        .from("stores")
+                        .select("id,seller_id,name,description,category,logo_url,banner_url,location,phone,rating,total_sales,is_verified,is_active")
+                        .eq("seller_id", sellerId)
                         .maybeSingle();
+                    if (error) throw error;
 
-                    if (profile) {
+                    if (store) {
                         return {
-                            id: sellerId,
-                            name: profile.store_name || `${profile.first_name || "GamBasket"} ${profile.last_name || "Seller"}`.trim(),
-                            description: profile.store_description || "Verified seller offering authentic Gambian goods and services.",
-                            location: profile.area ? `${profile.area}, ${profile.region || "Greater Banjul"}` : (profile.region || "Greater Banjul"),
-                            phone: profile.phone || "",
-                            logo_url: profile.avatar_url || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=300&q=80",
-                            cover_url: profile.cover_url || "https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&w=1200&q=80",
-                            status: "Verified",
-                            rating: 4.9,
-                            reviewsCount: 18
+                            id: store.id,
+                            seller_id: store.seller_id,
+                            name: store.name || "GamBasket Store",
+                            description: store.description || "Verified seller offering authentic Gambian goods and services.",
+                            category: store.category || "",
+                            location: store.location || "Greater Banjul",
+                            phone: store.phone || "",
+                            logo_url: store.logo_url || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=300&q=80",
+                            cover_url: store.banner_url || "https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&w=1200&q=80",
+                            status: store.is_verified ? "Verified" : "Unverified",
+                            rating: Number(store.rating || 0),
+                            reviewsCount: 0
                         };
                     }
                 } catch (e) {
@@ -66,24 +69,34 @@
             const session = await auth.getSession();
             const client = auth.getClient();
 
-            if (session?.user && client) {
-                try {
-                    await client
-                        .from("profiles")
-                        .update({
-                            store_name: storeData.name,
-                            store_description: storeData.description,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq("id", session.user.id);
-                } catch (e) {
-                    console.warn("[GamBasket Save Store DB]", e.message);
-                }
-            }
-
-            localStorage.setItem(STORE_STORAGE_KEY, JSON.stringify(storeData));
-            window.dispatchEvent(new CustomEvent("gambasket:seller:store:update", { detail: storeData }));
-            return { success: true };
+            if (!session?.user || !client) throw new Error("Sign in to save your store.");
+            const { data, error } = await client.rpc("save_my_store", {
+                p_name: String(storeData.name || "").trim(),
+                p_description: storeData.description || null,
+                p_category: storeData.category || null,
+                p_logo_url: storeData.logo_url || null,
+                p_banner_url: storeData.cover_url || storeData.banner_url || null,
+                p_location: storeData.location || null,
+                p_phone: storeData.phone || null
+            });
+            if (error) throw error;
+            const saved = {
+                ...storeData,
+                id: data.id,
+                seller_id: data.seller_id,
+                name: data.name,
+                description: data.description,
+                category: data.category,
+                location: data.location,
+                phone: data.phone,
+                logo_url: data.logo_url,
+                cover_url: data.banner_url,
+                status: data.is_verified ? "Verified" : "Unverified",
+                rating: Number(data.rating || 0)
+            };
+            localStorage.setItem(STORE_STORAGE_KEY, JSON.stringify(saved));
+            window.dispatchEvent(new CustomEvent("gambasket:seller:store:update", { detail: saved }));
+            return { success: true, store: saved };
         }
     };
 })();

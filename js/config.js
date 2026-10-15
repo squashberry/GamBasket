@@ -12,7 +12,21 @@
         
         // Supabase Client Key (CURRENT sb_publishable key from Supabase Settings → API Keys)
         SUPABASE_PUBLISHABLE_KEY: "sb_publishable_LYlQsw2QbUqUTPcrYiTAtg_6hwDQ92Z",
-        
+
+        // Cloudinary unsigned uploads. Fill these from Cloudinary Dashboard after
+        // creating a restricted unsigned upload preset; never put an API secret here.
+        CLOUDINARY_CLOUD_NAME: "",
+        CLOUDINARY_UPLOAD_PRESET: "",
+
+        isCloudinaryConfigured: function () {
+            return Boolean(
+                this.CLOUDINARY_CLOUD_NAME &&
+                /^[a-zA-Z0-9_-]+$/.test(this.CLOUDINARY_CLOUD_NAME) &&
+                this.CLOUDINARY_UPLOAD_PRESET &&
+                /^[a-zA-Z0-9_-]+$/.test(this.CLOUDINARY_UPLOAD_PRESET)
+            );
+        },
+
         // App Metadata
         APP_NAME: "GamBasket",
         TAGLINE: "The Digital Marketplace of The Gambia",

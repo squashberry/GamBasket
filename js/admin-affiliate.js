@@ -29,29 +29,24 @@
 
     async function loadOverview() {
         const overview = await rpc("admin_affiliate_overview");
-        $("affiliateStatAffiliates").textContent = Number(overview.affiliates || 0).toLocaleString();
-        $("affiliateStatClicks").textContent = Number(overview.clicks || 0).toLocaleString();
-        $("affiliateStatConversions").textContent = Number(overview.conversions || 0).toLocaleString();
-        $("affiliateStatSales").textContent = money(overview.sales);
+        $("affiliateStatAffiliates").textContent = Number(overview.affiliate_count || 0).toLocaleString();
+        $("affiliateStatClicks").textContent = Number(overview.total_clicks || 0).toLocaleString();
+        $("affiliateStatConversions").textContent = Number(overview.total_orders || 0).toLocaleString();
+        $("affiliateStatSales").textContent = money(overview.total_sales);
         $("affiliateStatPending").textContent = money(overview.pending_commission);
         $("affiliateStatApproved").textContent = money(overview.approved_commission);
     }
 
     async function loadAffiliates() {
-        const rows = await rpc("admin_list_affiliates", { p_search: state.search || null, p_status: state.status || null });
+        const rows = await rpc("admin_list_affiliates", { p_search: state.search || null, p_status: state.status || "all", p_limit: 100, p_offset: 0 });
         $("affiliateList").innerHTML = table(
-            ["Affiliate", "Code", "Status", "Clicks", "Orders", "Sales", "Rate", "Actions"],
-            rows.map(row => `<tr><td><strong>${escape(row.display_name || "GamBasket Affiliate")}</strong><br><small>${escape(row.email || "")}</small></td><td>${escape(row.affiliate_code)}</td><td>${status(row.status)}</td><td>${Number(row.total_clicks || 0).toLocaleString()}</td><td>${Number(row.total_orders || 0).toLocaleString()}</td><td>${money(row.total_sales)}</td><td>${Number(row.commission_rate || 0)}%</td><td><button data-affiliate-view="${row.id}">View</button><button data-affiliate-status="${row.id}" data-status="${row.status === "active" ? "suspended" : "active"}">${row.status === "active" ? "Suspend" : "Activate"}</button><button data-affiliate-rate="${row.id}" data-rate="${row.commission_rate || ""}">Rate</button></td></tr>`)
+            ["Affiliate", "Code", "Status", "Clicks", "Orders", "Sales", "Actions"],
+            rows.map(row => `<tr><td><strong>${escape(row.display_name || "GamBasket Affiliate")}</strong><br><small>${escape(row.email || "")}</small></td><td>${escape(row.affiliate_code)}</td><td>${status(row.status)}</td><td>${Number(row.total_clicks || 0).toLocaleString()}</td><td>${Number(row.total_orders || 0).toLocaleString()}</td><td>${money(row.total_sales)}</td><td><button data-affiliate-view="${row.id}">View</button><button data-affiliate-status="${row.id}" data-status="${row.status === "active" ? "suspended" : "active"}">${row.status === "active" ? "Suspend" : "Activate"}</button></td></tr>`)
         );
         document.querySelectorAll("[data-affiliate-view]").forEach(button => button.addEventListener("click", () => openAffiliateDetail(button.dataset.affiliateView)));
         document.querySelectorAll("[data-affiliate-status]").forEach(button => button.addEventListener("click", async () => {
             if (!confirm(`${button.dataset.status === "active" ? "Activate" : "Suspend"} this affiliate?`)) return;
-            await action(() => rpc("admin_update_affiliate", { p_affiliate_id: button.dataset.affiliateStatus, p_status: button.dataset.status, p_commission_rate: null }));
-        }));
-        document.querySelectorAll("[data-affiliate-rate]").forEach(button => button.addEventListener("click", async () => {
-            const rate = prompt("Commission rate (%)", button.dataset.rate);
-            if (rate === null || rate.trim() === "") return;
-            await action(() => rpc("admin_update_affiliate", { p_affiliate_id: button.dataset.affiliateRate, p_status: null, p_commission_rate: Number(rate) }));
+            await action(() => rpc("admin_set_affiliate_status", { p_affiliate_id: button.dataset.affiliateStatus, p_status: button.dataset.status }));
         }));
     }
 
@@ -60,19 +55,19 @@
         target.hidden = false;
         target.innerHTML = empty("Loading affiliate details…");
         const detail = await rpc("admin_get_affiliate_detail", { p_affiliate_id: affiliateId });
-        const affiliate = detail.affiliate;
+        const affiliate = detail.profile;
         if (!affiliate) { target.innerHTML = empty("Affiliate not found."); return; }
         target.innerHTML = `<button id="closeAffiliateDetail" class="admin-small-button" type="button">Close</button><h2>${escape(`${affiliate.first_name || ""} ${affiliate.last_name || ""}`.trim() || affiliate.display_name || "Affiliate")}</h2><p>${escape(affiliate.email || "")} · ${escape(affiliate.affiliate_code)} · ${status(affiliate.status)}</p><div class="affiliate-detail-grid"><div><span>Clicks</span><strong>${Number(affiliate.total_clicks || 0).toLocaleString()}</strong></div><div><span>Orders</span><strong>${Number(affiliate.total_orders || 0).toLocaleString()}</strong></div><div><span>Sales</span><strong>${money(affiliate.total_sales)}</strong></div><div><span>Commission</span><strong>${money(affiliate.total_commission)}</strong></div></div><h3>Promoted products</h3>${table(["Product", "Clicks", "Created"], (detail.links || []).map(link => `<tr><td>${escape(link.title || "Removed product")}</td><td>${Number(link.clicks || 0).toLocaleString()}</td><td>${date(link.created_at)}</td></tr>`))}<h3>Commission history</h3>${table(["Order", "Sale", "Commission", "Status"], (detail.conversions || []).map(conversion => `<tr><td>${escape(conversion.order_number || conversion.order_id)}</td><td>${money(conversion.sale_amount)}</td><td>${money(conversion.commission_amount)}</td><td>${status(conversion.status)}</td></tr>`))}`;
         $("closeAffiliateDetail").addEventListener("click", () => { target.hidden = true; });
     }
 
     async function loadTraffic() {
-        const rows = await rpc("admin_list_affiliate_traffic", { p_limit: 100 });
-        $("affiliateTrafficList").innerHTML = table(["When", "Affiliate", "Product", "Visitor", "Landing page"], rows.map(row => `<tr><td>${date(row.created_at)}</td><td><strong>${escape(row.affiliate_name || "Affiliate")}</strong><br><small>${escape(row.affiliate_code)}</small></td><td>${escape(row.product_title || "Marketplace")}</td><td>${escape(row.visitor_token || "Signed in visitor")}</td><td>${escape(row.landing_page || "—")}</td></tr>`));
+        const rows = await rpc("admin_list_affiliate_clicks", { p_affiliate_id: null, p_limit: 100 });
+        $("affiliateTrafficList").innerHTML = table(["When", "Affiliate code", "Product", "Visitor", "Landing page"], rows.map(row => `<tr><td>${date(row.created_at)}</td><td><strong>${escape(row.affiliate_code || "Affiliate")}</strong></td><td>${escape(row.product_title || "Marketplace")}</td><td>${escape(row.visitor_id || "Signed-in visitor")}</td><td>${escape(row.landing_page || "—")}</td></tr>`));
     }
 
     async function loadConversions() {
-        const rows = await rpc("admin_list_affiliate_conversions", { p_status: $("affiliateConversionStatus").value || null });
+        const rows = await rpc("admin_list_affiliate_conversions", { p_status: $("affiliateConversionStatus").value || "all", p_limit: 200 });
         $("affiliateConversionsList").innerHTML = table(["Affiliate", "Order", "Sale", "Commission", "Status", "Actions"], rows.map(row => `<tr><td>${escape(row.affiliate_name)}<br><small>${escape(row.affiliate_code)}</small></td><td>${escape(row.order_number || row.order_id)}</td><td>${money(row.sale_amount)}</td><td>${money(row.commission_amount)} <small>(${Number(row.commission_rate)}%)</small></td><td>${status(row.status)}</td><td>${row.status === "pending" ? `<button data-commission-approve="${row.id}">Approve</button><button class="danger" data-commission-reject="${row.id}">Reject</button>` : "—"}</td></tr>`));
         document.querySelectorAll("[data-commission-approve]").forEach(button => button.addEventListener("click", () => action(() => rpc("admin_approve_commission", { p_conversion_id: button.dataset.commissionApprove }))));
         document.querySelectorAll("[data-commission-reject]").forEach(button => button.addEventListener("click", () => {
@@ -82,7 +77,7 @@
     }
 
     async function loadPayouts() {
-        const rows = await rpc("admin_list_affiliate_payouts", { p_status: $("affiliatePayoutStatus").value || null });
+        const rows = await rpc("admin_list_affiliate_payouts", { p_status: $("affiliatePayoutStatus").value || "all", p_limit: 200 });
         $("affiliatePayoutsList").innerHTML = table(["Affiliate", "Amount", "Payment", "Status", "Requested", "Actions"], rows.map(row => `<tr><td>${escape(row.affiliate_name)}<br><small>${escape(row.affiliate_code)}</small></td><td>${money(row.amount)}</td><td>${escape(row.payment_method)}<br><small>${escape(row.payment_account)}</small></td><td>${status(row.status)}</td><td>${date(row.created_at)}</td><td>${row.status === "pending" ? `<button data-payout-approve="${row.id}">Approve</button><button class="danger" data-payout-reject="${row.id}">Reject</button>` : row.status === "approved" ? `<button data-payout-pay="${row.id}">Mark paid</button><button class="danger" data-payout-reject="${row.id}">Reject</button>` : "—"}</td></tr>`));
         document.querySelectorAll("[data-payout-approve]").forEach(button => button.addEventListener("click", () => action(() => rpc("admin_approve_affiliate_payout", { p_payout_id: button.dataset.payoutApprove, p_notes: "Approved by GamBasket administration." }))));
         document.querySelectorAll("[data-payout-reject]").forEach(button => button.addEventListener("click", () => { const reason = prompt("Reason for rejecting payout:"); if (reason !== null) action(() => rpc("admin_reject_affiliate_payout", { p_payout_id: button.dataset.payoutReject, p_reason: reason })); }));
@@ -100,7 +95,7 @@
     async function saveSettings() {
         await action(() => rpc("admin_update_affiliate_settings", {
             p_enabled: $("affiliateEnabled").checked,
-            p_default_commission_rate: Number($("affiliateDefaultRate").value),
+            p_commission_rate: Number($("affiliateDefaultRate").value),
             p_minimum_payout: Number($("affiliateMinimumPayout").value),
             p_attribution_days: Number($("affiliateAttributionDays").value)
         }));

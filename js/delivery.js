@@ -70,7 +70,7 @@
     if (state.deliveryProfile?.status !== "available") return toast("Go online before claiming a delivery request.");
     const button = document.querySelector(`[data-claim-id="${CSS.escape(id)}"]`);
     if (button) { button.disabled = true; button.textContent = "Claiming…"; }
-    const { data, error } = await state.client.rpc("claim_delivery_job", { p_request_id: id, p_worker_id: state.user.id });
+    const { data, error } = await state.client.rpc("claim_delivery_job", { p_request_id: id });
     if (error || !data?.success) { if (button) { button.disabled = false; button.textContent = "Claim run"; } return clientError(error || new Error(data?.error), "This request could not be claimed."); }
     notify("Delivery job claimed", `You claimed ${orderNumber(state.available.find(job => job.id === id))}.`);
     toast("Delivery claimed. Head to the pickup location.");

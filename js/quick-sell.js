@@ -40,13 +40,15 @@
         const estimatedSellerAmount = price - estimatedFee;
         const condition = document.getElementById("quickSellCondition")?.value || "Used - Good";
         const suppliedImage = document.getElementById("quickSellImage")?.value.trim() || "";
+        const imageFile = document.getElementById("quickSellImageFile")?.files?.[0] || null;
         const location = document.getElementById("quickSellLocation")?.value.trim() || "Greater Banjul";
 
         const confirmed = confirm(
             "Quick Sell fee: " + QUICK_SELL_FEE + "%\n\n" +
             "Item price: D " + price.toLocaleString() + "\n" +
-            "Estimated GamBasket fee: D " + estimatedFee.toLocaleString() + "\n" +
+            "Estimated fee (not charged when submitting a listing): D " + estimatedFee.toLocaleString() + "\n" +
             "Estimated amount after fee: D " + estimatedSellerAmount.toLocaleString() + "\n\n" +
+            "These figures are estimates only. No fee is collected by this form.\n\n" +
             "Continue?"
         );
 
@@ -61,6 +63,13 @@
         try {
             const profile = await window.GamBasketAuth?.fetchUserProfile?.();
             const listingLocation = location || [profile?.area, profile?.region].filter(Boolean).join(", ") || "Greater Banjul";
+            let mainImage = suppliedImage || null;
+            if (imageFile) {
+                if (typeof window.GamBasketAuth?.uploadImage !== "function") {
+                    throw new Error("Image upload is unavailable. Please paste a hosted photo URL instead.");
+                }
+                mainImage = await window.GamBasketAuth.uploadImage(imageFile, "products");
+            }
             const { error } = await client
                 .from("products")
                 .insert({
@@ -73,7 +82,7 @@
                     status: "pending_review",
                     seller_id: user.id,
                     location: listingLocation,
-                    main_image: suppliedImage || "https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&w=800&q=80",
+                    main_image: mainImage,
                     created_at: new Date().toISOString()
                 });
             if (error) throw error;

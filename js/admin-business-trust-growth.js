@@ -31,30 +31,51 @@
         try {
             const [verification, reports, disputes, actions] = await Promise.all([
                 client().from("verification_requests").select("*").order("submitted_at", { ascending: false }).limit(50),
-                client().from("trust_reports").select("*").order("created_at", { ascending: false }).limit(50),
+                client().from("reports").select("*").order("created_at", { ascending: false }).limit(50),
                 client().from("marketplace_disputes").select("*").order("created_at", { ascending: false }).limit(50),
                 client().from("account_actions").select("*").order("created_at", { ascending: false }).limit(25)
             ]);
             for (const response of [verification, reports, disputes, actions]) if (response.error) throw response.error;
             const rows = (items, render, empty) => items.length ? `<div class="admin-table-wrap"><table class="admin-table"><tbody>${items.map(render).join("")}</tbody></table></div>` : `<div class="admin-empty">${empty}</div>`;
             root.innerHTML = `
-                <div class="admin-card"><header class="admin-card-header"><div><span>VERIFICATION</span><h2>Business verification</h2></div><button class="admin-button" data-trust-refresh>Refresh</button></header>${rows(verification.data || [], item => `<tr><td><strong>${esc(item.business_name || item.role_type)}</strong><br><small>${esc(item.role_type)} · ${esc(item.status)}</small></td><td>${date(item.submitted_at)}</td><td>${item.status === "pending" || item.status === "needs_information" ? `<button class="admin-button" data-verify="${item.id}" data-status="approved">Approve</button> <button class="admin-button admin-button-danger" data-verify="${item.id}" data-status="rejected">Reject</button>` : "—"}</td></tr>`, "No verification requests.")}</div>
-                <div class="admin-card"><header class="admin-card-header"><div><span>REPORTS</span><h2>Marketplace reports</h2></div></header>${rows(reports.data || [], item => `<tr><td><strong>${esc(item.report_type)}</strong><br><small>${esc(item.reason)}</small></td><td>${esc(item.status)}</td><td>${!['resolved','dismissed'].includes(item.status) ? `<button class="admin-button" data-report="${item.id}">Resolve</button>` : "—"}</td></tr>`, "No open reports.")}</div>
+                <div class="admin-card"><header class="admin-card-header"><div><span>VERIFICATION</span><h2>Business verification</h2></div><button class="admin-button" data-trust-refresh>Refresh</button></header>${rows(verification.data || [], item => `<tr><td><strong>${esc(item.business_name || item.role_type)}</strong><br><small>${esc(item.role_type)} · ${esc(item.status)}</small></td><td>${date(item.submitted_at)}</td><td>${item.identity_document_url ? `<button class="admin-button" data-verification-document="${esc(item.identity_document_url)}">View private document</button>` : ""} ${item.status === "pending" || item.status === "needs_information" ? `<button class="admin-button" data-verify="${item.id}" data-status="approved">Approve</button> <button class="admin-button admin-button-danger" data-verify="${item.id}" data-status="rejected">Reject</button>` : "—"}</td></tr>`, "No verification requests.")}</div>
+                <div class="admin-card"><header class="admin-card-header"><div><span>REPORTS</span><h2>Marketplace reports</h2></div></header>${rows(reports.data || [], item => `<tr><td><strong>${esc(item.target_type || "Marketplace")} report</strong><br><small>${esc(item.reason)}</small></td><td>${esc(item.status)}</td><td>${!['resolved','dismissed'].includes(item.status) ? `<button class="admin-button" data-report="${item.id}">Resolve</button>` : "—"}</td></tr>`, "No open reports.")}</div>
                 <div class="admin-card"><header class="admin-card-header"><div><span>DISPUTES</span><h2>Order disputes</h2></div></header>${rows(disputes.data || [], item => `<tr><td><strong>${esc(item.reason)}</strong><br><small>Order ${esc(item.order_id)}</small></td><td>${esc(item.status)}</td><td>${!['resolved','dismissed'].includes(item.status) ? `<button class="admin-button" data-dispute="${item.id}">Resolve</button>` : "—"}</td></tr>`, "No disputes.")}</div>
                 <div class="admin-card"><header class="admin-card-header"><div><span>ACCOUNT ACTIONS</span><h2>Warn, suspend, or ban</h2></div></header><form id="accountActionForm" class="admin-toolbar"><input name="userId" placeholder="User UUID" required><select name="action"><option value="warning">Warning</option><option value="suspend">Suspend</option><option value="ban">Ban</option><option value="unsuspend">Unsuspend</option><option value="unban">Unban</option></select><input name="reason" placeholder="Reason" required><button class="admin-button" type="submit">Apply action</button></form>${rows(actions.data || [], item => `<tr><td>${esc(item.action_type)}</td><td>${esc(item.reason)}</td><td>${date(item.created_at)}</td></tr>`, "No account actions recorded.")}</div>`;
             root.querySelector("[data-trust-refresh]")?.addEventListener("click", loadTrust);
+            root.querySelectorAll("[data-verification-document]").forEach(button => button.addEventListener("click", async () => {
+                const path = button.dataset.verificationDocument;
+                if (!path || path.startsWith("/") || path.includes("..")) { notice("Invalid private document reference.", true); return; }
+                button.disabled = true;
+                try {
+                    const { data, error } = await client().storage.from("verification-documents").createSignedUrl(path, 300);
+                    if (error) throw error;
+                    if (!data?.signedUrl) throw new Error("A signed document link could not be created.");
+                    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+                } catch (error) {
+                    notice(error.message || "You are not authorized to view this document.", true);
+                } finally {
+                    button.disabled = false;
+                }
+            }));
             root.querySelectorAll("[data-verify]").forEach(button => button.addEventListener("click", async () => {
                 const status = button.dataset.status;
                 if (!confirm(`${status === "approved" ? "Approve" : "Reject"} this verification request?`)) return;
                 try { await rpc("admin_set_verification", { p_request_id: button.dataset.verify, p_status: status, p_notes: null }); notice("Verification updated."); loadTrust(); } catch (error) { notice(error.message, true); }
             }));
             root.querySelectorAll("[data-report]").forEach(button => button.addEventListener("click", async () => {
-                const resolution = prompt("Resolution note (optional):"); if (resolution === null || !confirm("Resolve this report?")) return;
-                try { await rpc("admin_resolve_trust_report", { p_report_id: button.dataset.report, p_status: "resolved", p_resolution: resolution }); notice("Report resolved."); loadTrust(); } catch (error) { notice(error.message, true); }
+                const resolution = prompt("Required resolution note:");
+                if (resolution === null) return;
+                if (!resolution.trim()) { notice("A resolution note is required.", true); return; }
+                if (!confirm("Resolve this report?")) return;
+                try { await rpc("resolve_marketplace_report", { p_report_id: button.dataset.report, p_status: "resolved", p_resolution: resolution.trim() }); notice("Report resolved."); loadTrust(); } catch (error) { notice(error.message, true); }
             }));
             root.querySelectorAll("[data-dispute]").forEach(button => button.addEventListener("click", async () => {
-                const resolution = prompt("Resolution note (optional):"); if (resolution === null || !confirm("Resolve this dispute?")) return;
-                try { await rpc("admin_resolve_marketplace_dispute", { p_dispute_id: button.dataset.dispute, p_status: "resolved", p_resolution: resolution }); notice("Dispute resolved."); loadTrust(); } catch (error) { notice(error.message, true); }
+                const resolution = prompt("Required resolution note:");
+                if (resolution === null) return;
+                if (!resolution.trim()) { notice("A resolution note is required.", true); return; }
+                if (!confirm("Resolve this dispute?")) return;
+                try { await rpc("admin_resolve_marketplace_dispute", { p_dispute_id: button.dataset.dispute, p_status: "resolved", p_resolution: resolution.trim() }); notice("Dispute resolved."); loadTrust(); } catch (error) { notice(error.message, true); }
             }));
             root.querySelector("#accountActionForm")?.addEventListener("submit", async event => {
                 event.preventDefault(); const form = new FormData(event.currentTarget); const action = form.get("action");

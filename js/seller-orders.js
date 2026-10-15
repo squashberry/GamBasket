@@ -19,23 +19,22 @@
             throw new Error("Invalid cancellation reason.");
         }
 
-        if (!window.supabaseClient) {
-            return { id: orderId, status: "cancelled", seller_cancel_reason: reason };
-        }
+        if (!window.supabaseClient) throw new Error("Order service unavailable.");
 
-        const { data, error } = await window.supabaseClient
-            .from("orders")
-            .update({
-                status: "cancelled",
-                seller_cancel_reason: reason,
-                seller_cancelled_at: new Date().toISOString()
-            })
-            .eq("id", orderId)
-            .select()
-            .single();
-
+        const reasonLabels = {
+            customer_request: "Customer request",
+            product_issue: "Product issue",
+            delivery_issue: "Delivery issue",
+            seller_unavailable: "Seller unavailable",
+            other: "Other"
+        };
+        const { data, error } = await window.supabaseClient.rpc("seller_update_order_status", {
+            p_order_id: orderId,
+            p_next_status: "cancelled",
+            p_reason: reasonLabels[reason]
+        });
         if (error) throw error;
-        return data;
+        return { ...data, status: data.order_status, seller_cancel_reason: reason };
     }
 
     window.GamBasketSellerOrders = {
@@ -61,12 +60,12 @@
                         .order("created_at", { ascending: false });
 
                     if (options.status && options.status !== "all") {
-                        query = query.eq("status", options.status);
+                        query = query.eq("order_status", options.status);
                     }
 
                     const { data, error } = await query;
                     if (!error && data) {
-                        return { items: data, total: data.length };
+                        return { items: data.map(order => ({ ...order, status: order.order_status })), total: data.length };
                     }
                 } catch (e) {
                     console.warn("Orders query:", e);
@@ -77,20 +76,14 @@
         },
 
         async updateStatus(orderId, newStatus) {
-            if (!window.supabaseClient) return { id: orderId, status: newStatus };
-
-            const { data, error } = await window.supabaseClient
-                .from("orders")
-                .update({
-                    status: newStatus,
-                    updated_at: new Date().toISOString()
-                })
-                .eq("id", orderId)
-                .select()
-                .single();
-
+            if (!window.supabaseClient) throw new Error("Order service unavailable.");
+            const { data, error } = await window.supabaseClient.rpc("seller_update_order_status", {
+                p_order_id: orderId,
+                p_next_status: newStatus,
+                p_reason: null
+            });
             if (error) throw error;
-            return data;
+            return { ...data, status: data.order_status };
         }
     };
 })();

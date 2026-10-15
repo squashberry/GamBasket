@@ -1,0 +1,124 @@
+name: GamBasket validation
+
+on:
+  push:
+    branches:
+      - main
+      - fix/security-and-backend-hardening
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gambasket-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  syntax-and-contracts:
+    name: Frontend syntax and critical contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check every JavaScript file
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=0
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+            count=$((count + 1))
+          done < <(find js -type f -name '*.js' -print0 | sort -z)
+          echo "Successfully syntax-checked $count JavaScript files."
+
+      - name: Check inline scripts on changed workflow pages
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          class ScriptParser(HTMLParser):
+              def __init__(self):
+                  super().__init__(convert_charrefs=False)
+                  self.scripts = []
+                  self.current = None
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() == "script":
+                      attrs = dict(attrs)
+                      if "src" not in attrs and attrs.get("type", "").lower() not in {
+                          "application/json", "application/ld+json", "importmap"
+                      }:
+                          self.current = {"type": attrs.get("type", "").lower(), "parts": []}
+              def handle_data(self, data):
+                  if self.current is not None:
+                      self.current["parts"].append(data)
+              def handle_endtag(self, tag):
+                  if tag.lower() == "script" and self.current is not None:
+                      self.scripts.append(self.current)
+                      self.current = None
+
+          pages = ["worker-apply.html", "quick-sell.html"]
+          checked = 0
+          for page in pages:
+              parser = ScriptParser()
+              parser.feed(Path(page).read_text(encoding="utf-8"))
+              for index, script in enumerate(parser.scripts, 1):
+                  suffix = ".mjs" if script["type"] == "module" else ".js"
+                  with tempfile.NamedTemporaryFile("w", suffix=suffix, encoding="utf-8", delete=False) as f:
+                      f.write("\n".join(script["parts"]))
+                      filename = f.name
+                  subprocess.run(["node", "--check", filename], check=True)
+                  checked += 1
+          print(f"Successfully syntax-checked {checked} inline scripts across {len(pages)} HTML pages.")
+          PY
+
+      - name: Guard public frontend against server secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n -E 'sb_secret_[A-Za-z0-9_-]+|SUPABASE_SERVICE_ROLE_KEY|service_role' js --include='*.js'; then
+            echo "Potential Supabase server secret found in browser JavaScript."
+            exit 1
+          fi
+          echo "No Supabase server-secret patterns found in browser JavaScript."
+
+      - name: Check security migration and client contracts
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          migrations = sorted(Path("supabase/migrations").glob("*.sql"))
+          assert migrations, "No version-controlled SQL migrations found."
+          all_sql = "\n".join(p.read_text(encoding="utf-8") for p in migrations)
+          checks = {
+              "profile privacy projection": "public_profiles" in all_sql and "profiles_owner_or_admin_select" in all_sql,
+              "buyer order cancellation RPC": "FUNCTION public.cancel_order" in all_sql,
+              "server-side checkout RPC": "FUNCTION public.create_order" in all_sql,
+              "courier identity derived from auth": "FUNCTION public.claim_delivery_job" in all_sql and "v_user uuid := auth.uid()" in all_sql,
+              "verification submission RPC": "FUNCTION public.submit_verification_request" in all_sql,
+              "private verification bucket": "INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types)" in all_sql and "'verification-documents',\n  'verification-documents',\n  false," in all_sql,
+              "role table write revocation": "REVOKE ALL ON TABLE public.user_roles FROM PUBLIC, anon, authenticated" in all_sql,
+              "admin-only audit read policy": "platform_audit_logs_admin_read" in all_sql,
+              "affiliate payout reconciliation": "FUNCTION public.admin_mark_affiliate_payout_paid" in all_sql,
+          }
+          for label, passed in checks.items():
+              print(("PASS" if passed else "FAIL") + ": " + label)
+          assert all(checks.values()), "A required backend security/workflow contract is missing."
+          config = Path("js/config.js").read_text(encoding="utf-8")
+          assert "CLOUDINARY_CLOUD_NAME: \"\"" in config and "CLOUDINARY_UPLOAD_PRESET: \"\"" in config, (
+              "Cloudinary config is expected to remain unconfigured until project-owned credentials are supplied."
+          )
+          print(f"Validated {len(checks)} backend contracts across {len(migrations)} SQL migration files.")
+          PY

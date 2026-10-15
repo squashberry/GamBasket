@@ -112,16 +112,13 @@
             });
             const order = result.order || result;
 
-            // Attribution is linked to the signed-in buyer before checkout. A
-            // commission is only attempted for an order whose payment is already
-            // confirmed; pending/COD orders are handled when payment is confirmed.
+            // Create a pending commission record only when an affiliate attribution
+            // exists. The database independently verifies order ownership and keeps
+            // commissions pending until a paid order is approved by an affiliate admin.
             if (order?.id) {
                 try {
                     await window.GamBasketAffiliate?.attachAttribution();
-
-                    if (["paid", "completed", "success", "successful"].includes(String(order.payment_status || "").toLowerCase())) {
-                        await window.GamBasketAffiliate?.recordConversion(order.id);
-                    }
+                    await window.GamBasketAffiliate?.recordConversion(order.id);
                 } catch (affiliateError) {
                     console.warn("[GamBasket Affiliate] Conversion attribution failed:", affiliateError);
                 }

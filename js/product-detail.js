@@ -41,10 +41,11 @@
                         let seller = null;
                         if (data.seller_id) {
                             const sellerResult = await client
-                                .from("profiles")
-                                .select("first_name, last_name, phone, area")
+                                .from("public_profiles")
+                                .select("id, first_name, last_name, avatar_url, area, region")
                                 .eq("id", data.seller_id)
                                 .maybeSingle();
+                            if (sellerResult.error) throw sellerResult.error;
                             seller = sellerResult.data;
                         }
                         currentProduct = {

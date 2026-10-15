@@ -84,15 +84,24 @@
         async getSellerProfile(userId) {
             if (!userId) return null;
 
-            if (window.supabaseClient) {
-                const { data, error } = await window.supabaseClient
-                    .from("profiles")
-                    .select("*")
-                    .eq("id", userId)
-                    .maybeSingle();
-
-                if (!error && data) {
-                    return data;
+            const client = window.supabaseClient || window.GamBasketAuth?.getClient?.();
+            if (client) {
+                try {
+                    const { data: authResult } = await client.auth.getUser();
+                    const currentUser = authResult?.user || null;
+                    const table = currentUser?.id === userId ? "profiles" : "public_profiles";
+                    const columns = table === "profiles"
+                        ? "*"
+                        : "id,first_name,last_name,avatar_url,country,region,area";
+                    const { data, error } = await client
+                        .from(table)
+                        .select(columns)
+                        .eq("id", userId)
+                        .maybeSingle();
+                    if (error) throw error;
+                    if (data) return data;
+                } catch (error) {
+                    console.warn("Seller profile lookup:", error.message);
                 }
             }
 

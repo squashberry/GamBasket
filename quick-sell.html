@@ -20,7 +20,7 @@
         .quick-sell-fee small { font-size: 11px; color: var(--text-secondary); line-height: 1.3; }
         #quickSellForm { display: grid; gap: 18px; }
         #quickSellForm label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: var(--text); }
-        #quickSellForm input, #quickSellForm textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-secondary); color: var(--text); font-family: inherit; font-size: 14px; outline: none; box-sizing: border-box; }
+        #quickSellForm input, #quickSellForm textarea, #quickSellForm select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-secondary); color: var(--text); font-family: inherit; font-size: 14px; outline: none; box-sizing: border-box; }
         #quickSellForm textarea { min-height: 100px; resize: vertical; }
         #quickSellForm .primary-btn { padding: 14px; border-radius: 14px; background: #2563eb; color: white; border: 0; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s ease; }
         #quickSellForm .primary-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
@@ -62,7 +62,7 @@
             <div class="quick-sell-fee">
                 <span>Marketplace fee</span>
                 <strong>7%</strong>
-                <small>Applied to a successful Quick Sell transaction.</small>
+                <small>Shown as an estimate only in this test build; no fee is collected when you submit a listing.</small>
             </div>
         </div>
 
@@ -76,8 +76,31 @@
                 <input id="quickSellPrice" type="number" min="1" required placeholder="D">
             </label>
             <label>
+                Condition
+                <select id="quickSellCondition" required>
+                    <option value="New">New</option>
+                    <option value="Like New">Like new</option>
+                    <option value="Refurbished">Refurbished</option>
+                    <option value="Used - Good" selected>Used — good</option>
+                    <option value="Used - Fair">Used — fair</option>
+                </select>
+            </label>
+            <label>
+                Listing location
+                <input id="quickSellLocation" maxlength="120" required value="Greater Banjul" placeholder="e.g. Serrekunda, Kanifing">
+            </label>
+            <label>
+                Product photo (optional)
+                <input id="quickSellImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+                <small>JPG, PNG or WEBP, up to 5MB. Image uploads require the Cloudinary preset to be configured.</small>
+            </label>
+            <label>
+                Or paste a hosted photo URL
+                <input id="quickSellImage" type="url" maxlength="1000" placeholder="https://…">
+            </label>
+            <label>
                 Description
-                <textarea id="quickSellDescription" maxlength="2000" required placeholder="Describe your item's condition, features, and pickup location..."></textarea>
+                <textarea id="quickSellDescription" maxlength="2000" required placeholder="Describe your item's condition, features, and pickup details..."></textarea>
             </label>
             <button type="submit" class="primary-btn">
                 Continue to Submit

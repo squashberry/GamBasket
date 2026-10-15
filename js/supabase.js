@@ -392,54 +392,11 @@
             const client = this.getClient();
             if (!client) return null;
 
-            const { firstName, lastName, avatarUrl } = this.extractUserNames(user);
-
             try {
-                // 1. Check existing profile
-                const { data: existingProfile } = await client
-                    .from("profiles")
-                    .select("id, first_name, last_name, email, country, avatar_url")
-                    .eq("id", user.id)
-                    .maybeSingle();
-
-                if (!existingProfile) {
-                    // Create profile with permanently locked Gambia country
-                    await client.from("profiles").upsert({
-                        id: user.id,
-                        first_name: firstName,
-                        last_name: lastName,
-                        email: user.email,
-                        country: "The Gambia",
-                        region: "Greater Banjul",
-                        avatar_url: avatarUrl || null,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: "id" });
-                } else if ((!existingProfile.first_name || existingProfile.first_name === "User" || existingProfile.first_name === "GamBasket") && (firstName && firstName !== "User")) {
-                    // Update profile with real name from Google
-                    await client.from("profiles").update({
-                        first_name: firstName,
-                        last_name: lastName || existingProfile.last_name,
-                        avatar_url: avatarUrl || existingProfile.avatar_url,
-                        updated_at: new Date().toISOString()
-                    }).eq("id", user.id);
-                }
-
-                // 2. Ensure default buyer role
-                const { data: existingRole } = await client
-                    .from("user_roles")
-                    .select("id")
-                    .eq("user_id", user.id)
-                    .eq("role_id", "buyer")
-                    .maybeSingle();
-
-                if (!existingRole) {
-                    await client.from("user_roles").upsert({
-                        user_id: user.id,
-                        role_id: "buyer",
-                        is_active: true
-                    }, { onConflict: "user_id,role_id" });
-                }
-
+                // The database owns profile creation and the default buyer role.
+                // This avoids client-side role writes and works with private profile RLS.
+                const { error } = await client.rpc("bootstrap_my_profile");
+                if (error) throw error;
                 return await this.fetchUserProfile(true);
             } catch (err) {
                 console.warn("[GamBasket] ensureProfileAndRoles notice:", err.message);
@@ -1070,10 +1027,20 @@
             for (const conversation of data || []) {
                 const { data: members, error: memberError } = await client
                     .from("conversation_participants")
-                    .select("user_id, last_read_at, profile:profiles(first_name, last_name)")
+                    .select("user_id, last_read_at")
                     .eq("conversation_id", conversation.id);
                 if (memberError) throw memberError;
                 const other = (members || []).find(member => member.user_id !== session.user.id);
+                let otherProfile = null;
+                if (other?.user_id) {
+                    const { data: safeProfile, error: profileError } = await client
+                        .from("public_profiles")
+                        .select("id, first_name, last_name")
+                        .eq("id", other.user_id)
+                        .maybeSingle();
+                    if (profileError) throw profileError;
+                    otherProfile = safeProfile;
+                }
                 const { data: lastMessages, error: messageError } = await client
                     .from("messages")
                     .select("message_text, created_at, sender_id, is_read")
@@ -1093,7 +1060,7 @@
                     id: conversation.id,
                     product_id: conversation.product_id,
                     product: conversation.product,
-                    other_user_name: `${other?.profile?.first_name || "GamBasket"} ${other?.profile?.last_name || "Member"}`.trim(),
+                    other_user_name: `${otherProfile?.first_name || "GamBasket"} ${otherProfile?.last_name || "Member"}`.trim(),
                     last_message: lastMessage?.message_text || "Start the conversation",
                     last_message_at: lastMessage?.created_at || conversation.updated_at || conversation.created_at,
                     unread_count: count || 0
@@ -1122,11 +1089,21 @@
             const session = await this.getSession();
             const { data: members, error: memberError } = await client
                 .from("conversation_participants")
-                .select("user_id, profile:profiles(first_name, last_name)")
+                .select("user_id")
                 .eq("conversation_id", conversationId);
             if (memberError) throw memberError;
             const other = (members || []).find(member => member.user_id !== session?.user?.id);
-            return { conversation: { ...conversation, other_user_name: `${other?.profile?.first_name || "GamBasket"} ${other?.profile?.last_name || "Member"}`.trim() }, messages, product: conversation.product };
+            let otherProfile = null;
+            if (other?.user_id) {
+                const { data: safeProfile, error: profileError } = await client
+                    .from("public_profiles")
+                    .select("id, first_name, last_name")
+                    .eq("id", other.user_id)
+                    .maybeSingle();
+                if (profileError) throw profileError;
+                otherProfile = safeProfile;
+            }
+            return { conversation: { ...conversation, other_user_name: `${otherProfile?.first_name || "GamBasket"} ${otherProfile?.last_name || "Member"}`.trim() }, messages, product: conversation.product };
         },
 
         getConversationMessages: async function (conversationId) {
@@ -1371,30 +1348,28 @@
             }
 
             const client = this.getClient();
-            const userId = session.user.id;
+            if (!client) return { success: false, error: "ORDER_SERVICE_UNAVAILABLE" };
 
             try {
-                if (client) {
-                    await client
-                        .from("orders")
-                        .update({ order_status: "cancelled", updated_at: new Date().toISOString() })
-                        .eq("buyer_id", userId)
-                        .eq("order_number", orderId);
-                }
+                const { data, error } = await client.rpc("cancel_order", {
+                    p_order_number: String(orderId)
+                });
+                if (error) throw error;
+                window.dispatchEvent(new CustomEvent("gambasket:orders:change", {
+                    detail: { orderId, status: data?.order_status || "cancelled", order: data }
+                }));
+                return { success: true, order: data };
             } catch (err) {
-                console.warn("[GamBasket] Order cancellation DB notice:", err.message);
+                console.warn("[GamBasket] Order cancellation failed:", err.message);
                 return { success: false, error: err };
             }
-
-            window.dispatchEvent(new CustomEvent("gambasket:orders:change", { detail: { orderId, status: "cancelled" } }));
-            return { success: true };
         },
 
-        uploadImage: async function (file, bucketName = "product-images") {
+        uploadImage: async function (file, folder = "product-images") {
             if (!file) throw new Error("No file selected.");
 
             const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-            if (!allowedTypes.includes(file.type.toLowerCase())) {
+            if (!allowedTypes.includes(String(file.type || "").toLowerCase())) {
                 throw new Error("Invalid image type. Please select a JPG, PNG, or WEBP file.");
             }
 
@@ -1403,41 +1378,33 @@
                 throw new Error("Image file is too large. Maximum allowed size is 5MB.");
             }
 
-            await this.ready();
-            const client = this.getClient();
-            const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-            const filePath = `${Date.now()}_${cleanName}`;
-
-            if (client) {
-                try {
-                    const { data, error } = await client.storage
-                        .from(bucketName)
-                        .upload(filePath, file, {
-                            cacheControl: "3600",
-                            upsert: true
-                        });
-
-                    if (error) throw error;
-
-                    const { data: publicUrlData } = client.storage
-                        .from(bucketName)
-                        .getPublicUrl(filePath);
-
-                    if (publicUrlData && publicUrlData.publicUrl) {
-                        return publicUrlData.publicUrl;
-                    }
-                } catch (storageErr) {
-                    console.warn("[GamBasket] Storage upload fallback to data URL:", storageErr.message);
-                }
+            const config = window.GAMBASKET_CONFIG || {};
+            if (!config.isCloudinaryConfigured || !config.isCloudinaryConfigured()) {
+                throw new Error("Image hosting is not configured yet. Add the Cloudinary cloud name and restricted unsigned upload preset in js/config.js.");
             }
 
-            // Client-side fallback to read as Data URL
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = (e) => reject(new Error("Failed to read image file."));
-                reader.readAsDataURL(file);
-            });
+            const cloudName = config.CLOUDINARY_CLOUD_NAME;
+            const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
+            const safeFolder = String(folder || "product-images")
+                .replace(/[^a-zA-Z0-9/_-]/g, "")
+                .replace(/^\/+|\/+$/g, "") || "product-images";
+            const payload = new FormData();
+            payload.append("file", file);
+            payload.append("upload_preset", uploadPreset);
+            payload.append("folder", `gambasket/${safeFolder}`);
+
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
+                { method: "POST", body: payload }
+            );
+
+            let result = null;
+            try { result = await response.json(); } catch {}
+            if (!response.ok || !result?.secure_url) {
+                const reason = result?.error?.message || `Cloudinary upload failed (HTTP ${response.status}).`;
+                throw new Error(reason);
+            }
+            return result.secure_url;
         }
     };
 

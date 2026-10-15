@@ -17,7 +17,7 @@
   async function getClient() { await window.GamBasketAuth?.ready?.(); return window.GamBasketAuth?.getClient?.() || null; }
 
   async function loadData() {
-    const productSelect = "id,seller_id,title,description,price,currency,category_id,condition,stock,location,main_image,status,rejection_reason,created_at,seller:profiles(first_name,last_name,email,phone,region,area),product_images(id,image_url,sort_order)";
+    const productSelect = "id,seller_id,title,description,price,currency,category_id,condition,stock,location,main_image,status,rejection_reason,created_at,product_images(id,image_url,sort_order)";
     const [products, applications, reports, earnings, activity] = await Promise.all([
       state.client.from("products").select(productSelect).eq("status", "pending_review").order("created_at", { ascending: true }),
       state.client.from("worker_applications").select("*").eq("status", "pending").order("created_at", { ascending: true }),
@@ -27,8 +27,30 @@
     ]);
     const errors = [products, applications, reports, earnings, activity].map(result => result.error).filter(Boolean);
     if (errors.length) console.warn("Some operations data could not be read:", errors.map(error => error.message));
-    state.products = products.data || []; state.applications = applications.data || []; state.reports = reports.data || []; state.earnings = earnings.data || []; state.activity = activity.data || [];
-    if (errors.length) toast("Some operations queues need the workspace migration before they can be loaded.");
+
+    const sellerIds = [...new Set((products.data || []).map(product => product.seller_id).filter(Boolean))];
+    const sellerProfiles = new Map();
+    if (sellerIds.length) {
+      const { data: profiles, error: profileError } = await state.client
+        .from("public_profiles")
+        .select("id,first_name,last_name,avatar_url,region,area")
+        .in("id", sellerIds);
+      if (profileError) {
+        console.warn("Safe seller profiles could not be loaded:", profileError.message);
+      } else {
+        for (const profile of profiles || []) sellerProfiles.set(profile.id, profile);
+      }
+    }
+
+    state.products = (products.data || []).map(product => ({
+      ...product,
+      seller: sellerProfiles.get(product.seller_id) || null
+    }));
+    state.applications = applications.data || [];
+    state.reports = reports.data || [];
+    state.earnings = earnings.data || [];
+    state.activity = activity.data || [];
+    if (errors.length) toast("Some operations queues could not be loaded. Check your access and try again.");
     render();
   }
 

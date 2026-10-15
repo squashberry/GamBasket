@@ -1365,11 +1365,11 @@
             }
         },
 
-        uploadImage: async function (file, bucketName = "product-images") {
+        uploadImage: async function (file, folder = "product-images") {
             if (!file) throw new Error("No file selected.");
 
             const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-            if (!allowedTypes.includes(file.type.toLowerCase())) {
+            if (!allowedTypes.includes(String(file.type || "").toLowerCase())) {
                 throw new Error("Invalid image type. Please select a JPG, PNG, or WEBP file.");
             }
 
@@ -1378,41 +1378,33 @@
                 throw new Error("Image file is too large. Maximum allowed size is 5MB.");
             }
 
-            await this.ready();
-            const client = this.getClient();
-            const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-            const filePath = `${Date.now()}_${cleanName}`;
-
-            if (client) {
-                try {
-                    const { data, error } = await client.storage
-                        .from(bucketName)
-                        .upload(filePath, file, {
-                            cacheControl: "3600",
-                            upsert: true
-                        });
-
-                    if (error) throw error;
-
-                    const { data: publicUrlData } = client.storage
-                        .from(bucketName)
-                        .getPublicUrl(filePath);
-
-                    if (publicUrlData && publicUrlData.publicUrl) {
-                        return publicUrlData.publicUrl;
-                    }
-                } catch (storageErr) {
-                    console.warn("[GamBasket] Storage upload fallback to data URL:", storageErr.message);
-                }
+            const config = window.GAMBASKET_CONFIG || {};
+            if (!config.isCloudinaryConfigured || !config.isCloudinaryConfigured()) {
+                throw new Error("Image hosting is not configured yet. Add the Cloudinary cloud name and restricted unsigned upload preset in js/config.js.");
             }
 
-            // Client-side fallback to read as Data URL
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = (e) => reject(new Error("Failed to read image file."));
-                reader.readAsDataURL(file);
-            });
+            const cloudName = config.CLOUDINARY_CLOUD_NAME;
+            const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
+            const safeFolder = String(folder || "product-images")
+                .replace(/[^a-zA-Z0-9/_-]/g, "")
+                .replace(/^\/+|\/+$/g, "") || "product-images";
+            const payload = new FormData();
+            payload.append("file", file);
+            payload.append("upload_preset", uploadPreset);
+            payload.append("folder", `gambasket/${safeFolder}`);
+
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
+                { method: "POST", body: payload }
+            );
+
+            let result = null;
+            try { result = await response.json(); } catch {}
+            if (!response.ok || !result?.secure_url) {
+                const reason = result?.error?.message || `Cloudinary upload failed (HTTP ${response.status}).`;
+                throw new Error(reason);
+            }
+            return result.secure_url;
         }
     };
 

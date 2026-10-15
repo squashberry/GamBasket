@@ -1,0 +1,214 @@
+/* GAMBASKET BUSINESS SITE CSS */
+:root {
+    --primary: #2563eb;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.site-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.site-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.site-search-wrap {
+    flex: 1;
+}
+
+.site-search-wrap input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    outline: none;
+}
+
+.site-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-secondary {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.business-cover {
+    height: 220px;
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    position: relative;
+}
+
+.business-profile-bar {
+    max-width: 1200px;
+    margin: -60px auto 0;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.business-profile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    gap: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.business-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 18px;
+    background: #eff6ff;
+    display: grid;
+    place-items: center;
+    font-size: 38px;
+}
+
+.business-meta {
+    flex: 1;
+}
+
+.business-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.business-title-row h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.badge-verified {
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.business-info-pills {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.business-contact-strip {
+    max-width: 1200px;
+    margin: 16px auto 0;
+    padding: 0 20px;
+    display: flex;
+    gap: 12px;
+}
+
+.contact-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.contact-btn.whatsapp { background: #22c55e; color: #fff; }
+.contact-btn.chat { background: #2563eb; color: #fff; }
+.contact-btn.call { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+
+.store-catalog-section, .store-reviews-section {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 0 20px;
+}
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 12px;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.product-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.product-card h3 {
+    margin: 8px 0 4px;
+    font-size: 14px;
+}
+
+.product-card .price {
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.site-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 30px 20px;
+    text-align: center;
+    margin-top: 60px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+.site-footer a { color: var(--primary); font-weight: 700; text-decoration: none; }

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>You're Offline — GamBasket</title>
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .offline-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            overflow: hidden;
+            background:
+                radial-gradient(
+                    circle at 50% 18%,
+                    rgba(37, 99, 235, .10),
+                    transparent 34%
+                ),
+                var(--background, #f8fafc);
+        }
+
+        .offline-scene {
+            width: min(620px, 100%);
+            text-align: center;
+            position: relative;
+        }
+
+        .offline-code {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(80px, 17vw, 150px);
+            font-weight: 900;
+            letter-spacing: -.08em;
+            color: rgba(37, 99, 235, .045);
+            user-select: none;
+        }
+
+        /* =====================================================
+           BAG
+        ===================================================== */
+
+        .disconnect-bag {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            margin: 40px auto 24px;
+            animation: bagFloat 3.4s ease-in-out infinite;
+        }
+
+        .bag-shape {
+            position: absolute;
+            left: 45px;
+            bottom: 12px;
+            width: 140px;
+            height: 135px;
+            border-radius: 18px 18px 24px 24px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #3b82f6,
+                    #1d4ed8
+                );
+            box-shadow:
+                0 24px 45px rgba(37, 99, 235, .22),
+                inset 0 1px 0 rgba(255,255,255,.2);
+        }
+
+        .bag-shape::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: -34px;
+            width: 75px;
+            height: 55px;
+            transform: translateX(-50%);
+            border: 8px solid #2563eb;
+            border-bottom: 0;
+            border-radius: 45px 45px 0 0;
+        }
+
+        /* =====================================================
+           FACE
+        ===================================================== */
+
+        .bag-face {
+            position: absolute;
+            inset: 0;
+        }
+
+        .bag-eye {
+            position: absolute;
+            top: 52px;
+            width: 11px;
+            height: 17px;
+            border-radius: 50%;
+            background: #0f172a;
+        }
+
+        .bag-eye.left {
+            left: 42px;
+        }
+
+        .bag-eye.right {
+            right: 42px;
+        }
+
+        .bag-mouth {
+            position: absolute;
+            left: 50%;
+            top: 78px;
+            width: 27px;
+            height: 15px;
+            transform: translateX(-50%);
+            border-bottom: 4px solid #0f172a;
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* =====================================================
+           WIRES
+        ===================================================== */
+
+        .wire {
+            position: absolute;
+            top: 117px;
+            width: 60px;
+            height: 4px;
+            border-radius: 999px;
+        }
+
+        .wire-left {
+            left: -5px;
+            background: #ef4444;
+            transform: rotate(-12deg);
+        }
+
+        .wire-right {
+            right: -5px;
+            background: #2563eb;
+            transform: rotate(12deg);
+        }
+
+        .wire-copper {
+            position: absolute;
+            top: 114px;
+            width: 13px;
+            height: 9px;
+            border-radius: 2px;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    #f59e0b 0 3px,
+                    #d97706 3px 5px
+                );
+        }
+
+        .wire-copper.left {
+            left: 47px;
+            transform: rotate(-12deg);
+        }
+
+        .wire-copper.right {
+            right: 47px;
+            transform: rotate(12deg);
+        }
+
+        /* =====================================================
+           HANDS
+        ===================================================== */
+
+        .hand {
+            position: absolute;
+            width: 54px;
+            height: 31px;
+            border-radius: 18px 18px 10px 10px;
+            background: #f3c7a4;
+            box-shadow:
+                inset 0 -3px 0 rgba(0,0,0,.05);
+            z-index: 4;
+        }
+
+        .hand.left {
+            left: 0;
+            top: 95px;
+            transform:
+                rotate(-15deg)
+                translateX(-2px);
+        }
+
+        .hand.right {
+            right: 0;
+            top: 95px;
+            transform:
+                rotate(15deg)
+                translateX(2px);
+        }
+
+        .finger {
+            position: absolute;
+            width: 13px;
+            height: 25px;
+            border-radius: 10px;
+            background: #f3c7a4;
+            top: -13px;
+        }
+
+        .hand.left .finger:nth-child(1) {
+            left: 7px;
+            transform: rotate(-12deg);
+        }
+
+        .hand.left .finger:nth-child(2) {
+            left: 18px;
+            transform: rotate(-4deg);
+        }
+
+        .hand.left .finger:nth-child(3) {
+            left: 29px;
+            transform: rotate(5deg);
+        }
+
+        .hand.right .finger:nth-child(1) {
+            right: 7px;
+            transform: rotate(12deg);
+        }
+
+        .hand.right .finger:nth-child(2) {
+            right: 18px;
+            transform: rotate(4deg);
+        }
+
+        .hand.right .finger:nth-child(3) {
+            right: 29px;
+            transform: rotate(-5deg);
+        }
+
+        /* =====================================================
+           ELECTRIC SPARK
+        ===================================================== */
+
+        .spark {
+            position: absolute;
+            left: 50%;
+            top: 108px;
+            width: 20px;
+            height: 20px;
+            transform: translateX(-50%);
+            color: #f59e0b;
+            animation: sparkFlash 1.6s ease-in-out infinite;
+        }
+
+        .spark::before,
+        .spark::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 26px;
+            height: 2px;
+            background: currentColor;
+            border-radius: 999px;
+        }
+
+        .spark::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .spark::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        /* =====================================================
+           TEXT
+        ===================================================== */
+
+        .offline-kicker {
+            display: inline-flex;
+            padding: 6px 11px;
+            border-radius: 999px;
+            background: rgba(37,99,235,.08);
+            color: #2563eb;
+            font-size: 9px;
+            font-weight: 850;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .offline-title {
+            margin: 14px 0 8px;
+            color: var(--text, #0f172a);
+            font-size: clamp(31px, 6vw, 48px);
+            line-height: 1.02;
+            letter-spacing: -.05em;
+        }
+
+        .offline-text {
+            max-width: 450px;
+            margin: 0 auto;
+            color: var(--text-secondary, #64748b);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .offline-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 26px;
+        }
+
+        .offline-btn {
+            min-width: 165px;
+            min-height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 18px;
+            border-radius: 13px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            transition:
+                transform .2s cubic-bezier(.2,.8,.2,1),
+                box-shadow .2s ease,
+                background .2s ease;
+        }
+
+        .offline-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .offline-btn.primary {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            box-shadow:
+                0 10px 25px rgba(37,99,235,.20);
+        }
+
+        .offline-btn.secondary {
+            border: 1px solid var(--border, #e2e8f0);
+            background: var(--surface, #fff);
+            color: var(--text, #0f172a);
+        }
+
+        .offline-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .offline-help {
+            margin-top: 20px;
+            color: var(--text-muted, #94a3b8);
+            font-size: 11px;
+        }
+
+        .offline-help a {
+            color: #2563eb;
+            font-weight: 750;
+            text-decoration: none;
+        }
+
+        .offline-status {
+            margin-top: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: var(--surface-secondary);
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .offline-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239,68,68,.10);
+        }
+
+        /* =====================================================
+           DECORATIVE DOTS
+        ===================================================== */
+
+        .offline-dot {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #93c5fd;
+            opacity: .45;
+            animation: dotFloat 4s ease-in-out infinite;
+        }
+
+        .offline-dot.one {
+            top: 18%;
+            left: 9%;
+        }
+
+        .offline-dot.two {
+            top: 31%;
+            right: 9%;
+            animation-delay: .8s;
+        }
+
+        .offline-dot.three {
+            bottom: 18%;
+            left: 14%;
+            animation-delay: 1.6s;
+        }
+
+        @keyframes bagFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(-2deg);
+            }
+
+            50% {
+                transform: translateY(-8px) rotate(2deg);
+            }
+        }
+
+        @keyframes sparkFlash {
+            0%, 58%, 100% {
+                opacity: 0;
+                transform:
+                    translateX(-50%)
+                    scale(.6);
+            }
+
+            64% {
+                opacity: 1;
+                transform:
+                    translateX(-50%)
+                    scale(1.1);
+            }
+
+            70% {
+                opacity: .3;
+                transform:
+                    translateX(-50%)
+                    scale(.85);
+            }
+
+            76% {
+                opacity: 1;
+                transform:
+                    translateX(-50%)
+                    scale(1);
+            }
+        }
+
+        @keyframes dotFloat {
+            0%, 100% {
+                transform: translateY(0);
+                opacity: .3;
+            }
+
+            50% {
+                transform: translateY(-12px);
+                opacity: .7;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .offline-page {
+                padding:
+                    30px
+                    18px
+                    calc(30px + env(safe-area-inset-bottom));
+            }
+
+            .offline-code {
+                top: -15px;
+                font-size: 95px;
+            }
+
+            .disconnect-bag {
+                transform: scale(.88);
+                margin-top: 28px;
+            }
+
+            .offline-title {
+                font-size: 34px;
+            }
+
+            .offline-text {
+                font-size: 13px;
+            }
+
+            .offline-actions {
+                flex-direction: column;
+            }
+
+            .offline-btn {
+                width: 100%;
+            }
+        }
+
+        .dark .offline-page {
+            background:
+                radial-gradient(
+                    circle at 50% 18%,
+                    rgba(37,99,235,.18),
+                    transparent 34%
+                ),
+                var(--background, #020617);
+        }
+
+        .dark .offline-code {
+            color: rgba(96,165,250,.06);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .disconnect-bag,
+            .spark,
+            .offline-dot {
+                animation: none !important;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="offline-page">
+
+        <span class="offline-dot one"></span>
+        <span class="offline-dot two"></span>
+        <span class="offline-dot three"></span>
+
+        <section class="offline-scene">
+
+            <div class="offline-code">
+                OFFLINE
+            </div>
+
+            <!-- BAG SCENE -->
+            <div class="disconnect-bag">
+
+                <div class="bag-shape">
+
+                    <div class="bag-face">
+
+                        <span class="bag-eye left"></span>
+                        <span class="bag-eye right"></span>
+
+                        <span class="bag-mouth"></span>
+
+                    </div>
+
+                </div>
+
+                <!-- LEFT WIRE -->
+                <div class="wire wire-left"></div>
+                <div class="wire-copper left"></div>
+
+                <!-- RIGHT WIRE -->
+                <div class="wire wire-right"></div>
+                <div class="wire-copper right"></div>
+
+                <!-- HANDS -->
+                <div class="hand left">
+                    <span class="finger"></span>
+                    <span class="finger"></span>
+                    <span class="finger"></span>
+                </div>
+
+                <div class="hand right">
+                    <span class="finger"></span>
+                    <span class="finger"></span>
+                    <span class="finger"></span>
+                </div>
+
+                <div class="spark"></div>
+
+            </div>
+
+
+            <span class="offline-kicker">
+                CONNECTION LOST
+            </span>
+
+            <h1 class="offline-title">
+                Oops, you're offline.
+            </h1>
+
+            <p class="offline-text">
+                GamBasket can't reach the marketplace right now.
+                Recheck your connection and try again.
+            </p>
+
+
+            <div class="offline-actions">
+
+                <button
+                    id="retryConnection"
+                    class="offline-btn primary"
+                    type="button">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8">
+
+                        <path
+                            d="M20 11a8 8 0 1 0 1 4"
+                            stroke-linecap="round"
+                        />
+
+                        <path
+                            d="M20 5v6h-6"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+
+                    </svg>
+
+                    Try Again
+
+                </button>
+
+                <a
+                    href="index.html"
+                    class="offline-btn secondary">
+
+                    Back to GamBasket
+
+                </a>
+
+            </div>
+
+
+            <p class="offline-help">
+                Error persisting?
+                <a href="customer-care.html">
+                    Click here
+                </a>
+                for help.
+            </p>
+
+
+            <div class="offline-status">
+
+                <span class="offline-status-dot"></span>
+
+                No internet connection detected
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+        const retryButton =
+            document.getElementById("retryConnection");
+
+        retryButton?.addEventListener(
+            "click",
+            () => {
+
+                retryButton.disabled = true;
+                retryButton.textContent = "Checking...";
+
+                setTimeout(() => {
+
+                    if (navigator.onLine) {
+                        window.location.href = "index.html";
+                    } else {
+                        retryButton.disabled = false;
+
+                        retryButton.innerHTML = `
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8">
+
+                                <path
+                                    d="M20 11a8 8 0 1 0 1 4"
+                                    stroke-linecap="round"
+                                />
+
+                                <path
+                                    d="M20 5v6h-6"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+
+                            Try Again
+                        `;
+                    }
+
+                }, 700);
+
+            }
+        );
+
+        window.addEventListener(
+            "online",
+            () => {
+                window.location.href = "index.html";
+            }
+        );
+    </script>
+
+</body>
+</html>

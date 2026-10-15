@@ -1,0 +1,3158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#07111f"
+    >
+
+    <title>GamBasket Admin Console</title>
+
+    <link
+        rel="icon"
+        href="../favicon.svg"
+        type="image/svg+xml"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/admin.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/admin-affiliate.css"
+    >
+
+    <script>
+        (() => {
+            try {
+                if (
+                    localStorage.getItem("gambasket-theme") === "dark"
+                ) {
+                    document.documentElement.classList.add("dark");
+                }
+            } catch (_) {}
+        })();
+    </script>
+</head>
+
+<body class="admin-page">
+
+    <!-- ======================================================
+         ADMIN BOOT SCREEN
+    ======================================================= -->
+
+    <div
+        id="adminLoader"
+        class="admin-loader"
+    >
+
+        <div class="admin-loader-orbit">
+
+            <div class="admin-loader-logo">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    />
+
+                    <path
+                        d="M3 6h18M16 10a4 4 0 0 1-8 0"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    />
+                </svg>
+
+            </div>
+
+        </div>
+
+        <div class="admin-loader-kicker">
+            -GAMBASKET ADMINISTRATION-
+        </div>
+
+        <h1>
+            Opening control center
+        </h1>
+
+        <p id="adminLoaderText">
+            Verifying administrator authorization
+        </p>
+
+        <div class="admin-loader-progress">
+
+            <span id="adminLoaderBar"></span>
+
+        </div>
+
+        <div class="admin-loader-status">
+
+            <i></i>
+
+            <span>
+                Secure administrative session
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         APPLICATION
+    ======================================================= -->
+
+    <div
+        id="adminApplication"
+        class="admin-application"
+        hidden
+    >
+
+        <!-- ==================================================
+             MOBILE HEADER
+        =================================================== -->
+
+        <header class="admin-mobile-header">
+
+            <button
+                id="mobileMenuBtn"
+                class="admin-icon-button"
+                type="button"
+                aria-label="Open administration navigation"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M4 7h16M4 12h16M4 17h16"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+                </svg>
+            </button>
+
+            <div class="admin-mobile-brand">
+
+                <strong>GamBasket</strong>
+
+                <span>
+                    Admin Console
+                </span>
+
+            </div>
+
+            <button
+                id="mobileThemeBtn"
+                class="admin-icon-button"
+                type="button"
+                aria-label="Toggle theme"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    />
+                </svg>
+            </button>
+
+        </header>
+
+
+        <!-- ==================================================
+             SIDEBAR
+        =================================================== -->
+
+        <aside
+            id="adminSidebar"
+            class="admin-sidebar"
+        >
+
+            <div class="admin-brand">
+
+                <a
+                    href="../index.html"
+                    class="admin-brand-mark"
+                    aria-label="GamBasket"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+
+                        <path
+                            d="M3 6h18M16 10a4 4 0 0 1-8 0"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+                    </svg>
+                </a>
+
+                <div>
+
+                    <strong>
+                        GamBasket
+                    </strong>
+
+                    <span>
+                        ADMINISTRATION
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-current-user">
+
+                <div
+                    id="adminAvatar"
+                    class="admin-avatar"
+                >
+                    A
+                </div>
+
+                <div class="admin-current-user-copy">
+
+                    <strong id="adminName">
+                        Administrator
+                    </strong>
+
+                    <span>
+                        Full platform access
+                    </span>
+
+                </div>
+
+                <i class="admin-online-dot"></i>
+
+            </div>
+
+
+            <nav
+                id="adminNav"
+                class="admin-nav"
+            >
+
+                <div class="admin-nav-label">
+                    PLATFORM
+                </div>
+
+                <button
+                    class="admin-nav-item active"
+                    data-page="overview"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M4 19V9M10 19V5M16 19v-8M22 19V3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Overview
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="users"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle
+                                cx="9"
+                                cy="8"
+                                r="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M3 20c.5-4 2.5-6 6-6s5.5 2 6 6"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M17 6a3 3 0 1 1 0 4M16 14c2.8.7 4.4 2.5 4.7 6"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Users
+                    </span>
+
+                    <em id="countUsers">
+                        0
+                    </em>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="sellers"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="m3 10 2-6h14l2 6"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M4 10v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            />
+                            <path
+                                d="M8 21v-6h8v6"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Sellers
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="products"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="m4.5 7.7 7.5 4.3 7.5-4.3M12 12v9"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Products
+                    </span>
+
+                    <em id="countProducts">
+                        0
+                    </em>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="orders"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect
+                                x="4"
+                                y="3"
+                                width="16"
+                                height="18"
+                                rx="2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M8 8h8M8 12h8M8 16h5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Orders
+                    </span>
+
+                    <em id="countOrders">
+                        0
+                    </em>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="deliveries"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect
+                                x="2"
+                                y="5"
+                                width="13"
+                                height="11"
+                                rx="2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M15 9h4l3 3v4h-7V9Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <circle
+                                cx="7"
+                                cy="19"
+                                r="2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <circle
+                                cx="18"
+                                cy="19"
+                                r="2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Deliveries
+                    </span>
+
+                </button>
+
+
+                <div class="admin-nav-label">
+                    OPERATIONS
+                </div>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="workers"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 3 20 6v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="m9 12 2 2 4-4"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Worker Applications
+                    </span>
+
+                    <em id="countWorkers">
+                        0
+                    </em>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="moderation"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 3 20 6v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M12 8v4M12 16h.01"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Moderation
+                    </span>
+
+                    <em id="countReports">
+                        0
+                    </em>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="messages"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M20 11.5a8.5 8.5 0 0 1-8.5 8.5 8.7 8.7 0 0 1-3.6-.8L3 21l1.8-5.1A8.7 8.7 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 20 11.5Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Messages
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="reviews"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.6"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Reviews
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="earnings"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M12 7v10M15 9c-.8-1-2-1.5-3-1.5-1.4 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1.1 0-2.2-.5-3-1.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Earnings
+                    </span>
+
+                </button>
+
+
+                <div class="admin-nav-label">
+                    GROWTH
+                </div>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="promotions"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="m3 11 18-7v16L3 13v-2Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Promotions
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="websites"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect
+                                x="3"
+                                y="4"
+                                width="18"
+                                height="16"
+                                rx="2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M3 9h18M7 14h4M7 17h7"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Business Websites
+                    </span>
+
+                    <em id="countWebsites">
+                        0
+                    </em>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="plans"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect
+                                x="3"
+                                y="4"
+                                width="18"
+                                height="16"
+                                rx="2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M7 9h10M7 13h7M7 17h4"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Seller Plans
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="categories"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect
+                                x="3"
+                                y="3"
+                                width="7"
+                                height="7"
+                                rx="1"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <rect
+                                x="14"
+                                y="3"
+                                width="7"
+                                height="7"
+                                rx="1"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <rect
+                                x="3"
+                                y="14"
+                                width="7"
+                                height="7"
+                                rx="1"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <rect
+                                x="14"
+                                y="14"
+                                width="7"
+                                height="7"
+                                rx="1"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Categories
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="featured"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.6"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Featured
+                    </span>
+
+                </button>
+
+
+                <div class="admin-nav-label">
+                    AFFILIATE
+                </div>
+
+                <button
+                    class="admin-nav-item"
+                    data-page="affiliate"
+                    type="button"
+                >
+                    <span class="admin-nav-icon">↗</span>
+                    <span>Affiliate Center</span>
+                </button>
+
+                <div class="admin-nav-label">
+                    SYSTEM
+                </div>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="analytics"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M4 19V9M10 19V5M16 19v-8M22 19V3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="logs"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M8 8h8M8 12h8M8 16h5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="admin-nav-item"
+                    data-page="settings"
+                    type="button"
+                >
+
+                    <span class="admin-nav-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.3a1.7 1.7 0 0 0 1.5-1A1.7 1.7 0 0 0 4.5 7.2l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9.1 4a1.7 1.7 0 0 0 1-1.5V2.3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1h.3a2 2 0 1 1 0 4h-.3a1.7 1.7 0 0 0-1.5 1Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.35"
+                            />
+                        </svg>
+                    </span>
+
+                    <span>
+                        Settings
+                    </span>
+
+                </button>
+
+            </nav>
+
+
+            <div class="admin-sidebar-bottom">
+
+                <button
+                    id="adminThemeBtn"
+                    class="admin-sidebar-action"
+                    type="button"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+                    </svg>
+
+                    <span id="themeLabel">
+                        Dark mode
+                    </span>
+                </button>
+
+
+                <a
+                    href="../me.html"
+                    class="admin-sidebar-action"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                        />
+
+                        <path
+                            d="m16 17 5-5-5-5M21 12H9"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                        />
+                    </svg>
+
+                    <span>
+                        Return to GamBasket
+                    </span>
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <div
+            id="adminMobileBackdrop"
+            class="admin-mobile-backdrop"
+            hidden
+        ></div>
+
+
+        <!-- ==================================================
+             MAIN
+        =================================================== -->
+
+        <main class="admin-main">
+
+            <header class="admin-topbar">
+
+                <div class="admin-breadcrumb">
+
+                    <span>
+                        GamBasket
+                    </span>
+
+                    <b>/</b>
+
+                    <strong id="pageTitle">
+                        Overview
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-top-actions">
+
+                    <button
+                        id="globalSearchBtn"
+                        class="admin-search-trigger"
+                        type="button"
+                    >
+
+                        <svg viewBox="0 0 24 24">
+                            <circle
+                                cx="11"
+                                cy="11"
+                                r="6.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                            <path
+                                d="m16 16 5 5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+
+                        <span>
+                            Search anything...
+                        </span>
+
+                        <kbd>
+                            /
+                        </kbd>
+
+                    </button>
+
+
+                    <button
+                        id="notificationBtn"
+                        class="admin-top-action"
+                        type="button"
+                        aria-label="Notifications"
+                    >
+
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M18 9.5C18 6.46 16.21 4 12 4S6 6.46 6 9.5C6 14.75 4 16 4 17.5h16C20 16 18 14.75 18 9.5Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                            />
+                        </svg>
+
+                        <i></i>
+
+                    </button>
+
+
+                    <div class="admin-top-user">
+
+                        <div
+                            id="adminTopAvatar"
+                            class="admin-avatar"
+                        >
+                            A
+                        </div>
+
+                        <div>
+
+                            <strong id="adminTopName">
+                                Administrator
+                            </strong>
+
+                            <span>
+                                Control center
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <div class="admin-page-content">
+
+                <!-- ==========================================
+                     OVERVIEW
+                =========================================== -->
+
+                <section
+                    class="admin-section active"
+                    data-section="overview"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                CONTROL CENTER
+                            </div>
+
+                            <h1>
+                                Platform overview
+                            </h1>
+
+                            <p>
+                                Live command view across the entire GamBasket marketplace.
+                            </p>
+
+                        </div>
+
+                        <button
+                            id="refreshAll"
+                            class="admin-primary-button"
+                            type="button"
+                        >
+                            Refresh data
+                        </button>
+
+                    </div>
+
+
+                    <div class="admin-kpi-grid">
+
+                        <article class="admin-kpi">
+
+                            <span>
+                                Marketplace GMV
+                            </span>
+
+                            <strong id="statGMV">
+                                D 0
+                            </strong>
+
+                            <small>
+                                Total recorded order value
+                            </small>
+
+                        </article>
+
+
+                        <article class="admin-kpi">
+
+                            <span>
+                                Registered users
+                            </span>
+
+                            <strong id="statUsers">
+                                0
+                            </strong>
+
+                            <small>
+                                Active marketplace accounts
+                            </small>
+
+                        </article>
+
+
+                        <article class="admin-kpi">
+
+                            <span>
+                                Products
+                            </span>
+
+                            <strong id="statProducts">
+                                0
+                            </strong>
+
+                            <small>
+                                Marketplace listings
+                            </small>
+
+                        </article>
+
+
+                        <article class="admin-kpi">
+
+                            <span>
+                                Orders
+                            </span>
+
+                            <strong id="statOrders">
+                                0
+                            </strong>
+
+                            <small>
+                                Orders recorded
+                            </small>
+
+                        </article>
+
+
+                        <article class="admin-kpi">
+
+                            <span>
+                                Delivery queue
+                            </span>
+
+                            <strong id="statDeliveries">
+                                0
+                            </strong>
+
+                            <small>
+                                Open delivery jobs
+                            </small>
+
+                        </article>
+
+
+                        <article class="admin-kpi warning">
+
+                            <span>
+                                Requires attention
+                            </span>
+
+                            <strong id="statAttention">
+                                0
+                            </strong>
+
+                            <small>
+                                Pending moderation / applications
+                            </small>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-dashboard-grid">
+
+                        <section class="admin-card admin-card-wide">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        MARKETPLACE ACTIVITY
+                                    </span>
+
+                                    <h2>
+                                        Order value trend
+                                    </h2>
+
+                                </div>
+
+                                <select id="chartRange">
+                                    <option value="7">
+                                        7 days
+                                    </option>
+                                    <option value="30">
+                                        30 days
+                                    </option>
+                                    <option value="90">
+                                        90 days
+                                    </option>
+                                </select>
+
+                            </header>
+
+                            <div
+                                id="mainChart"
+                                class="admin-chart"
+                            ></div>
+
+                        </section>
+
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        ADMIN
+                                    </span>
+
+                                    <h2>
+                                        Quick actions
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+
+                            <div class="admin-shortcut-grid">
+
+                                <button
+                                    data-open-section="users"
+                                    type="button"
+                                >
+                                    Manage users
+                                </button>
+
+                                <button
+                                    data-open-section="products"
+                                    type="button"
+                                >
+                                    Moderate products
+                                </button>
+
+                                <button
+                                    data-open-section="workers"
+                                    type="button"
+                                >
+                                    Review applications
+                                </button>
+
+                                <button
+                                    data-open-section="deliveries"
+                                    type="button"
+                                >
+                                    Delivery command
+                                </button>
+
+                                <button
+                                    data-open-section="websites"
+                                    type="button"
+                                >
+                                    Business websites
+                                </button>
+
+                                <button
+                                    data-open-section="promotions"
+                                    type="button"
+                                >
+                                    Create promotion
+                                </button>
+
+                            </div>
+
+                        </section>
+
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        PLATFORM ACTIVITY
+                                    </span>
+
+                                    <h2>
+                                        Recent events
+                                    </h2>
+
+                                </div>
+
+                                <button
+                                    class="admin-text-button"
+                                    data-open-section="logs"
+                                    type="button"
+                                >
+                                    View all
+                                </button>
+
+                            </header>
+
+                            <div
+                                id="activityFeed"
+                                class="admin-activity-feed"
+                            ></div>
+
+                        </section>
+
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        HEALTH
+                                    </span>
+
+                                    <h2>
+                                        Platform services
+                                    </h2>
+
+                                </div>
+
+                                <strong class="health-pill">
+                                    Operational
+                                </strong>
+
+                            </header>
+
+                            <div class="admin-health-list">
+
+                                <div>
+                                    <span>
+                                        Authentication
+                                    </span>
+                                    <strong>
+                                        Operational
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Database
+                                    </span>
+                                    <strong>
+                                        Operational
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Storage
+                                    </span>
+                                    <strong>
+                                        Operational
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Messaging
+                                    </span>
+                                    <strong>
+                                        Operational
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     USERS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="users"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                PEOPLE
+                            </div>
+
+                            <h1>
+                                User management
+                            </h1>
+
+                            <p>
+                                Inspect complete accounts, products, stores, roles, websites, earnings and activity.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-toolbar">
+
+                        <div class="admin-search-box">
+
+                            <svg viewBox="0 0 24 24">
+                                <circle
+                                    cx="11"
+                                    cy="11"
+                                    r="6.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                                <path
+                                    d="m16 16 5 5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                            </svg>
+
+                            <input
+                                id="userSearch"
+                                type="search"
+                                placeholder="Search name, email, phone..."
+                            >
+
+                        </div>
+
+
+                        <select id="userRoleFilter">
+
+                            <option value="all">
+                                All users
+                            </option>
+
+                            <option value="buyer">
+                                Buyer
+                            </option>
+
+                            <option value="seller">
+                                Seller
+                            </option>
+
+                            <option value="delivery_worker">
+                                Delivery Worker
+                            </option>
+
+                            <option value="marketplace_worker">
+                                Marketplace Worker
+                            </option>
+
+                            <option value="admin">
+                                Admin
+                            </option>
+
+                            <option value="banned">
+                                Banned
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <section class="admin-card">
+
+                        <div
+                            id="usersTable"
+                            class="admin-table-wrapper"
+                        ></div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- ==========================================
+                     SELLERS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="sellers"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                MERCHANTS
+                            </div>
+
+                            <h1>
+                                Seller operations
+                            </h1>
+
+                            <p>
+                                Seller approvals, stores, plans, products and business websites.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-mini-grid">
+
+                        <article class="admin-mini-card">
+                            <span>Pending applications</span>
+                            <strong id="sellerApplicationsCount">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Approved sellers</span>
+                            <strong id="approvedSellerCount">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Stores</span>
+                            <strong id="storesCount">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Business websites</span>
+                            <strong id="sellerWebsitesCount">0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    APPLICATION QUEUE
+                                </span>
+
+                                <h2>
+                                    Seller applications
+                                </h2>
+
+                            </div>
+
+                        </header>
+
+                        <div
+                            id="sellerApplicationsList"
+                            class="admin-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     PRODUCTS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="products"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                MARKETPLACE
+                            </div>
+
+                            <h1>
+                                Product operations
+                            </h1>
+
+                            <p>
+                                Moderate listings, remove unsafe products and inspect seller inventory.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-mini-grid">
+
+                        <article class="admin-mini-card">
+                            <span>Total listings</span>
+                            <strong id="productTotal">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Pending</span>
+                            <strong id="productPending">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Approved</span>
+                            <strong id="productApproved">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Rejected</span>
+                            <strong id="productRejected">0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    LISTING MODERATION
+                                </span>
+
+                                <h2>
+                                    Product queue
+                                </h2>
+
+                            </div>
+
+                            <button
+                                id="refreshProducts"
+                                class="admin-small-button"
+                                type="button"
+                            >
+                                Refresh
+                            </button>
+
+                        </header>
+
+                        <div
+                            id="productsList"
+                            class="admin-product-grid"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     ORDERS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="orders"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                COMMERCE
+                            </div>
+
+                            <h1>
+                                Order command center
+                            </h1>
+
+                            <p>
+                                See order flow, customers, sellers, totals and delivery status.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-mini-grid">
+
+                        <article class="admin-mini-card">
+                            <span>All orders</span>
+                            <strong id="ordersTotal">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Pending</span>
+                            <strong id="ordersPending">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Processing</span>
+                            <strong id="ordersProcessing">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Completed</span>
+                            <strong id="ordersCompleted">0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <div
+                            id="ordersList"
+                            class="admin-table-wrapper"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     DELIVERIES
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="deliveries"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                LOGISTICS
+                            </div>
+
+                            <h1>
+                                Delivery command
+                            </h1>
+
+                            <p>
+                                Monitor courier availability, open requests, active deliveries and completed jobs.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-mini-grid">
+
+                        <article class="admin-mini-card">
+                            <span>Available couriers</span>
+                            <strong id="deliveryWorkersCount">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Open jobs</span>
+                            <strong id="deliveryOpenCount">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Active jobs</span>
+                            <strong id="deliveryActiveCount">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Completed</span>
+                            <strong id="deliveryCompletedCount">0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    DELIVERY QUEUE
+                                </span>
+
+                                <h2>
+                                    Live requests
+                                </h2>
+
+                            </div>
+
+                        </header>
+
+                        <div
+                            id="deliveryList"
+                            class="admin-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     WORKERS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="workers"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                WORKFORCE
+                            </div>
+
+                            <h1>
+                                Worker applications
+                            </h1>
+
+                            <p>
+                                Delivery-worker and marketplace-operation applications.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    APPLICATIONS
+                                </span>
+
+                                <h2>
+                                    Pending workforce
+                                </h2>
+
+                            </div>
+
+                        </header>
+
+                        <div
+                            id="workersList"
+                            class="admin-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     MODERATION
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="moderation"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                TRUST & SAFETY
+                            </div>
+
+                            <h1>
+                                Moderation center
+                            </h1>
+
+                            <p>
+                                Reports, account problems and marketplace safety issues.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <div
+                            id="reportsList"
+                            class="admin-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     MESSAGES
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="messages"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                COMMUNICATIONS
+                            </div>
+
+                            <h1>
+                                Message oversight
+                            </h1>
+
+                            <p>
+                                Monitor conversations and investigate reported communication issues.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    CONVERSATIONS
+                                </span>
+
+                                <h2>
+                                    Recent conversations
+                                </h2>
+
+                            </div>
+
+                        </header>
+
+                        <div
+                            id="messagesList"
+                            class="admin-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     REVIEWS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="reviews"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                CUSTOMER FEEDBACK
+                            </div>
+
+                            <h1>
+                                Reviews & ratings
+                            </h1>
+
+                            <p>
+                                Inspect customer reviews and remove inappropriate feedback.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <div
+                            id="reviewsList"
+                            class="admin-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     EARNINGS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="earnings"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                WORK ECONOMY
+                            </div>
+
+                            <h1>
+                                Earnings & payouts
+                            </h1>
+
+                            <p>
+                                Track wages earned by delivery and marketplace workers.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-mini-grid">
+
+                        <article class="admin-mini-card">
+                            <span>Total wages</span>
+                            <strong id="wagesTotal">D 0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Delivery wages</span>
+                            <strong id="deliveryWages">D 0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Moderation wages</span>
+                            <strong id="moderationWages">D 0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Payout requests</span>
+                            <strong id="payoutRequests">0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    WAGE ENGINE
+                                </span>
+
+                                <h2>
+                                    Earning rules
+                                </h2>
+
+                            </div>
+
+                        </header>
+
+
+                        <div class="admin-form-grid two">
+
+                            <label>
+                                Delivery wage
+                                <div class="admin-money-field">
+                                    <b>D</b>
+                                    <input
+                                        id="deliveryWage"
+                                        type="number"
+                                        min="0"
+                                        value="100"
+                                    >
+                                </div>
+                            </label>
+
+                            <label>
+                                Moderation wage
+                                <div class="admin-money-field">
+                                    <b>D</b>
+                                    <input
+                                        id="moderationWage"
+                                        type="number"
+                                        min="0"
+                                        value="10"
+                                    >
+                                </div>
+                            </label>
+
+                        </div>
+
+
+                        <div class="admin-card-actions">
+
+                            <button
+                                id="saveWages"
+                                class="admin-primary-button"
+                                type="button"
+                            >
+                                Save wage rules
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     PROMOTIONS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="promotions"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                GROWTH
+                            </div>
+
+                            <h1>
+                                Promotions & popups
+                            </h1>
+
+                            <p>
+                                Create customer-facing campaign banners and popup announcements.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-two-column">
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        CAMPAIGN CREATOR
+                                    </span>
+
+                                    <h2>
+                                        New popup
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+
+                            <div class="admin-form-grid">
+
+                                <label>
+                                    Campaign title
+                                    <input
+                                        id="popupTitle"
+                                        placeholder="New promotion"
+                                    >
+                                </label>
+
+
+                                <label>
+                                    Message
+                                    <textarea
+                                        id="popupMessage"
+                                        placeholder="Write your campaign message..."
+                                    ></textarea>
+                                </label>
+
+
+                                <label>
+                                    Campaign image
+                                    <input
+                                        id="popupImage"
+                                        type="file"
+                                        accept="image/*"
+                                    >
+                                </label>
+
+
+                                <div class="admin-form-grid two no-padding">
+
+                                    <label>
+                                        Button text
+                                        <input
+                                            id="popupButtonText"
+                                            placeholder="Shop now"
+                                        >
+                                    </label>
+
+                                    <label>
+                                        Action
+                                        <input
+                                            id="popupAction"
+                                            placeholder="explore.html"
+                                        >
+                                    </label>
+
+                                </div>
+
+
+                                <div class="admin-form-grid two no-padding">
+
+                                    <label>
+                                        Audience
+                                        <select id="popupAudience">
+
+                                            <option value="all">
+                                                Everyone
+                                            </option>
+
+                                            <option value="buyers">
+                                                Buyers
+                                            </option>
+
+                                            <option value="sellers">
+                                                Sellers
+                                            </option>
+
+                                            <option value="workers">
+                                                Workers
+                                            </option>
+
+                                        </select>
+                                    </label>
+
+
+                                    <label>
+                                        Frequency
+                                        <select id="popupFrequency">
+
+                                            <option value="session">
+                                                Once per session
+                                            </option>
+
+                                            <option value="day">
+                                                Once per day
+                                            </option>
+
+                                            <option value="campaign">
+                                                Once per campaign
+                                            </option>
+
+                                        </select>
+                                    </label>
+
+                                </div>
+
+                                <button
+                                    id="createPromotion"
+                                    class="admin-primary-button"
+                                    type="button"
+                                >
+                                    Activate promotion
+                                </button>
+
+                            </div>
+
+                        </section>
+
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        LIVE CAMPAIGNS
+                                    </span>
+
+                                    <h2>
+                                        Active promotions
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+                            <div
+                                id="promotionsList"
+                                class="admin-list"
+                            ></div>
+
+                        </section>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     WEBSITES
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="websites"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                BUSINESS PLATFORM
+                            </div>
+
+                            <h1>
+                                Business websites
+                            </h1>
+
+                            <p>
+                                Every seller website created through GamBasket.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-mini-grid">
+
+                        <article class="admin-mini-card">
+                            <span>Websites</span>
+                            <strong id="websiteTotal">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Active</span>
+                            <strong id="websiteActive">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Draft</span>
+                            <strong id="websiteDraft">0</strong>
+                        </article>
+
+                        <article class="admin-mini-card">
+                            <span>Suspended</span>
+                            <strong id="websiteSuspended">0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <header class="admin-card-header">
+
+                            <div>
+
+                                <span>
+                                    WEBSITE DIRECTORY
+                                </span>
+
+                                <h2>
+                                    Seller websites
+                                </h2>
+
+                            </div>
+
+                        </header>
+
+
+                        <div
+                            id="websitesList"
+                            class="admin-website-grid"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     PLANS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="plans"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                SELLER ECONOMY
+                            </div>
+
+                            <h1>
+                                Seller plans
+                            </h1>
+
+                            <p>
+                                Configure subscriptions, commissions and listing limits.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="plansGrid"
+                        class="admin-plan-grid"
+                    ></div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     CATEGORIES
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="categories"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                CATALOG
+                            </div>
+
+                            <h1>
+                                Categories & subcategories
+                            </h1>
+
+                            <p>
+                                Manage the marketplace category hierarchy.
+                            </p>
+
+                        </div>
+
+                        <button
+                            id="addCategoryBtn"
+                            class="admin-primary-button"
+                            type="button"
+                        >
+                            Add category
+                        </button>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <div
+                            id="categoriesList"
+                            class="admin-category-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     FEATURED
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="featured"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                MERCHANDISING
+                            </div>
+
+                            <h1>
+                                Featured products
+                            </h1>
+
+                            <p>
+                                Control which marketplace listings receive prominent placement.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <div
+                            id="featuredList"
+                            class="admin-product-grid"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     ANALYTICS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="analytics"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                INTELLIGENCE
+                            </div>
+
+                            <h1>
+                                Marketplace analytics
+                            </h1>
+
+                            <p>
+                                Operational trends derived from marketplace records.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-two-column">
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        USERS
+                                    </span>
+
+                                    <h2>
+                                        Registration activity
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+                            <div
+                                id="userChart"
+                                class="admin-bars"
+                            ></div>
+
+                        </section>
+
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        ORDERS
+                                    </span>
+
+                                    <h2>
+                                        Order activity
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+                            <div
+                                id="orderChart"
+                                class="admin-bars"
+                            ></div>
+
+                        </section>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     LOGS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="logs"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                SECURITY
+                            </div>
+
+                            <h1>
+                                Audit logs
+                            </h1>
+
+                            <p>
+                                Administrative activity and platform changes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-card">
+
+                        <div
+                            id="logsList"
+                            class="admin-log-list"
+                        ></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==========================================
+                     AFFILIATE CENTER
+                =========================================== -->
+                <section class="admin-section" data-section="affiliate">
+                    <div class="admin-page-heading">
+                        <div>
+                            <div class="admin-heading-label">AFFILIATE</div>
+                            <h1>Affiliate Center</h1>
+                            <p>Review referral performance, commissions, and payouts.</p>
+                        </div>
+                        <button id="affiliateRefresh" class="admin-button" type="button">Refresh</button>
+                    </div>
+
+                    <div class="affiliate-admin-tabs" role="tablist">
+                        <button class="affiliate-admin-tab active" data-aff-tab="overview" type="button">Overview</button>
+                        <button class="affiliate-admin-tab" data-aff-tab="affiliates" type="button">Affiliates</button>
+                        <button class="affiliate-admin-tab" data-aff-tab="traffic" type="button">Traffic</button>
+                        <button class="affiliate-admin-tab" data-aff-tab="conversions" type="button">Commissions</button>
+                        <button class="affiliate-admin-tab" data-aff-tab="payouts" type="button">Payout requests</button>
+                        <button class="affiliate-admin-tab" data-aff-tab="settings" type="button">Settings</button>
+                    </div>
+
+                    <div id="affiliateOverviewPanel" class="affiliate-admin-panel active">
+                        <div class="affiliate-admin-stats">
+                            <article class="admin-card"><span>Affiliates</span><strong id="affiliateStatAffiliates">—</strong></article>
+                            <article class="admin-card"><span>Clicks</span><strong id="affiliateStatClicks">—</strong></article>
+                            <article class="admin-card"><span>Conversions</span><strong id="affiliateStatConversions">—</strong></article>
+                            <article class="admin-card"><span>Sales</span><strong id="affiliateStatSales">—</strong></article>
+                            <article class="admin-card"><span>Pending commission</span><strong id="affiliateStatPending">—</strong></article>
+                            <article class="admin-card"><span>Approved commission</span><strong id="affiliateStatApproved">—</strong></article>
+                        </div>
+                    </div>
+
+                    <div id="affiliateAffiliatesPanel" class="affiliate-admin-panel">
+                        <div class="affiliate-admin-toolbar"><input id="affiliateSearch" placeholder="Search name, email, code, or phone"><select id="affiliateStatusFilter"><option value="">All statuses</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="disabled">Disabled</option></select></div>
+                        <div id="affiliateList" class="admin-card"></div><div id="affiliateDetail" class="admin-card" hidden></div>
+                    </div>
+                    <div id="affiliateTrafficPanel" class="affiliate-admin-panel"><div id="affiliateTrafficList" class="admin-card"></div></div>
+                    <div id="affiliateConversionsPanel" class="affiliate-admin-panel"><div class="affiliate-admin-toolbar"><select id="affiliateConversionStatus"><option value="">All commission statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="paid">Paid</option></select></div><div id="affiliateConversionsList" class="admin-card"></div></div>
+                    <div id="affiliatePayoutsPanel" class="affiliate-admin-panel"><div class="affiliate-admin-toolbar"><select id="affiliatePayoutStatus"><option value="">All payout statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="paid">Paid</option></select></div><div id="affiliatePayoutsList" class="admin-card"></div></div>
+                    <div id="affiliateSettingsPanel" class="affiliate-admin-panel"><div class="admin-card affiliate-settings-form"><label><input id="affiliateEnabled" type="checkbox"> Enable affiliate program</label><label>Default commission (%)<input id="affiliateDefaultRate" type="number" min="0" max="100" step="0.01"></label><label>Minimum payout (D)<input id="affiliateMinimumPayout" type="number" min="0" step="0.01"></label><label>Attribution days<input id="affiliateAttributionDays" type="number" min="1" max="365"></label><button id="saveAffiliateSettings" class="admin-button" type="button">Save affiliate settings</button></div></div>
+                </section>
+
+                <!-- ==========================================
+                     SETTINGS
+                =========================================== -->
+
+                <section
+                    class="admin-section"
+                    data-section="settings"
+                >
+
+                    <div class="admin-page-heading">
+
+                        <div>
+
+                            <div class="admin-heading-label">
+                                PLATFORM
+                            </div>
+
+                            <h1>
+                                System settings
+                            </h1>
+
+                            <p>
+                                Control platform-wide behavior.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-two-column">
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        MARKETPLACE
+                                    </span>
+
+                                    <h2>
+                                        Platform controls
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+
+                            <div class="admin-settings-list">
+
+                                <label>
+
+                                    <span>
+
+                                        <strong>
+                                            Allow new signups
+                                        </strong>
+
+                                        <small>
+                                            Customers may create accounts.
+                                        </small>
+
+                                    </span>
+
+                                    <input
+                                        id="settingSignups"
+                                        type="checkbox"
+                                    >
+
+                                </label>
+
+
+                                <label>
+
+                                    <span>
+
+                                        <strong>
+                                            Seller applications
+                                        </strong>
+
+                                        <small>
+                                            Buyers can apply to become sellers.
+                                        </small>
+
+                                    </span>
+
+                                    <input
+                                        id="settingSellers"
+                                        type="checkbox"
+                                    >
+
+                                </label>
+
+
+                                <label>
+
+                                    <span>
+
+                                        <strong>
+                                            Worker applications
+                                        </strong>
+
+                                        <small>
+                                            Allow worker applications.
+                                        </small>
+
+                                    </span>
+
+                                    <input
+                                        id="settingWorkers"
+                                        type="checkbox"
+                                    >
+
+                                </label>
+
+
+                                <label>
+
+                                    <span>
+
+                                        <strong>
+                                            Maintenance mode
+                                        </strong>
+
+                                        <small>
+                                            Restrict marketplace access temporarily.
+                                        </small>
+
+                                    </span>
+
+                                    <input
+                                        id="settingMaintenance"
+                                        type="checkbox"
+                                    >
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="admin-card-actions">
+
+                                <button
+                                    id="savePlatformSettings"
+                                    class="admin-primary-button"
+                                    type="button"
+                                >
+                                    Save platform settings
+                                </button>
+
+                            </div>
+
+                        </section>
+
+
+                        <section class="admin-card">
+
+                            <header class="admin-card-header">
+
+                                <div>
+
+                                    <span>
+                                        LOGISTICS
+                                    </span>
+
+                                    <h2>
+                                        Delivery engine
+                                    </h2>
+
+                                </div>
+
+                            </header>
+
+
+                            <div class="admin-settings-list">
+
+                                <label>
+
+                                    <span>
+
+                                        <strong>
+                                            Automatic courier matching
+                                        </strong>
+
+                                        <small>
+                                            Automatically notify eligible couriers.
+                                        </small>
+
+                                    </span>
+
+                                    <input
+                                        id="settingAutoMatching"
+                                        type="checkbox"
+                                    >
+
+                                </label>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- ======================================================
+         USER DETAIL DRAWER
+    ======================================================= -->
+
+    <div
+        id="userDrawerBackdrop"
+        class="admin-modal-backdrop"
+        hidden
+    ></div>
+
+
+    <aside
+        id="userDrawer"
+        class="admin-user-drawer"
+        aria-hidden="true"
+    >
+
+        <header class="admin-drawer-header">
+
+            <div>
+
+                <span>
+                    USER PROFILE
+                </span>
+
+                <h2 id="drawerUserName">
+                    User
+                </h2>
+
+            </div>
+
+            <button
+                id="closeUserDrawer"
+                type="button"
+            >
+                ×
+            </button>
+
+        </header>
+
+
+        <div
+            id="userDrawerContent"
+            class="admin-drawer-content"
+        ></div>
+
+    </aside>
+
+
+    <!-- ======================================================
+         GLOBAL SEARCH
+    ======================================================= -->
+
+    <div
+        id="searchBackdrop"
+        class="admin-modal-backdrop"
+        hidden
+    ></div>
+
+
+    <div
+        id="globalSearch"
+        class="admin-search-modal"
+        hidden
+    >
+
+        <div class="admin-search-modal-inner">
+
+            <header>
+
+                <strong>
+                    Search GamBasket
+                </strong>
+
+                <button
+                    id="closeSearch"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </header>
+
+
+            <div class="admin-global-search-field">
+
+                <svg viewBox="0 0 24 24">
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="6.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                    />
+
+                    <path
+                        d="m16 16 5 5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                    />
+                </svg>
+
+                <input
+                    id="globalSearchInput"
+                    placeholder="Search users, products, stores, websites..."
+                >
+
+            </div>
+
+
+            <div
+                id="globalSearchResults"
+                class="admin-search-results"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SCRIPTS
+    ======================================================= -->
+
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/auth-errors.js"></script>
+    <script src="../js/auth-guard.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/admin-affiliate.js"></script>
+    <script src="../js/admin-business-trust-growth.js"></script>
+
+</body>
+</html>

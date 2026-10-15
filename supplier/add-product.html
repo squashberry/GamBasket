@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+    <title>Product Editor — GamBasket Seller</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/seller.css">
+    <link rel="stylesheet" href="../css/business-trust-growth.css">
+    <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+</head>
+<body class="seller-page">
+    <header class="desktop-app-header">
+        <a href="../index.html" class="desktop-app-brand">
+            <span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span>
+        </a>
+        <div style="flex:1;"></div>
+        <div class="desktop-app-actions">
+            <button class="icon-button" id="desktopThemeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon"><use href="#icon-moon"></use></svg></button>
+            <a href="../me.html" class="seller-button seller-button-secondary">Account</a>
+        </div>
+    </header>
+
+    <div id="sellerProtectedContent" hidden>
+        <div class="seller-shell">
+            <aside class="seller-sidebar">
+    <div class="seller-brand">
+        <strong>GamBasket Seller</strong>
+        <span>Business Workspace</span>
+    </div>
+    <nav class="seller-nav">
+        <a href="index.html" class="seller-nav-link">Overview</a>
+        <a href="products.html" class="seller-nav-link">Products</a>
+        <a href="add-product.html" class="seller-nav-link active">Add Product</a>
+        <a href="orders.html" class="seller-nav-link">Orders</a>
+        <a href="customers.html" class="seller-nav-link">Customers</a>
+        <a href="messages.html" class="seller-nav-link">Messages</a>
+        <a href="earnings.html" class="seller-nav-link">Earnings</a>
+        <a href="store.html" class="seller-nav-link">Storefront</a>
+        <a href="website.html" class="seller-nav-link">Business Website</a>
+        <a href="settings.html" class="seller-nav-link">Settings</a>
+    </nav>
+    <div class="seller-sidebar-bottom">
+        <a href="../index.html" class="seller-switch-button" style="text-decoration:none;display:block;text-align:center;">
+            ← Switch to Buyer
+        </a>
+    </div>
+</aside>
+
+            <main class="seller-main">
+                <nav class="seller-mobile-nav">
+        <a href="index.html" class="">
+            Overview
+        </a>
+    
+        <a href="products.html" class="">
+            Products
+        </a>
+    
+        <a href="orders.html" class="">
+            Orders
+        </a>
+    
+        <a href="customers.html" class="">
+            Customers
+        </a>
+    
+        <a href="messages.html" class="">
+            Messages
+        </a>
+    
+        <a href="earnings.html" class="">
+            Earnings
+        </a>
+    
+        
+    
+        <a href="store.html" class="">
+            Storefront
+        </a>
+    
+        
+    
+        <a href="settings.html" class="">
+            Settings
+        </a>
+    </nav>
+                <div class="seller-topbar">
+                    <div>
+                        <h1 class="seller-page-title" id="pageHeading">Add New Product</h1>
+                        <p class="seller-page-subtitle">Publish a verified product to the GamBasket nationwide catalog.</p>
+                    </div>
+                </div>
+
+                <div class="seller-grid-2">
+                    <form id="productForm" class="seller-panel" style="padding:24px;">
+                        <div style="display:grid;gap:18px;">
+                            <div>
+                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Title *</label>
+                                <input type="text" id="pTitle" class="seller-input" style="width:100%;" placeholder="e.g. iPhone 15 Pro 256GB" required>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Category *</label>
+                                    <select id="pCategory" class="seller-select" style="width:100%;" required>
+                                        <option value="Phones">Phones & Tablets</option>
+                                        <option value="Electronics">Electronics & Laptops</option>
+                                        <option value="Fashion">Fashion & Clothing</option>
+                                        <option value="Home">Home & Kitchen</option>
+                                        <option value="Beauty">Beauty & Personal Care</option>
+                                        <option value="Groceries">Food & Groceries</option>
+                                        <option value="Solar">Solar & Energy</option>
+                                        <option value="Vehicles">Cars & Auto Parts</option>
+                                        <option value="Tools">Hardware & Tools</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Condition</label>
+                                    <select id="pCondition" class="seller-select" style="width:100%;">
+                                        <option value="New">Brand New (Boxed)</option>
+                                        <option value="Like New">Like New</option>
+                                        <option value="Refurbished">Refurbished</option>
+                                        <option value="Used - Good">Used - Good</option>
+                                        <option value="Used - Fair">Used - Fair</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="business-listing-section" id="businessListingSection" hidden>
+                                <label class="business-field">
+                                    <span>Listing type</span>
+                                    <select id="listingType">
+                                        <option value="retail">Retail</option>
+                                        <option value="wholesale">Wholesale</option>
+                                        <option value="both">Retail + Wholesale</option>
+                                    </select>
+                                </label>
+                                <div id="wholesaleFields" hidden style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                    <label class="business-field">
+                                        <span>Wholesale price (GMD)</span>
+                                        <input id="wholesalePrice" type="number" min="0" step="0.01" placeholder="Wholesale price">
+                                    </label>
+                                    <label class="business-field">
+                                        <span>Minimum order quantity</span>
+                                        <input id="minimumOrderQuantity" type="number" min="1" value="1">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Price (Gambian Dalasi D) *</label>
+                                    <input type="number" id="pPrice" class="seller-input" style="width:100%;" placeholder="e.g. 45000" min="1" required>
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Available Stock *</label>
+                                    <input type="number" id="pStock" class="seller-input" style="width:100%;" placeholder="e.g. 10" min="0" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Location in The Gambia</label>
+                                <input type="text" id="pLocation" class="seller-input" style="width:100%;" placeholder="e.g. Kairaba Avenue, Serrekunda">
+                            </div>
+
+                            <div>
+                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Description</label>
+                                <textarea id="pDescription" class="seller-input" rows="4" style="width:100%;padding-top:10px;resize:vertical;" placeholder="Describe features, specifications, and warranty details..."></textarea>
+                            </div>
+
+                            <div>
+                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Image Upload (Max 5MB)</label>
+                                <input type="file" id="pImageFile" accept="image/*" class="seller-input" style="width:100%;padding:8px;">
+                                <input type="hidden" id="pImageUrl">
+                            </div>
+
+                            <div style="display:flex;gap:10px;margin-top:10px;">
+                                <button type="submit" class="seller-button seller-button-primary" id="saveBtn" style="flex:1;">Submit for Review</button>
+                                <a href="products.html" class="seller-button seller-button-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- LIVE PREVIEW PANEL -->
+                    <aside class="seller-panel" style="padding:24px;">
+                        <h3 class="seller-panel-title" style="margin-bottom:14px;">Live Marketplace Preview</h3>
+                        <div class="seller-product-card" style="max-width:320px;margin:0 auto;">
+                            <img id="prevImg" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80" alt="Preview" class="seller-product-image">
+                            <div class="seller-product-body">
+                                <span class="seller-status info" id="prevCat">PHONES</span>
+                                <h3 class="seller-product-title" id="prevTitle" style="margin-top:8px;">Product Title</h3>
+                                <div class="seller-product-meta">
+                                    <span class="seller-product-price" id="prevPrice">D 0</span>
+                                    <span class="seller-product-stock" id="prevStock">0 in stock</span>
+                                </div>
+                                <p style="font-size:11px;color:var(--text-secondary);margin:8px 0 0;" id="prevLoc">Greater Banjul</p>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- SVG SPRITE -->
+    <svg width="0" height="0" style="position:absolute;display:none;"><defs><symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-box" viewBox="0 0 24 24"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.4 7.7 12 12l7.6-4.3M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-orders" viewBox="0 0 24 24"><path d="M5 3h14v18H5z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol><symbol id="icon-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3h.5a8.48 8.48 0 0 1 8 8.5Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h13v16H6a2 2 0 0 1-2-2V6Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7h12a2 2 0 0 1 2 2v3H4z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-store" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 22V12h6v10" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 3Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c.6-3.6 3.1-5.5 7-5.5s6.4 1.9 7 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol><symbol id="icon-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="1" y1="10" x2="23" y2="10" stroke="currentColor" stroke-width="1.8"/></symbol><symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3ZM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol><symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol></defs></svg>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/auth-errors.js"></script>
+    <script src="../js/auth-guard.js"></script>
+    <script src="../js/states.js"></script>
+    <script src="../js/business-roles.js"></script>
+    <script src="../js/trust-engine.js"></script>
+    <script src="../js/growth-engine.js"></script>
+    <script src="../js/seller.js"></script>
+    <script src="../js/seller-products.js"></script>
+
+    <script>
+    (async () => {
+        "use strict";
+        const roles = await window.GamBasketBusiness?.getCurrentRoles?.() || [];
+        if (!roles.includes("seller") && !roles.includes("supplier") && !roles.includes("admin")) {
+            window.GamBasketGuard?.showUnauthorized?.();
+            return;
+        }
+        document.getElementById("sellerProtectedContent").hidden = false;
+
+        const isSupplier = roles.includes("supplier") || roles.includes("admin");
+        const isSeller = roles.includes("seller") || roles.includes("admin");
+        if (isSeller) await window.GamBasketSeller?.init();
+        const seller = window.GamBasketSeller?.currentSeller;
+        if (isSeller && !isSupplier && !window.GamBasketSeller?.canUseBusinessProducts(seller)) {
+            window.GamBasketSeller.showPlanRequiredModal();
+            return;
+        }
+
+        const listingSection = document.getElementById("businessListingSection");
+        const listingType = document.getElementById("listingType");
+        const wholesaleFields = document.getElementById("wholesaleFields");
+        listingSection.hidden = !isSupplier;
+        if (isSupplier && !isSeller) {
+            listingType.value = "wholesale";
+            [...listingType.options].forEach(option => option.disabled = option.value === "retail");
+            document.getElementById("pageHeading").textContent = "Add Wholesale Product";
+            document.querySelector(".seller-page-subtitle").textContent = "Publish a wholesale listing for verified GamBasket business buyers.";
+        }
+        const updateWholesaleFields = () => {
+            const enabled = listingType.value === "wholesale" || listingType.value === "both";
+            wholesaleFields.hidden = !enabled;
+            document.getElementById("wholesalePrice").required = enabled;
+        };
+        listingType.addEventListener("change", updateWholesaleFields);
+        updateWholesaleFields();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get("id");
+
+        function updatePreview() {
+            document.getElementById("prevTitle").textContent = document.getElementById("pTitle").value || "Product Title";
+            document.getElementById("prevCat").textContent = document.getElementById("pCategory").value.toUpperCase();
+            document.getElementById("prevPrice").textContent = "D " + Number(document.getElementById("pPrice").value || 0).toLocaleString();
+            document.getElementById("prevStock").textContent = (document.getElementById("pStock").value || 0) + " in stock";
+            document.getElementById("prevLoc").textContent = document.getElementById("pLocation").value || "Greater Banjul";
+            const imgUrl = document.getElementById("pImageUrl").value;
+            if (imgUrl) document.getElementById("prevImg").src = imgUrl;
+        }
+
+        ["pTitle", "pCategory", "pPrice", "pStock", "pLocation"].forEach(id => {
+            document.getElementById(id)?.addEventListener("input", updatePreview);
+        });
+
+        // Load existing product if in Edit mode
+        if (editId) {
+            document.getElementById("pageHeading").textContent = "Edit Product";
+            document.getElementById("saveBtn").textContent = "Update Product";
+            try {
+                const { data } = await window.GamBasketSellerProducts.get(editId);
+                if (data) {
+                    document.getElementById("pTitle").value = data.title || data.name || "";
+                    document.getElementById("pCategory").value = data.category_id || data.category || "Phones";
+                    document.getElementById("pCondition").value = data.condition || "New";
+                    document.getElementById("pPrice").value = data.price || "";
+                    document.getElementById("pStock").value = data.stock || 0;
+                    document.getElementById("pLocation").value = data.location || "";
+                    document.getElementById("pDescription").value = data.description || "";
+                    document.getElementById("pImageUrl").value = data.main_image || data.image || "";
+                    if (data.listing_type && isSupplier) {
+                        listingType.value = data.listing_type;
+                        document.getElementById("wholesalePrice").value = data.wholesale_price || "";
+                        document.getElementById("minimumOrderQuantity").value = data.min_order_quantity || data.minimum_order_quantity || 1;
+                        updateWholesaleFields();
+                    }
+                    updatePreview();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Image file picker
+        document.getElementById("pImageFile")?.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert("File exceeds maximum 5MB limit.");
+                return;
+            }
+            try {
+                if (window.GamBasketAuth?.uploadImage) {
+                    const url = await window.GamBasketAuth.uploadImage(file, "product-images");
+                    if (url) {
+                        document.getElementById("pImageUrl").value = url;
+                        document.getElementById("prevImg").src = url;
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn("[GamBasket Image Upload fallback]", err);
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                document.getElementById("pImageUrl").value = ev.target.result;
+                document.getElementById("prevImg").src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Form Submit
+        document.getElementById("productForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("saveBtn");
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+
+            try {
+                const payload = {
+                    id: editId,
+                    title: document.getElementById("pTitle").value.trim(),
+                    category: document.getElementById("pCategory").value,
+                    condition: document.getElementById("pCondition").value,
+                    price: Number(document.getElementById("pPrice").value),
+                    stock: Number(document.getElementById("pStock").value),
+                    location: document.getElementById("pLocation").value.trim(),
+                    description: document.getElementById("pDescription").value.trim(),
+                    main_image: document.getElementById("pImageUrl").value,
+                    listing_type: isSupplier ? listingType.value : "retail",
+                    wholesale_enabled: isSupplier && listingType.value !== "retail",
+                    wholesale_price: isSupplier && listingType.value !== "retail" ? Number(document.getElementById("wholesalePrice").value) : null,
+                    min_order_quantity: isSupplier && listingType.value !== "retail" ? Number(document.getElementById("minimumOrderQuantity").value || 1) : 1
+                };
+
+                await window.GamBasketSellerProducts.save(payload);
+                alert("Product saved and submitted for catalog review.");
+                window.location.href = "products.html";
+            } catch (err) {
+                alert("Error saving product: " + (err.message || "Please try again."));
+                btn.disabled = false;
+                btn.textContent = editId ? "Update Product" : "Submit for Review";
+            }
+        });
+
+        document.getElementById("switchBuyerMode")?.addEventListener("click", () => location.href = "../index.html");
+        document.getElementById("desktopThemeToggle")?.addEventListener("click", () => {
+            const isDark = document.documentElement.classList.toggle("dark");
+            localStorage.setItem("gambasket-theme", isDark ? "dark" : "light");
+        });
+    })();
+    </script>
+</body>
+</html>

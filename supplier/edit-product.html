@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Product Editor — GamBasket Seller</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/seller.css">
+  <script>try{if(localStorage.getItem('gambasket-theme')==='dark')document.documentElement.classList.add('dark')}catch(_){}</script>
+</head>
+<body class="seller-page">
+  <header class="desktop-app-header"><a href="../index.html" class="desktop-app-brand"><span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span></a><div style="flex:1"></div><div class="desktop-app-actions"><button class="icon-button" id="desktopThemeToggle" type="button" aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z" stroke="currentColor" stroke-width="1.8"/></svg></button><a href="../me.html" class="seller-button seller-button-secondary">Account</a></div></header>
+  <div id="sellerProtectedContent" hidden><main class="seller-main"><div class="seller-topbar"><div><h1 class="seller-page-title">Product editor</h1><p class="seller-page-subtitle">The unified product editor now handles both new listings and existing listing updates.</p></div></div><section class="seller-panel"><div class="seller-panel-body"><div class="seller-empty"><div><h3>Opening your product editor</h3><p>Continue to the current seller workspace to update product details, inventory, images, and submit changes for review.</p><a id="openEditor" href="add-product.html" class="seller-button seller-button-primary" style="margin-top:16px">Continue to editor</a></div></div></div></section></main></div>
+  <script src="../js/config.js"></script><script src="../js/supabase.js"></script><script src="../js/auth-errors.js"></script><script src="../js/auth-guard.js"></script><script src="../js/states.js"></script><script src="../js/seller.js"></script><script>(async()=>{if(window.GamBasketGuard?.gatePage&&!await window.GamBasketGuard.gatePage('seller'))return;document.getElementById('sellerProtectedContent').hidden=false;document.getElementById('openEditor').href='add-product.html'+location.search;document.getElementById('desktopThemeToggle').addEventListener('click',()=>{const dark=document.documentElement.classList.toggle('dark');localStorage.setItem('gambasket-theme',dark?'dark':'light')})})()</script>
+</body>
+</html>

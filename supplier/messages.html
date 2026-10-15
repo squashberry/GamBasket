@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+    <title>Buyer Messages — GamBasket Seller</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/seller.css">
+    <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+</head>
+<body class="seller-page">
+    <header class="desktop-app-header">
+        <a href="../index.html" class="desktop-app-brand"><span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span></a>
+        <div style="flex:1;"></div>
+        <div class="desktop-app-actions">
+            <button class="icon-button" id="desktopThemeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon"><use href="#icon-moon"></use></svg></button>
+            <a href="../me.html" class="seller-button seller-button-secondary">Account</a>
+        </div>
+    </header>
+    <div id="sellerProtectedContent" hidden>
+        <div class="seller-shell">
+            <aside class="seller-sidebar">
+    <div class="seller-brand">
+        <strong>GamBasket Seller</strong>
+        <span>Business Workspace</span>
+    </div>
+    <nav class="seller-nav">
+        <a href="index.html" class="seller-nav-link">Overview</a>
+        <a href="products.html" class="seller-nav-link">Products</a>
+        <a href="add-product.html" class="seller-nav-link">Add Product</a>
+        <a href="orders.html" class="seller-nav-link">Orders</a>
+        <a href="customers.html" class="seller-nav-link">Customers</a>
+        <a href="messages.html" class="seller-nav-link active">Messages</a>
+        <a href="earnings.html" class="seller-nav-link">Earnings</a>
+        <a href="store.html" class="seller-nav-link">Storefront</a>
+        <a href="website.html" class="seller-nav-link">Business Website</a>
+        <a href="settings.html" class="seller-nav-link">Settings</a>
+    </nav>
+    <div class="seller-sidebar-bottom">
+        <a href="../index.html" class="seller-switch-button" style="text-decoration:none;display:block;text-align:center;">
+            ← Switch to Buyer
+        </a>
+    </div>
+</aside>
+            <main class="seller-main" style="display:flex;flex-direction:column;height:calc(100vh - 64px);padding:18px;">
+                <nav class="seller-mobile-nav">
+        <a href="index.html" class="">
+            Overview
+        </a>
+    
+        <a href="products.html" class="">
+            Products
+        </a>
+    
+        <a href="orders.html" class="">
+            Orders
+        </a>
+    
+        <a href="customers.html" class="">
+            Customers
+        </a>
+    
+        <a href="messages.html" class="active">
+            Messages
+        </a>
+    
+        <a href="earnings.html" class="">
+            Earnings
+        </a>
+    
+        
+    
+        <a href="store.html" class="">
+            Storefront
+        </a>
+    
+        
+    
+        <a href="settings.html" class="">
+            Settings
+        </a>
+    </nav>
+                <div class="seller-panel" style="flex:1;display:grid;grid-template-columns:300px 1fr;min-height:0;">
+                    <!-- CONVERSATIONS LIST -->
+                    <div style="border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;">
+                        <div style="padding:14px;border-bottom:1px solid var(--border);"><strong style="font-size:14px;">Inquiries & Chats</strong></div>
+                        <div id="conversationsList" style="flex:1;overflow-y:auto;padding:8px;"></div>
+                    </div>
+                    <!-- CHAT PANE -->
+                    <div style="display:flex;flex-direction:column;min-height:0;background:var(--surface);">
+                        <div id="chatHeader" style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                            <div><strong id="chatRecipientName">Select a buyer</strong><span id="chatProductContext" style="display:block;font-size:11px;color:var(--text-secondary);">Direct marketplace inquiry</span></div>
+                        </div>
+                        <div id="chatMessages" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;">
+                            <div style="text-align:center;color:var(--text-secondary);font-size:12px;margin:auto;">Select a conversation to respond to inquiries in real time.</div>
+                        </div>
+                        <form id="chatForm" style="padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:10px;">
+                            <input type="text" id="chatInput" class="seller-input" style="flex:1;" placeholder="Type your reply..." required disabled>
+                            <button type="submit" id="chatSendBtn" class="seller-button seller-button-primary" disabled>Send</button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <svg width="0" height="0" style="position:absolute;display:none;" aria-hidden="true"><defs>
+        <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-box" viewBox="0 0 24 24"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.4 7.7 12 12l7.6-4.3M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-orders" viewBox="0 0 24 24"><path d="M5 3h14v18H5z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3h.5a8.48 8.48 0 0 1 8 8.5Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h13v16H6a2 2 0 0 1-2-2V6Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7h12a2 2 0 0 1 2 2v3H4z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-store" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 22V12h6v10" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 3Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c.6-3.6 3.1-5.5 7-5.5s6.4 1.9 7 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="icon-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="1" y1="10" x2="23" y2="10" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3ZM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+        <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    </defs></svg>
+
+    <script src="../js/config.js"></script><script src="../js/supabase.js"></script><script src="../js/auth-errors.js"></script><script src="../js/auth-guard.js"></script><script src="../js/states.js"></script><script src="../js/seller.js"></script>
+    <script>
+    (async () => {
+        "use strict";
+        if (window.GamBasketGuard?.gatePage && !await window.GamBasketGuard.gatePage("seller")) return;
+        document.getElementById("sellerProtectedContent").hidden = false;
+
+        let activeConvId = null;
+        const convList = document.getElementById("conversationsList");
+        const msgContainer = document.getElementById("chatMessages");
+        const chatInput = document.getElementById("chatInput");
+        const chatSendBtn = document.getElementById("chatSendBtn");
+
+        async function loadConversations() {
+            try {
+                if (window.GamBasketAuth?.getConversations) {
+                    const convs = await window.GamBasketAuth.getConversations();
+                    if (!convs.length) {
+                        convList.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-secondary);">No buyer inquiries yet.</div>';
+                        return;
+                    }
+                    convList.innerHTML = convs.map(c => `
+                        <div class="seller-low-stock-item" style="cursor:pointer;margin-bottom:6px;" onclick="openChat('${c.id}', '${c.buyer_name || "Buyer"}', '${c.product_title || ""}')">
+                            <div class="seller-low-stock-copy">
+                                <strong>${c.buyer_name || "Buyer Inquiry"}</strong>
+                                <span>${c.last_message || "New product message"}</span>
+                            </div>
+                        </div>
+                    `).join("");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.openChat = async (id, name, prod) => {
+            activeConvId = id;
+            document.getElementById("chatRecipientName").textContent = name;
+            document.getElementById("chatProductContext").textContent = prod ? `Regarding: ${prod}` : "Marketplace chat";
+            chatInput.disabled = false;
+            chatSendBtn.disabled = false;
+            msgContainer.innerHTML = '<div style="text-align:center;color:var(--text-secondary);font-size:12px;">Loading messages...</div>';
+
+            try {
+                if (window.GamBasketAuth?.getConversationMessages) {
+                    const msgs = await window.GamBasketAuth.getConversationMessages(id);
+                    renderMessages(msgs);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        function renderMessages(msgs) {
+            if (!msgs.length) {
+                msgContainer.innerHTML = '<div style="text-align:center;color:var(--text-secondary);font-size:12px;margin:auto;">Send a greeting to start chatting with the buyer.</div>';
+                return;
+            }
+            msgContainer.innerHTML = msgs.map(m => {
+                const isSeller = m.sender_role === "seller" || m.is_mine;
+                return `
+                    <div style="align-self:${isSeller ? "flex-end" : "flex-start"};max-width:70%;padding:10px 14px;border-radius:14px;background:${isSeller ? "var(--seller-blue)" : "var(--surface-secondary)"};color:${isSeller ? "#fff" : "var(--text)"};font-size:13px;">
+                        ${m.content || m.message_text}
+                    </div>
+                `;
+            }).join("");
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+
+        document.getElementById("chatForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text || !activeConvId) return;
+            chatInput.value = "";
+            try {
+                if (window.GamBasketAuth?.sendMessage) {
+                    await window.GamBasketAuth.sendMessage(activeConvId, text);
+                    const msgs = await window.GamBasketAuth.getConversationMessages(activeConvId);
+                    renderMessages(msgs);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        document.getElementById("switchBuyerMode")?.addEventListener("click", () => location.href = "../index.html");
+        document.getElementById("desktopThemeToggle")?.addEventListener("click", () => {
+            const isDark = document.documentElement.classList.toggle("dark");
+            localStorage.setItem("gambasket-theme", isDark ? "dark" : "light");
+        });
+
+        loadConversations();
+    })();
+    </script>
+</body>
+</html>

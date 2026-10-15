@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
+    <title>Account Settings — GamBasket</title>
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/settings.css">
+
+    <script>
+        (() => {
+            try {
+                if (localStorage.getItem("gambasket-theme") === "dark") {
+                    document.documentElement.classList.add("dark");
+                }
+            } catch (_) {}
+        })();
+    </script>
+</head>
+
+<body class="settings-page">
+
+    <!-- =====================================================
+         ICON SPRITE
+    ====================================================== -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+
+            <symbol id="icon-home" viewBox="0 0 24 24">
+                <path d="M3.5 10.7 12 3.8l8.5 6.9v8.1a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7v-8.1Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M9 20.5v-5.8h6v5.8"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+            </symbol>
+
+            <symbol id="icon-search" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="6.5"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="m16 16 5 5"
+                    fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round"/>
+            </symbol>
+
+            <symbol id="icon-box" viewBox="0 0 24 24">
+                <path d="m4 7.5 8-4.5 8 4.5v9L12 21l-8-4.5v-9Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="m4.4 7.7 7.6 4.3 7.6-4.3M12 12v9"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+            </symbol>
+
+            <symbol id="icon-heart" viewBox="0 0 24 24">
+                <path d="M20.8 8.7c0 5.2-8.8 10.1-8.8 10.1S3.2 13.9 3.2 8.7A4.7 4.7 0 0 1 12 6.1a4.7 4.7 0 0 1 8.8 2.6Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+            </symbol>
+
+            <symbol id="icon-user" viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="3.5"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M5 20c.6-3.6 3.1-5.5 7-5.5s6.4 1.9 7 5.5"
+                    fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round"/>
+            </symbol>
+
+            <symbol id="icon-chat" viewBox="0 0 24 24">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+
+            <symbol id="icon-settings" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"
+                    fill="none" stroke="currentColor" stroke-width="1.4"/>
+            </symbol>
+
+            <symbol id="icon-shield" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+            </symbol>
+
+            <symbol id="icon-bell" viewBox="0 0 24 24">
+                <path d="M18 9.5C18 6.46 16.21 4 12 4S6 6.46 6 9.5C6 14.75 4 16 4 17.5h16c0-1.5-2-2.75-2-8Z"
+                    fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M10 20c.5.65 1.2 1 2 1s1.5-.35 2-1"
+                    fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round"/>
+            </symbol>
+
+            <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+                <path d="m9 18 6-6-6-6"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+
+            <symbol id="icon-camera" viewBox="0 0 24 24">
+                <path d="M4 7h4l1.5-2h5L16 7h4a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+                <circle cx="12" cy="13" r="3.5"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+            </symbol>
+
+            <symbol id="icon-location" viewBox="0 0 24 24">
+                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+                <circle cx="12" cy="10" r="2.5"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+            </symbol>
+
+            <symbol id="icon-phone" viewBox="0 0 24 24">
+                <path d="M6.5 3.5 9 3l2 5-2.3 1.6a13.5 13.5 0 0 0 5.2 5.2l1.6-2.3 5 2-.5 2.5a2 2 0 0 1-2.2 1.6C10.8 17.7 6.3 13.2 4.9 5.7A2 2 0 0 1 6.5 3.5Z"
+                    fill="none" stroke="currentColor" stroke-width="1.6"
+                    stroke-linejoin="round"/>
+            </symbol>
+
+            <symbol id="icon-globe" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+                <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"
+                    fill="none" stroke="currentColor" stroke-width="1.4"/>
+            </symbol>
+
+            <symbol id="icon-sun" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="4"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+                <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+                    fill="none" stroke="currentColor" stroke-width="1.7"
+                    stroke-linecap="round"/>
+            </symbol>
+
+            <symbol id="icon-moon" viewBox="0 0 24 24">
+                <path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z"
+                    fill="none" stroke="currentColor" stroke-width="1.7"/>
+            </symbol>
+
+            <symbol id="icon-check" viewBox="0 0 24 24">
+                <path d="m5 12 4 4L19 6"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+
+            <symbol id="icon-close" viewBox="0 0 24 24">
+                <path d="m6 6 12 12M18 6 6 18"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round"/>
+            </symbol>
+
+        </defs>
+    </svg>
+
+
+    <!-- =====================================================
+         DESKTOP HEADER
+    ====================================================== -->
+
+    <header class="desktop-app-header">
+
+        <a href="index.html" class="desktop-app-brand">
+            <span>GamB</span>
+
+            <svg
+                class="brand-bag-icon"
+                viewBox="0 0 24 24"
+            >
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+
+            <span>sket</span>
+        </a>
+
+        <div class="desktop-app-search">
+            <a href="explore.html" class="desktop-search-fake-input">
+                <svg class="ui-icon">
+                    <use href="#icon-search"></use>
+                </svg>
+
+                <span>
+                    Search Gambian products, electronics, food...
+                </span>
+            </a>
+        </div>
+
+        <nav class="desktop-app-nav">
+
+            <a href="index.html" class="desktop-app-nav-link">
+                <svg class="ui-icon"><use href="#icon-home"></use></svg>
+                <span>Home</span>
+            </a>
+
+            <a href="explore.html" class="desktop-app-nav-link">
+                <svg class="ui-icon"><use href="#icon-search"></use></svg>
+                <span>Explore</span>
+            </a>
+
+            <a href="orders.html" class="desktop-app-nav-link">
+                <svg class="ui-icon"><use href="#icon-box"></use></svg>
+                <span>Orders</span>
+            </a>
+
+            <a href="wishlist.html" class="desktop-app-nav-link">
+                <svg class="ui-icon"><use href="#icon-heart"></use></svg>
+                <span>Wishlist</span>
+            </a>
+
+            <a href="messages.html" class="desktop-app-nav-link">
+                <svg class="ui-icon"><use href="#icon-chat"></use></svg>
+                <span>Messages</span>
+            </a>
+
+            <a href="me.html" class="desktop-app-nav-link active">
+                <svg class="ui-icon"><use href="#icon-user"></use></svg>
+                <span>Me</span>
+            </a>
+
+        </nav>
+
+        <div class="desktop-app-actions">
+
+            <button
+                id="settingsThemeToggle"
+                class="icon-button"
+                type="button"
+                aria-label="Toggle theme"
+            >
+                <svg class="ui-icon">
+                    <use href="#icon-moon"></use>
+                </svg>
+            </button>
+
+            <a href="me.html" class="icon-button">
+                <svg class="ui-icon">
+                    <use href="#icon-user"></use>
+                </svg>
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MOBILE HEADER
+    ====================================================== -->
+
+    <header class="mobile-header">
+
+        <div class="header-top">
+
+            <a href="me.html" class="brand">
+                <span>GamB</span>
+
+                <svg
+                    class="brand-bag-icon"
+                    viewBox="0 0 24 24"
+                >
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+
+                <span>sket</span>
+            </a>
+
+            <div class="header-actions">
+
+                <button
+                    id="mobileThemeToggle"
+                    class="icon-button"
+                    type="button"
+                    aria-label="Toggle theme"
+                >
+                    <svg class="ui-icon">
+                        <use href="#icon-moon"></use>
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="settings-layout">
+
+        <!-- LEFT NAV -->
+
+        <aside class="settings-side">
+
+            <div class="settings-side-heading">
+                <span>ACCOUNT</span>
+                <h1>Settings</h1>
+                <p>
+                    Manage your profile and shopping preferences.
+                </p>
+            </div>
+
+            <nav class="settings-nav">
+
+                <button
+                    class="settings-nav-item active"
+                    data-section="profile"
+                    type="button"
+                >
+                    <span class="settings-nav-icon">
+                        <svg><use href="#icon-user"></use></svg>
+                    </span>
+
+                    <span>
+                        <strong>Profile</strong>
+                        <small>Your personal information</small>
+                    </span>
+                </button>
+
+                <button
+                    class="settings-nav-item"
+                    data-section="preferences"
+                    type="button"
+                >
+                    <span class="settings-nav-icon">
+                        <svg><use href="#icon-settings"></use></svg>
+                    </span>
+
+                    <span>
+                        <strong>Preferences</strong>
+                        <small>Shopping and experience</small>
+                    </span>
+                </button>
+
+                <button
+                    class="settings-nav-item"
+                    data-section="notifications"
+                    type="button"
+                >
+                    <span class="settings-nav-icon">
+                        <svg><use href="#icon-bell"></use></svg>
+                    </span>
+
+                    <span>
+                        <strong>Notifications</strong>
+                        <small>What GamBasket can notify you about</small>
+                    </span>
+                </button>
+
+                <a
+                    href="security.html"
+                    class="settings-nav-item"
+                >
+                    <span class="settings-nav-icon">
+                        <svg><use href="#icon-shield"></use></svg>
+                    </span>
+
+                    <span>
+                        <strong>Security</strong>
+                        <small>Password and account protection</small>
+                    </span>
+
+                    <svg class="settings-arrow">
+                        <use href="#icon-arrow-right"></use>
+                    </svg>
+                </a>
+
+            </nav>
+
+
+            <div class="settings-side-footer">
+
+                <a href="me.html">
+                    ← Back to My Account
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- CONTENT -->
+
+        <div class="settings-content">
+
+
+            <!-- PROFILE -->
+
+            <section
+                class="settings-section active"
+                data-content="profile"
+            >
+
+                <div class="settings-section-heading">
+
+                    <div>
+                        <span>PERSONAL INFORMATION</span>
+
+                        <h2>
+                            Your profile
+                        </h2>
+
+                        <p>
+                            Keep your account details accurate so
+                            sellers and delivery teams can serve you correctly.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <section class="settings-profile-card">
+
+                    <div class="settings-profile-cover"></div>
+
+                    <div class="settings-profile-content">
+
+                        <div class="settings-avatar-wrap">
+
+                            <div
+                                id="profileAvatar"
+                                class="settings-avatar"
+                            >
+                                U
+                            </div>
+
+                            <label
+                                class="settings-avatar-edit"
+                                for="avatarInput"
+                                title="Change profile photo"
+                            >
+                                <svg>
+                                    <use href="#icon-camera"></use>
+                                </svg>
+                            </label>
+
+                            <input
+                                id="avatarInput"
+                                type="file"
+                                accept="image/*"
+                                hidden
+                            >
+
+                        </div>
+
+                        <div class="settings-profile-main">
+
+                            <span class="settings-profile-label">
+                                GAMBasket ACCOUNT
+                            </span>
+
+                            <h3 id="profileDisplayName">
+                                User
+                            </h3>
+
+                            <p id="profileDisplayEmail">
+                                Loading account…
+                            </p>
+
+                            <div class="settings-profile-badges">
+
+                                <span>
+                                    <svg>
+                                        <use href="#icon-check"></use>
+                                    </svg>
+
+                                    The Gambia
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <form
+                    id="profileForm"
+                    class="settings-form-card"
+                >
+
+                    <div class="settings-card-heading">
+                        <div>
+                            <span>IDENTITY</span>
+                            <h3>Personal details</h3>
+                        </div>
+                    </div>
+
+
+                    <div class="settings-field-grid">
+
+                        <label class="settings-field">
+                            <span>First name</span>
+
+                            <input
+                                id="firstName"
+                                type="text"
+                                maxlength="60"
+                                autocomplete="given-name"
+                                placeholder="Enter your first name"
+                            >
+                        </label>
+
+                        <label class="settings-field">
+                            <span>Last name</span>
+
+                            <input
+                                id="lastName"
+                                type="text"
+                                maxlength="60"
+                                autocomplete="family-name"
+                                placeholder="Enter your last name"
+                            >
+                        </label>
+
+                    </div>
+
+
+                    <div class="settings-field-grid">
+
+                        <label class="settings-field">
+                            <span>Email address</span>
+
+                            <input
+                                id="emailAddress"
+                                type="email"
+                                disabled
+                            >
+
+                            <small>
+                                Your login email is managed by
+                                Supabase authentication.
+                            </small>
+                        </label>
+
+                        <label class="settings-field">
+                            <span>Phone number</span>
+
+                            <div class="settings-phone-input">
+
+                                <span>+220</span>
+
+                                <input
+                                    id="phoneNumber"
+                                    type="tel"
+                                    inputmode="numeric"
+                                    maxlength="12"
+                                    placeholder="Enter phone number"
+                                >
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="settings-field-grid">
+
+                        <label class="settings-field">
+                            <span>Region</span>
+
+                            <select id="region">
+                                <option value="">
+                                    Select region
+                                </option>
+                                <option value="Greater Banjul">
+                                    Greater Banjul Area
+                                </option>
+                                <option value="West Coast">
+                                    West Coast Region
+                                </option>
+                                <option value="Lower River">
+                                    Lower River Region
+                                </option>
+                                <option value="North Bank">
+                                    North Bank Region
+                                </option>
+                                <option value="Central River">
+                                    Central River Region
+                                </option>
+                                <option value="Upper River">
+                                    Upper River Region
+                                </option>
+                            </select>
+                        </label>
+
+                        <label class="settings-field">
+                            <span>Area / Town</span>
+
+                            <input
+                                id="area"
+                                type="text"
+                                maxlength="100"
+                                placeholder="e.g. Serrekunda"
+                            >
+                        </label>
+
+                    </div>
+
+
+                    <label class="settings-field">
+                        <span>Delivery address</span>
+
+                        <textarea
+                            id="deliveryAddress"
+                            rows="3"
+                            maxlength="350"
+                            placeholder="House, compound, street, landmark..."
+                        ></textarea>
+
+                        <small>
+                            This can be used to pre-fill checkout.
+                        </small>
+                    </label>
+
+
+                    <div class="settings-form-footer">
+
+                        <span
+                            id="profileSaveStatus"
+                            class="settings-save-status"
+                        ></span>
+
+                        <button
+                            class="settings-primary-button"
+                            type="submit"
+                        >
+                            Save profile
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <section class="settings-form-card">
+
+                    <div class="settings-card-heading">
+                        <div>
+                            <span>ACCOUNT REGION</span>
+                            <h3>Marketplace location</h3>
+                        </div>
+                    </div>
+
+                    <div class="settings-location-card">
+
+                        <div class="settings-location-icon">
+                            <svg>
+                                <use href="#icon-location"></use>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <strong>
+                                The Gambia
+                            </strong>
+
+                            <p>
+                                Your GamBasket marketplace is configured
+                                for Gambian buyers and sellers.
+                            </p>
+                        </div>
+
+                        <span class="settings-location-fixed">
+                            Fixed
+                        </span>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- PREFERENCES -->
+
+            <section
+                class="settings-section"
+                data-content="preferences"
+                hidden
+            >
+
+                <div class="settings-section-heading">
+
+                    <div>
+                        <span>EXPERIENCE</span>
+
+                        <h2>
+                            Preferences
+                        </h2>
+
+                        <p>
+                            Customize how GamBasket behaves for you.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <section class="settings-form-card">
+
+                    <div class="settings-card-heading">
+                        <span>DISPLAY</span>
+                        <h3>Appearance</h3>
+                    </div>
+
+                    <div class="settings-preference-row">
+
+                        <div class="settings-preference-icon">
+                            <svg id="preferenceThemeIcon">
+                                <use href="#icon-moon"></use>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <strong>Theme</strong>
+                            <span>
+                                Choose light, dark, or follow your device.
+                            </span>
+                        </div>
+
+                        <select id="themePreference">
+                            <option value="system">System</option>
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <section class="settings-form-card">
+
+                    <div class="settings-card-heading">
+                        <span>SHOPPING</span>
+                        <h3>Shopping experience</h3>
+                    </div>
+
+
+                    <label class="settings-switch-row">
+
+                        <span>
+                            <strong>Personalized product suggestions</strong>
+                            <small>
+                                Use your browsing and shopping activity
+                                to improve recommendations.
+                            </small>
+                        </span>
+
+                        <input
+                            id="personalizedRecommendations"
+                            type="checkbox"
+                            checked
+                        >
+
+                    </label>
+
+
+                    <label class="settings-switch-row">
+
+                        <span>
+                            <strong>Remember my delivery details</strong>
+                            <small>
+                                Pre-fill saved delivery information
+                                during checkout.
+                            </small>
+                        </span>
+
+                        <input
+                            id="rememberDelivery"
+                            type="checkbox"
+                            checked
+                        >
+
+                    </label>
+
+
+                    <label class="settings-switch-row">
+
+                        <span>
+                            <strong>Show nearby products first</strong>
+                            <small>
+                                Prioritize products closer to your
+                                selected area.
+                            </small>
+                        </span>
+
+                        <input
+                            id="nearbyProducts"
+                            type="checkbox"
+                            checked
+                        >
+
+                    </label>
+
+                </section>
+
+
+                <section class="settings-form-card">
+
+                    <div class="settings-card-heading">
+                        <span>LANGUAGE</span>
+                        <h3>Language</h3>
+                    </div>
+
+                    <div class="settings-preference-row">
+
+                        <div class="settings-preference-icon">
+                            <svg>
+                                <use href="#icon-globe"></use>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <strong>
+                                Interface language
+                            </strong>
+
+                            <span>
+                                Your preferred GamBasket language.
+                            </span>
+                        </div>
+
+                        <select id="languagePreference">
+                            <option value="en">
+                                English
+                            </option>
+                        </select>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+
+            <!-- NOTIFICATIONS -->
+
+            <section
+                class="settings-section"
+                data-content="notifications"
+                hidden
+            >
+
+                <div class="settings-section-heading">
+
+                    <div>
+                        <span>COMMUNICATION</span>
+
+                        <h2>
+                            Notifications
+                        </h2>
+
+                        <p>
+                            Control what updates GamBasket can send you.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <section class="settings-form-card">
+
+                    <div class="settings-card-heading">
+                        <span>ORDERS</span>
+                        <h3>Order updates</h3>
+                    </div>
+
+                    <label class="settings-switch-row">
+                        <span>
+                            <strong>Order status</strong>
+                            <small>
+                                Confirmations, processing, shipping
+                                and delivery updates.
+                            </small>
+                        </span>
+
+                        <input
+                            id="notifyOrders"
+                            type="checkbox"
+                            checked
+                        >
+                    </label>
+
+                    <label class="settings-switch-row">
+                        <span>
+                            <strong>Delivery updates</strong>
+                            <small>
+                                Courier assignment and delivery progress.
+                            </small>
+                        </span>
+
+                        <input
+                            id="notifyDelivery"
+                            type="checkbox"
+                            checked
+                        >
+                    </label>
+
+                    <label class="settings-switch-row">
+                        <span>
+                            <strong>Seller messages</strong>
+                            <small>
+                                New messages and replies from sellers.
+                            </small>
+                        </span>
+
+                        <input
+                            id="notifyMessages"
+                            type="checkbox"
+                            checked
+                        >
+                    </label>
+
+                </section>
+
+
+                <section class="settings-form-card">
+
+                    <div class="settings-card-heading">
+                        <span>GAMBASKET</span>
+                        <h3>Platform notifications</h3>
+                    </div>
+
+                    <label class="settings-switch-row">
+                        <span>
+                            <strong>Promotions and offers</strong>
+                            <small>
+                                New deals and marketplace campaigns.
+                            </small>
+                        </span>
+
+                        <input
+                            id="notifyPromotions"
+                            type="checkbox"
+                            checked
+                        >
+                    </label>
+
+                    <label class="settings-switch-row">
+                        <span>
+                            <strong>Important account notices</strong>
+                            <small>
+                                Security, policy and account-related messages.
+                            </small>
+                        </span>
+
+                        <input
+                            id="notifyAccount"
+                            type="checkbox"
+                            checked
+                        >
+                    </label>
+
+                </section>
+
+
+                <div class="settings-form-footer standalone">
+
+                    <button
+                        id="saveNotificationPreferences"
+                        class="settings-primary-button"
+                        type="button"
+                    >
+                        Save notification settings
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         MOBILE NAV
+    ====================================================== -->
+
+    <nav class="bottom-navigation">
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="location.href='index.html'"
+        >
+            <span class="nav-icon">
+                <svg class="ui-icon">
+                    <use href="#icon-home"></use>
+                </svg>
+            </span>
+
+            <span class="nav-label">
+                Home
+            </span>
+        </button>
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="location.href='explore.html'"
+        >
+            <span class="nav-icon">
+                <svg class="ui-icon">
+                    <use href="#icon-search"></use>
+                </svg>
+            </span>
+
+            <span class="nav-label">
+                Explore
+            </span>
+        </button>
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="location.href='orders.html'"
+        >
+            <span class="nav-icon">
+                <svg class="ui-icon">
+                    <use href="#icon-box"></use>
+                </svg>
+            </span>
+
+            <span class="nav-label">
+                Orders
+            </span>
+        </button>
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="location.href='wishlist.html'"
+        >
+            <span class="nav-icon">
+                <svg class="ui-icon">
+                    <use href="#icon-heart"></use>
+                </svg>
+            </span>
+
+            <span class="nav-label">
+                Wishlist
+            </span>
+        </button>
+
+        <button
+            class="nav-item active"
+            type="button"
+            onclick="location.href='me.html'"
+        >
+            <span class="nav-icon">
+                <svg class="ui-icon">
+                    <use href="#icon-user"></use>
+                </svg>
+            </span>
+
+            <span class="nav-label">
+                Me
+            </span>
+        </button>
+
+    </nav>
+
+
+    <div
+        id="settingsToast"
+        class="settings-toast"
+        hidden
+    >
+        <div class="settings-toast-icon">
+            <svg>
+                <use href="#icon-check"></use>
+            </svg>
+        </div>
+
+        <div>
+            <strong id="settingsToastTitle">
+                Saved
+            </strong>
+
+            <span id="settingsToastMessage">
+                Your settings were updated.
+            </span>
+        </div>
+    </div>
+
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth-errors.js"></script>
+    <script src="js/auth-guard.js"></script>
+
+    <script>
+(() => {
+    "use strict";
+
+    const $ = (selector) => document.querySelector(selector);
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    /* ============================================================
+       STORAGE
+    ============================================================ */
+
+    const PREF_KEY = "gambasket_preferences";
+
+    function getPreferences() {
+        try {
+            return JSON.parse(
+                localStorage.getItem(PREF_KEY) || "{}"
+            );
+        } catch {
+            return {};
+        }
+    }
+
+    function savePreferencesObject(preferences) {
+        localStorage.setItem(
+            PREF_KEY,
+            JSON.stringify(preferences)
+        );
+
+        /*
+         * Broadcast to other GamBasket pages/tabs/components.
+         */
+        window.dispatchEvent(
+            new CustomEvent("gambasket:preferences:change", {
+                detail: preferences
+            })
+        );
+
+        /*
+         * Storage event handles other browser tabs.
+         */
+        window.localStorage.setItem(
+            "gambasket_preferences_updated_at",
+            Date.now().toString()
+        );
+    }
+
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+
+    let toastTimer = null;
+
+    function showToast(title, message) {
+
+        const toast = $("#settingsToast");
+
+        if (!toast) return;
+
+        const titleEl =
+            $("#settingsToastTitle");
+
+        const messageEl =
+            $("#settingsToastMessage");
+
+        if (titleEl) {
+            titleEl.textContent = title;
+        }
+
+        if (messageEl) {
+            messageEl.textContent = message;
+        }
+
+        toast.hidden = false;
+
+        clearTimeout(toastTimer);
+
+        toastTimer = setTimeout(() => {
+            toast.hidden = true;
+        }, 2800);
+    }
+
+
+    /* ============================================================
+       THEME
+    ============================================================ */
+
+    function getSystemTheme() {
+        return window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+    }
+
+    function applyTheme(theme, save = true) {
+
+        const root =
+            document.documentElement;
+
+        let effectiveTheme =
+            theme;
+
+        if (theme === "system") {
+            effectiveTheme =
+                getSystemTheme();
+        }
+
+        root.classList.toggle(
+            "dark",
+            effectiveTheme === "dark"
+        );
+
+        /*
+         * Keep the existing GamBasket theme key
+         * compatible with the rest of the website.
+         */
+        if (save) {
+
+            if (theme === "system") {
+                localStorage.removeItem(
+                    "gambasket-theme"
+                );
+            } else {
+                localStorage.setItem(
+                    "gambasket-theme",
+                    theme
+                );
+            }
+        }
+
+        const preferenceSelect =
+            $("#themePreference");
+
+        if (preferenceSelect) {
+            preferenceSelect.value =
+                theme;
+        }
+
+        updateThemeIcons(
+            effectiveTheme
+        );
+    }
+
+    function updateThemeIcons(theme) {
+
+        document
+            .querySelectorAll(
+                "#settingsThemeToggle use, #mobileThemeToggle use, #preferenceThemeIcon use"
+            )
+            .forEach(use => {
+
+                use.setAttribute(
+                    "href",
+                    theme === "dark"
+                        ? "#icon-sun"
+                        : "#icon-moon"
+                );
+            });
+    }
+
+    function getSavedTheme() {
+
+        const preferences =
+            getPreferences();
+
+        if (
+            preferences.theme ===
+                "dark" ||
+            preferences.theme ===
+                "light" ||
+            preferences.theme ===
+                "system"
+        ) {
+            return preferences.theme;
+        }
+
+        const legacyTheme =
+            localStorage.getItem(
+                "gambasket-theme"
+            );
+
+        if (
+            legacyTheme === "dark" ||
+            legacyTheme === "light"
+        ) {
+            return legacyTheme;
+        }
+
+        return "system";
+    }
+
+    function setTheme(theme) {
+
+        const preferences =
+            getPreferences();
+
+        preferences.theme =
+            theme;
+
+        savePreferencesObject(
+            preferences
+        );
+
+        applyTheme(
+            theme,
+            true
+        );
+
+        showToast(
+            "Theme updated",
+            theme === "system"
+                ? "GamBasket will follow your device theme."
+                : `GamBasket is now using ${theme} mode.`
+        );
+    }
+
+
+    /* ============================================================
+       LOAD PREFERENCES INTO UI
+    ============================================================ */
+
+    function loadPreferencesIntoUI() {
+
+        const preferences =
+            getPreferences();
+
+        const defaults = {
+
+            personalizedRecommendations: true,
+            rememberDelivery: true,
+            nearbyProducts: true,
+
+            notifyOrders: true,
+            notifyDelivery: true,
+            notifyMessages: true,
+            notifyPromotions: true,
+            notifyAccount: true,
+
+            language: "en"
+        };
+
+        const merged = {
+            ...defaults,
+            ...preferences
+        };
+
+        const checkboxMap = {
+
+            personalizedRecommendations:
+                "#personalizedRecommendations",
+
+            rememberDelivery:
+                "#rememberDelivery",
+
+            nearbyProducts:
+                "#nearbyProducts",
+
+            notifyOrders:
+                "#notifyOrders",
+
+            notifyDelivery:
+                "#notifyDelivery",
+
+            notifyMessages:
+                "#notifyMessages",
+
+            notifyPromotions:
+                "#notifyPromotions",
+
+            notifyAccount:
+                "#notifyAccount"
+        };
+
+        Object.entries(
+            checkboxMap
+        ).forEach(([key, selector]) => {
+
+            const element =
+                $(selector);
+
+            if (element) {
+                element.checked =
+                    Boolean(merged[key]);
+            }
+        });
+
+        const language =
+            $("#languagePreference");
+
+        if (language) {
+            language.value =
+                merged.language || "en";
+        }
+
+        const theme =
+            merged.theme ||
+            getSavedTheme();
+
+        const themeSelect =
+            $("#themePreference");
+
+        if (themeSelect) {
+            themeSelect.value =
+                theme;
+        }
+
+        applyTheme(
+            theme,
+            false
+        );
+    }
+
+
+    /* ============================================================
+       SAVE ONE PREFERENCE IMMEDIATELY
+    ============================================================ */
+
+    function updatePreference(
+        key,
+        value,
+        message = "Your preference was updated."
+    ) {
+
+        const preferences =
+            getPreferences();
+
+        preferences[key] =
+            value;
+
+        savePreferencesObject(
+            preferences
+        );
+
+        showToast(
+            "Preference saved",
+            message
+        );
+    }
+
+
+    /* ============================================================
+       PROFILE
+    ============================================================ */
+
+    function getInitials(
+        firstName,
+        lastName
+    ) {
+
+        const first =
+            firstName?.trim()?.[0] || "";
+
+        const last =
+            lastName?.trim()?.[0] || "";
+
+        return (
+            `${first}${last}`.toUpperCase() ||
+            "U"
+        );
+    }
+
+
+    async function loadProfile() {
+
+        await window.GamBasketAuth.ready();
+
+        const session =
+            await window.GamBasketAuth.getSession();
+
+        if (
+            !session ||
+            !session.user
+        ) {
+
+            window.location.href =
+                "login.html?redirect=settings.html";
+
+            return false;
+        }
+
+        currentUser =
+            session.user;
+
+        currentProfile =
+            await window.GamBasketAuth.fetchUserProfile();
+
+        const firstName =
+            currentProfile?.first_name ||
+            currentUser.user_metadata?.first_name ||
+            currentUser.user_metadata?.given_name ||
+            "";
+
+        const lastName =
+            currentProfile?.last_name ||
+            currentUser.user_metadata?.last_name ||
+            currentUser.user_metadata?.family_name ||
+            "";
+
+        const fullName =
+            `${firstName} ${lastName}`.trim() ||
+            "User";
+
+        const avatar =
+            $("#profileAvatar");
+
+        if (avatar) {
+
+            avatar.textContent =
+                getInitials(
+                    firstName,
+                    lastName
+                );
+
+            /*
+             * Clear any temporary avatar preview when profile reloads.
+             */
+            avatar.style.backgroundImage =
+                "";
+
+            avatar.style.backgroundSize =
+                "";
+
+            avatar.style.backgroundPosition =
+                "";
+        }
+
+        const nameEl =
+            $("#profileDisplayName");
+
+        if (nameEl) {
+            nameEl.textContent =
+                fullName;
+        }
+
+        const emailEl =
+            $("#profileDisplayEmail");
+
+        if (emailEl) {
+            emailEl.textContent =
+                currentUser.email || "";
+        }
+
+        const firstNameInput =
+            $("#firstName");
+
+        if (firstNameInput) {
+            firstNameInput.value =
+                firstName;
+        }
+
+        const lastNameInput =
+            $("#lastName");
+
+        if (lastNameInput) {
+            lastNameInput.value =
+                lastName;
+        }
+
+        const emailInput =
+            $("#emailAddress");
+
+        if (emailInput) {
+            emailInput.value =
+                currentUser.email || "";
+        }
+
+        const phoneInput =
+            $("#phoneNumber");
+
+        if (phoneInput) {
+            phoneInput.value =
+                currentProfile?.phone || "";
+        }
+
+        const regionInput =
+            $("#region");
+
+        if (regionInput) {
+            regionInput.value =
+                currentProfile?.region || "";
+        }
+
+        const areaInput =
+            $("#area");
+
+        if (areaInput) {
+            areaInput.value =
+                currentProfile?.area || "";
+        }
+
+        const addressInput =
+            $("#deliveryAddress");
+
+        if (addressInput) {
+
+            addressInput.value =
+                localStorage.getItem(
+                    "gambasket_delivery_address"
+                ) || "";
+        }
+
+        return true;
+    }
+
+
+    async function saveProfile(event) {
+
+        event.preventDefault();
+
+        const status =
+            $("#profileSaveStatus");
+
+        if (status) {
+            status.textContent =
+                "Saving…";
+        }
+
+        try {
+
+            const client =
+                window.supabaseClient ||
+                window.gambasketSupabase ||
+                window.supabase ||
+                window.sb;
+
+            if (!client) {
+                throw new Error(
+                    "Supabase client unavailable."
+                );
+            }
+
+            const firstName =
+                $("#firstName")?.value.trim() || "";
+
+            const lastName =
+                $("#lastName")?.value.trim() || "";
+
+            const phone =
+                $("#phoneNumber")?.value.trim() || "";
+
+            const region =
+                $("#region")?.value || "";
+
+            const area =
+                $("#area")?.value.trim() || "";
+
+            const address =
+                $("#deliveryAddress")?.value.trim() || "";
+
+            const {
+                error
+            } = await client
+                .from("profiles")
+                .update({
+
+                    first_name:
+                        firstName,
+
+                    last_name:
+                        lastName,
+
+                    phone:
+                        phone,
+
+                    region:
+                        region,
+
+                    area:
+                        area,
+
+                    updated_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    currentUser.id
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            localStorage.setItem(
+                "gambasket_delivery_address",
+                address
+            );
+
+            currentProfile = {
+                ...(currentProfile || {}),
+
+                first_name:
+                    firstName,
+
+                last_name:
+                    lastName,
+
+                phone,
+                region,
+                area
+            };
+
+            const fullName =
+                `${firstName} ${lastName}`.trim() ||
+                "User";
+
+            if ($("#profileDisplayName")) {
+                $("#profileDisplayName")
+                    .textContent =
+                    fullName;
+            }
+
+            if ($("#profileAvatar")) {
+                $("#profileAvatar")
+                    .textContent =
+                    getInitials(
+                        firstName,
+                        lastName
+                    );
+            }
+
+            if (status) {
+                status.textContent =
+                    "Saved";
+            }
+
+            showToast(
+                "Profile updated",
+                "Your personal information is now saved."
+            );
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "gambasket:profile:change",
+                    {
+                        detail: currentProfile
+                    }
+                )
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[GamBasket Settings]",
+                error
+            );
+
+            const friendly =
+                window.getAuthErrorMessage
+                    ? window.getAuthErrorMessage(error)
+                    : "Unable to save your profile.";
+
+            if (status) {
+                status.textContent =
+                    "Could not save";
+            }
+
+            showToast(
+                "Save failed",
+                friendly
+            );
+        }
+    }
+
+
+    /* ============================================================
+       SECTION NAVIGATION
+       THIS IS THE IMPORTANT FIX
+    ============================================================ */
+
+    function showSection(
+        sectionName,
+        shouldScroll = true,
+        updateHash = true
+    ) {
+
+        const validSections = [
+            "profile",
+            "preferences",
+            "notifications"
+        ];
+
+        if (
+            !validSections.includes(
+                sectionName
+            )
+        ) {
+            sectionName =
+                "profile";
+        }
+
+        /*
+         * Update navigation state.
+         */
+        document
+            .querySelectorAll(
+                ".settings-nav-item[data-section]"
+            )
+            .forEach(button => {
+
+                button.classList.toggle(
+                    "active",
+                    button.dataset.section ===
+                        sectionName
+                );
+            });
+
+        /*
+         * Show exactly one content section.
+         */
+        document
+            .querySelectorAll(
+                ".settings-section[data-content]"
+            )
+            .forEach(section => {
+
+                const active =
+                    section.dataset.content ===
+                    sectionName;
+
+                section.hidden =
+                    !active;
+
+                section.classList.toggle(
+                    "active",
+                    active
+                );
+            });
+
+        /*
+         * Update URL so refreshing keeps the selected section.
+         */
+        if (updateHash) {
+
+            const newHash =
+                `#${sectionName}`;
+
+            if (
+                window.location.hash !==
+                newHash
+            ) {
+
+                history.replaceState(
+                    null,
+                    "",
+                    newHash
+                );
+            }
+        }
+
+        /*
+         * Scroll to selected section.
+         */
+        if (shouldScroll) {
+
+            requestAnimationFrame(() => {
+
+                const target =
+                    document.querySelector(
+                        `[data-content="${sectionName}"]`
+                    );
+
+                if (!target) return;
+
+                const header =
+                    document.querySelector(
+                        ".desktop-app-header"
+                    );
+
+                const mobileHeader =
+                    document.querySelector(
+                        ".mobile-header"
+                    );
+
+                const headerHeight =
+                    window.innerWidth > 900
+                        ? (
+                            header?.getBoundingClientRect()
+                                .height || 0
+                        )
+                        : (
+                            mobileHeader?.getBoundingClientRect()
+                                .height || 0
+                        );
+
+                const top =
+                    target.getBoundingClientRect().top +
+                    window.scrollY -
+                    headerHeight -
+                    22;
+
+                window.scrollTo({
+                    top: Math.max(
+                        0,
+                        top
+                    ),
+                    behavior: "smooth"
+                });
+
+            });
+        }
+    }
+
+
+    function handleHashNavigation() {
+
+        const hash =
+            window.location.hash
+                .replace("#", "")
+                .trim();
+
+        if (
+            hash === "profile" ||
+            hash === "preferences" ||
+            hash === "notifications"
+        ) {
+
+            showSection(
+                hash,
+                true,
+                false
+            );
+
+        } else {
+
+            showSection(
+                "profile",
+                false,
+                false
+            );
+        }
+    }
+
+
+    function bindSectionNavigation() {
+
+        document
+            .querySelectorAll(
+                ".settings-nav-item[data-section]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        showSection(
+                            button.dataset.section,
+                            true,
+                            true
+                        );
+
+                    }
+                );
+            });
+
+        window.addEventListener(
+            "hashchange",
+            handleHashNavigation
+        );
+    }
+
+
+    /* ============================================================
+       PREFERENCE EVENT BINDING
+    ============================================================ */
+
+    function bindPreferences() {
+
+        const checkboxMap = {
+
+            personalizedRecommendations:
+                "Personalized recommendations enabled.",
+
+            rememberDelivery:
+                "Saved delivery details preference updated.",
+
+            nearbyProducts:
+                "Nearby product preference updated.",
+
+            notifyOrders:
+                "Order notification preference updated.",
+
+            notifyDelivery:
+                "Delivery notification preference updated.",
+
+            notifyMessages:
+                "Message notification preference updated.",
+
+            notifyPromotions:
+                "Promotion notification preference updated.",
+
+            notifyAccount:
+                "Account notification preference updated."
+        };
+
+        Object.entries(
+            checkboxMap
+        ).forEach(([id, message]) => {
+
+            const checkbox =
+                $(`#${id}`);
+
+            if (!checkbox) return;
+
+            checkbox.addEventListener(
+                "change",
+                () => {
+
+                    updatePreference(
+                        id,
+                        checkbox.checked,
+                        message
+                    );
+
+                }
+            );
+        });
+
+
+        $("#themePreference")
+            ?.addEventListener(
+                "change",
+                event => {
+
+                    setTheme(
+                        event.target.value
+                    );
+
+                }
+            );
+
+
+        $("#languagePreference")
+            ?.addEventListener(
+                "change",
+                event => {
+
+                    updatePreference(
+                        "language",
+                        event.target.value,
+                        "Language preference saved."
+                    );
+
+                }
+            );
+    }
+
+
+    /* ============================================================
+       THEME BUTTONS
+    ============================================================ */
+
+    function bindThemeButtons() {
+
+        const toggle =
+            () => {
+
+                const current =
+                    document.documentElement
+                        .classList
+                        .contains("dark");
+
+                setTheme(
+                    current
+                        ? "light"
+                        : "dark"
+                );
+            };
+
+        $("#settingsThemeToggle")
+            ?.addEventListener(
+                "click",
+                toggle
+            );
+
+        $("#mobileThemeToggle")
+            ?.addEventListener(
+                "click",
+                toggle
+            );
+    }
+
+
+    /* ============================================================
+       AVATAR
+    ============================================================ */
+
+    function bindAvatar() {
+
+        $("#avatarInput")
+            ?.addEventListener(
+                "change",
+                event => {
+
+                    const file =
+                        event.target.files?.[0];
+
+                    if (!file) return;
+
+                    if (
+                        !file.type.startsWith(
+                            "image/"
+                        )
+                    ) {
+
+                        showToast(
+                            "Invalid image",
+                            "Please select an image file."
+                        );
+
+                        return;
+                    }
+
+                    if (
+                        file.size >
+                        5 * 1024 * 1024
+                    ) {
+
+                        showToast(
+                            "Image too large",
+                            "Maximum profile image size is 5 MB."
+                        );
+
+                        return;
+                    }
+
+                    const reader =
+                        new FileReader();
+
+                    reader.onload =
+                        () => {
+
+                            const avatar =
+                                $("#profileAvatar");
+
+                            if (!avatar) return;
+
+                            avatar.textContent =
+                                "";
+
+                            avatar.style.backgroundImage =
+                                `url("${reader.result}")`;
+
+                            avatar.style.backgroundSize =
+                                "cover";
+
+                            avatar.style.backgroundPosition =
+                                "center";
+
+                        };
+
+                    reader.readAsDataURL(
+                        file
+                    );
+
+                    showToast(
+                        "Photo selected",
+                        "Your profile preview has been updated."
+                    );
+                }
+            );
+    }
+
+
+    /* ============================================================
+       INITIALIZATION
+    ============================================================ */
+
+    async function init() {
+
+        if (
+            !window.GamBasketAuth
+        ) {
+            console.error(
+                "[GamBasket Settings] GamBasketAuth unavailable."
+            );
+
+            return;
+        }
+
+        /*
+         * Load authentication/profile first.
+         */
+        const authenticated =
+            await loadProfile();
+
+        if (!authenticated) {
+            return;
+        }
+
+        /*
+         * Load preferences immediately.
+         */
+        loadPreferencesIntoUI();
+
+        /*
+         * Bind all interactions.
+         */
+        bindSectionNavigation();
+        bindPreferences();
+        bindThemeButtons();
+        bindAvatar();
+
+        $("#profileForm")
+            ?.addEventListener(
+                "submit",
+                saveProfile
+            );
+
+        /*
+         * Open the correct section from the URL.
+         */
+        handleHashNavigation();
+
+
+        /*
+         * If another tab changes preferences,
+         * instantly synchronize this page.
+         */
+        window.addEventListener(
+            "storage",
+            event => {
+
+                if (
+                    event.key ===
+                    PREF_KEY
+                ) {
+
+                    loadPreferencesIntoUI();
+                }
+
+            }
+        );
+
+
+        /*
+         * Synchronize when another GamBasket component
+         * changes preferences in this same page.
+         */
+        window.addEventListener(
+            "gambasket:preferences:change",
+            loadPreferencesIntoUI
+        );
+
+
+        /*
+         * Profile updates from elsewhere in the app.
+         */
+        window.addEventListener(
+            "gambasket:profile:change",
+            () => {
+                loadProfile();
+            }
+        );
+    }
+
+
+    init().catch(
+        error => {
+
+            console.error(
+                "[GamBasket Settings Init]",
+                error
+            );
+
+        }
+    );
+
+})();
+</script>
+
+</body>
+</html>

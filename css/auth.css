@@ -1,0 +1,1373 @@
+/* =========================================================
+   GAMBASKET AUTHENTICATION
+   Shared authentication stylesheet
+========================================================= */
+
+:root {
+    --blue: #1877f2;
+    --blue-dark: #0f5dcc;
+    --blue-light: #eaf3ff;
+    --blue-soft: #f4f8ff;
+
+    --green: #16a34a;
+    --red: #ef4444;
+    --orange: #f59e0b;
+
+    --bg: #f7f9fc;
+    --surface: #ffffff;
+    --surface-soft: #f8fafc;
+
+    --text: #111827;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+
+    --border: #e2e8f0;
+    --border-focus: #1877f2;
+
+    --shadow:
+        0 25px 70px rgba(15, 23, 42, 0.10);
+
+    --radius: 24px;
+
+    --transition:
+        cubic-bezier(.2, .8, .2, 1);
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+html.dark {
+
+    --bg: #070b12;
+    --surface: #111827;
+    --surface-soft: #182231;
+
+    --text: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    --border: #263244;
+
+    --blue-light: #10264a;
+    --blue-soft: #0d1728;
+
+    --shadow:
+        0 25px 70px rgba(0, 0, 0, 0.40);
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(24, 119, 242, 0.08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 90%,
+            rgba(24, 119, 242, 0.06),
+            transparent 30%
+        ),
+        var(--bg);
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    transition:
+        background .3s ease,
+        color .3s ease;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.auth-page {
+
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.auth-topbar {
+
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 32px;
+}
+
+
+.auth-logo {
+
+    display: inline-flex;
+    align-items: center;
+
+    color: var(--text);
+
+    text-decoration: none;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    letter-spacing: -1px;
+}
+
+
+.auth-logo span {
+    color: var(--blue);
+}
+
+
+.auth-top-actions {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.theme-toggle {
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    background: var(--surface);
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--surface-soft);
+}
+
+.theme-toggle:active {
+    transform: scale(.9);
+}
+
+.theme-toggle svg {
+    width: 19px;
+    height: 19px;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.auth-main {
+
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        30px
+        20px
+        60px;
+}
+
+
+/* =========================================================
+   AUTH CONTAINER
+========================================================= */
+
+.auth-container {
+
+    width: 100%;
+    max-width: 470px;
+
+    animation:
+        authContainerIn
+        .6s
+        var(--transition);
+}
+
+
+@keyframes authContainerIn {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(25px)
+            scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   LOGO MARK
+========================================================= */
+
+.auth-mark {
+
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #1877f2,
+            #0f5dcc
+        );
+
+    color: white;
+
+    box-shadow:
+        0 12px 30px rgba(24, 119, 242, .25);
+
+    animation:
+        markIn
+        .7s
+        var(--transition);
+}
+
+
+@keyframes markIn {
+
+    from {
+        opacity: 0;
+        transform:
+            scale(.6)
+            rotate(-8deg);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            scale(1)
+            rotate(0);
+    }
+}
+
+
+.auth-mark svg {
+    width: 28px;
+    height: 28px;
+}
+
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+.auth-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-heading h1 {
+
+    margin-bottom: 8px;
+
+    font-size: clamp(26px, 5vw, 34px);
+
+    line-height: 1.1;
+
+    letter-spacing: -1.2px;
+
+    font-weight: 800;
+}
+
+.auth-heading p {
+
+    max-width: 360px;
+
+    margin: auto;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.auth-card {
+
+    padding: 30px;
+
+    background: var(--surface);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    transition:
+        background .3s ease,
+        border .3s ease;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.auth-form {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   FIELD
+========================================================= */
+
+.field {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.field-label {
+
+    color: var(--text);
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+.field-wrap {
+
+    position: relative;
+}
+
+
+.field input {
+
+    width: 100%;
+
+    height: 52px;
+
+    padding:
+        0 15px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 13px;
+
+    outline: none;
+
+    background: var(--surface-soft);
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    transition:
+        border .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+.field input:focus {
+
+    border-color: var(--border-focus);
+
+    background: var(--surface);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(24, 119, 242, .10);
+}
+
+
+.field input::placeholder {
+    color: var(--text-muted);
+}
+
+
+/* =========================================================
+   PASSWORD FIELD
+========================================================= */
+
+.password-input {
+    padding-right: 52px !important;
+}
+
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 6px;
+    top: 6px;
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--text-muted);
+
+    cursor: pointer;
+
+    border-radius: 10px;
+}
+
+
+.password-toggle:hover {
+    background: var(--blue-light);
+    color: var(--blue);
+}
+
+
+.password-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* =========================================================
+   PASSWORD STRENGTH
+========================================================= */
+
+.password-strength {
+
+    display: none;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.password-strength.visible {
+    display: flex;
+}
+
+.strength-bars {
+
+    display: flex;
+
+    gap: 4px;
+}
+
+.strength-bar {
+
+    flex: 1;
+
+    height: 4px;
+
+    border-radius: 99px;
+
+    background: var(--border);
+
+    transition:
+        background .3s ease,
+        transform .3s ease;
+}
+
+.strength-label {
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.primary-btn {
+
+    width: 100%;
+
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1877f2,
+            #1267d9
+        );
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(24, 119, 242, .20);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        opacity .2s ease;
+}
+
+
+.primary-btn:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 14px 30px
+        rgba(24, 119, 242, .27);
+}
+
+
+.primary-btn:active {
+    transform: scale(.98);
+}
+
+
+.primary-btn:disabled {
+
+    opacity: .6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+.primary-btn svg {
+    width: 17px;
+    height: 17px;
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.secondary-btn {
+
+    width: 100%;
+
+    min-height: 50px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 13px;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+
+.secondary-btn:hover {
+    background: var(--surface-soft);
+}
+
+
+.secondary-btn:active {
+    transform: scale(.98);
+}
+
+
+/* =========================================================
+   GOOGLE SIGN-IN BUTTON
+========================================================= */
+
+.google-btn {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.google-btn:hover {
+    background: var(--surface-soft);
+    border-color: #2563eb;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.google-btn:active {
+    transform: scale(.98);
+}
+
+.google-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   LINKS
+========================================================= */
+
+.auth-link {
+
+    color: var(--blue);
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+
+.forgot-row {
+
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: -6px;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.auth-divider {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 4px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: var(--border);
+}
+
+.auth-divider span {
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   BOTTOM TEXT
+========================================================= */
+
+.auth-bottom {
+
+    margin-top: 23px;
+
+    text-align: center;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.form-error {
+
+    display: none;
+
+    padding: 11px 13px;
+
+    border:
+        1px solid
+        rgba(239, 68, 68, .20);
+
+    border-radius: 11px;
+
+    background:
+        rgba(239, 68, 68, .07);
+
+    color: var(--red);
+
+    font-size: 12px;
+
+    line-height: 1.45;
+
+    animation:
+        errorIn
+        .25s
+        ease;
+}
+
+.form-error.show {
+    display: block;
+}
+
+
+@keyframes errorIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   SIGNUP PROGRESS
+========================================================= */
+
+.signup-progress {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-bottom: 25px;
+}
+
+
+.progress-line {
+
+    flex: 1;
+
+    height: 4px;
+
+    border-radius: 99px;
+
+    background: var(--border);
+
+    overflow: hidden;
+}
+
+
+.progress-line span {
+
+    display: block;
+
+    width: 0;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background: var(--blue);
+
+    transition:
+        width .4s
+        var(--transition);
+}
+
+
+.progress-step {
+
+    flex-shrink: 0;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SIGNUP STEP
+========================================================= */
+
+.signup-step {
+
+    display: none;
+
+    animation:
+        stepIn
+        .4s
+        var(--transition);
+}
+
+.signup-step.active {
+    display: block;
+}
+
+
+@keyframes stepIn {
+
+    from {
+        opacity: 0;
+        transform:
+            translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateX(0);
+    }
+}
+
+
+.step-heading {
+
+    margin-bottom: 22px;
+}
+
+.step-heading h2 {
+
+    margin-bottom: 5px;
+
+    font-size: 20px;
+
+    letter-spacing: -.5px;
+}
+
+.step-heading p {
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FIELD GRID
+========================================================= */
+
+.field-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   LOCKED COUNTRY
+========================================================= */
+
+.locked-field {
+
+    position: relative;
+}
+
+
+.locked-field input {
+
+    padding-right: 48px;
+
+    color: var(--text-secondary);
+
+    cursor: not-allowed;
+}
+
+
+.lock-icon {
+
+    position: absolute;
+
+    right: 15px;
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    color: var(--text-muted);
+
+    pointer-events: none;
+}
+
+.lock-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* =========================================================
+   CHECKBOX
+========================================================= */
+
+.checkbox-row {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-top: 3px;
+}
+
+
+.checkbox-row input {
+
+    width: 17px;
+    height: 17px;
+
+    margin-top: 1px;
+
+    accent-color: var(--blue);
+
+    cursor: pointer;
+}
+
+
+.checkbox-row label {
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   STEP BUTTONS
+========================================================= */
+
+.step-buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 4px;
+}
+
+
+.back-btn {
+
+    width: 50px;
+
+    flex-shrink: 0;
+
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 13px;
+
+    background: var(--surface);
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+
+.back-btn:hover {
+    background: var(--surface-soft);
+}
+
+
+.back-btn:active {
+    transform: scale(.95);
+}
+
+
+.back-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* =========================================================
+   EMAIL VERIFICATION
+========================================================= */
+
+.verification-icon {
+
+    width: 82px;
+    height: 82px;
+
+    margin:
+        0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--blue-light);
+
+    color: var(--blue);
+
+    animation:
+        verifyPulse
+        2.5s
+        infinite;
+}
+
+
+.verification-icon svg {
+    width: 35px;
+    height: 35px;
+}
+
+
+@keyframes verifyPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 0
+            rgba(24, 119, 242, .15);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 14px
+            rgba(24, 119, 242, 0);
+    }
+}
+
+
+.email-display {
+
+    margin:
+        17px
+        0
+        22px;
+
+    padding: 13px;
+
+    border-radius: 12px;
+
+    background: var(--surface-soft);
+
+    color: var(--text);
+
+    text-align: center;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+.success-state {
+
+    text-align: center;
+
+    animation:
+        successIn
+        .6s
+        var(--transition);
+}
+
+
+.success-icon {
+
+    width: 88px;
+    height: 88px;
+
+    margin:
+        0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(22, 163, 74, .10);
+
+    color: var(--green);
+}
+
+
+.success-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+
+@keyframes successIn {
+
+    from {
+        opacity: 0;
+        transform:
+            scale(.7);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.btn-spinner {
+
+    width: 17px;
+    height: 17px;
+
+    border:
+        2px solid
+        rgba(255, 255, 255, .35);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation:
+        spin
+        .7s
+        linear
+        infinite;
+}
+
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .auth-topbar {
+        padding: 17px 18px;
+    }
+
+    .auth-logo {
+        font-size: 21px;
+    }
+
+    .auth-main {
+        padding:
+            20px
+            14px
+            40px;
+    }
+
+    .auth-card {
+        padding: 22px 18px;
+        border-radius: 21px;
+    }
+
+    .auth-heading {
+        margin-bottom: 22px;
+    }
+
+    .auth-heading h1 {
+        font-size: 28px;
+    }
+
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .auth-card {
+        padding: 19px 15px;
+    }
+
+    .auth-main {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration: .01ms !important;
+
+        animation-iteration-count: 1 !important;
+
+        transition-duration: .01ms !important;
+
+        scroll-behavior: auto !important;
+    }
+
+}

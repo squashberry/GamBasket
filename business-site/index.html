@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Business Website — Powered by GamBasket</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="site-header-inner">
+        <div class="site-brand">
+            <span id="siteLogo" class="site-logo">🏪</span>
+            <span id="siteName" class="site-name">Business Store</span>
+        </div>
+        <div class="site-search-wrap">
+            <input type="search" id="storeSearch" placeholder="Search products in this store...">
+        </div>
+        <div class="site-header-actions">
+            <button id="btnFollow" class="btn-secondary">Follow</button>
+            <button id="btnShare" class="btn-secondary">Share</button>
+        </div>
+    </div>
+</header>
+
+<main class="site-main">
+    <section class="business-cover" id="siteCover">
+        <div class="business-cover-overlay"></div>
+    </section>
+
+    <div class="business-profile-bar">
+        <div class="business-profile-card">
+            <div class="business-avatar" id="avatarBox">🏪</div>
+            <div class="business-meta">
+                <div class="business-title-row">
+                    <h1 id="heroBusinessName">Business Name</h1>
+                    <span class="badge-verified">✓ Verified Business</span>
+                </div>
+                <p id="heroDescription">Business description will be displayed here.</p>
+                <div class="business-info-pills">
+                    <span id="infoLocation">📍 Greater Banjul</span>
+                    <span id="infoHours">🕒 Mon - Sat: 9am - 7pm</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="business-contact-strip">
+        <a href="#" id="btnWhatsApp" class="contact-btn whatsapp">💬 WhatsApp</a>
+        <a href="../messages.html" id="btnChat" class="contact-btn chat">✉️ Message Seller</a>
+        <a href="#" id="btnCall" class="contact-btn call">📞 Call Store</a>
+    </section>
+
+    <section class="store-catalog-section">
+        <div class="catalog-header">
+            <h2>Products</h2>
+            <div class="category-chips" id="categoryChips">
+                <button class="chip active">All Products</button>
+            </div>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <div class="empty-state">
+                <p>Loading products for this store...</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="store-reviews-section">
+        <h2>Seller Reviews</h2>
+        <div class="reviews-card">
+            <div class="rating-large">
+                <strong>5.0</strong>
+                <span>⭐⭐⭐⭐⭐</span>
+                <small>100% positive feedback</small>
+            </div>
+            <div class="reviews-list">
+                <div class="review-item">
+                    <strong>Fatou J.</strong>
+                    <p>Excellent communication and fast pickup at the store!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <p>Powered by <a href="../index.html">GamBasket</a> — The Gambia's Online Marketplace</p>
+    </div>
+</footer>
+
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>

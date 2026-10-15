@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Your Cart - GamBasket</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+    <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+</head>
+<body class="cart-page">
+    <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><symbol id="icon-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/><path d="M2.5 3.5h3l2.4 11.3a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6l1.4-7.3H7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol><symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5m6 6-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol></defs></svg>
+    <header class="desktop-app-header"><a href="index.html" class="desktop-app-brand"><span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span></a><div class="desktop-app-search"><a href="explore.html" class="desktop-search-fake-input">Search Gambian products, electronics, fashion...</a></div><nav class="desktop-app-nav"><a href="index.html" class="desktop-app-nav-link">Home</a><a href="explore.html" class="desktop-app-nav-link">Explore</a><a href="orders.html" class="desktop-app-nav-link">Orders</a><a href="wishlist.html" class="desktop-app-nav-link">Wishlist</a><a href="messages.html" class="desktop-app-nav-link">Messages</a><a href="me.html" class="desktop-app-nav-link">Me</a></nav><div class="desktop-app-actions"><button class="icon-button" id="desktopThemeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon"><use href="#icon-moon"></use></svg></button><a href="cart.html" class="icon-button active" aria-label="Cart">Cart</a></div></header>
+    <header class="mobile-header"><div class="header-top"><div class="header-back-group"><button class="icon-button" id="backButton" type="button" aria-label="Go back"><svg class="ui-icon"><use href="#icon-arrow-left"></use></svg></button><a href="index.html" class="brand">GamBasket</a></div><div class="header-actions"><button class="icon-button" id="themeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon" id="themeIcon"><use href="#icon-moon"></use></svg></button></div></div></header>
+    <main class="cart-shell">
+        <div class="cart-heading"><p class="section-eyebrow">YOUR SHOPPING BAG</p><h1>Your Cart</h1><p id="cartSubtitle">Review your items before checkout.</p></div>
+        <div id="cartLoading" class="cart-card"><div class="empty-cart">Loading your cart...</div></div>
+        <div id="cartError" class="cart-card" hidden><div class="empty-cart"><h2>We couldn't load your cart</h2><p>Check your connection and try again.</p><button id="retryCart" class="checkout-btn" type="button">Try Again</button></div></div>
+        <div id="cartEmpty" class="cart-card" hidden><div class="empty-cart"><div class="empty-cart-icon"><svg class="ui-icon"><use href="#icon-cart"></use></svg></div><h2>Your cart is empty</h2><p>Add products from GamBasket and they will appear here.</p><a href="explore.html" class="continue-btn">Continue Shopping</a></div></div>
+        <div id="cartContent" class="cart-layout" hidden><section class="cart-card"><div class="cart-card-header"><strong id="cartCount">0 items</strong><button id="clearCartBtn" class="remove-btn" type="button">Clear cart</button></div><div id="cartItems" class="cart-items"></div></section><aside class="summary-card"><h2>Order Summary</h2><div class="summary-row"><span>Subtotal</span><strong id="cartSubtotal">D 0</strong></div><div class="summary-row"><span>Delivery</span><strong>Calculated at checkout</strong></div><div class="summary-row"><span>Discount</span><strong>D 0</strong></div><div class="summary-row summary-total"><span>Total</span><strong id="cartTotal">D 0</strong></div><button id="checkoutBtn" class="checkout-btn" type="button">Proceed to Checkout</button></aside></div>
+    </main>
+    <script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/auth-errors.js"></script><script src="js/auth-guard.js"></script><script src="js/cart.js"></script>
+    <script src="js/states.js"></script>
+</body>
+</html>
+

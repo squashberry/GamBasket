@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Sell — GamBasket</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .quick-sell-page { max-width: 600px; margin: 40px auto 80px; padding: 0 20px; }
+        .quick-sell-hero { text-align: center; margin-bottom: 30px; }
+        .quick-sell-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 16px; }
+        .quick-sell-hero h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; line-height: 1.2; margin-bottom: 12px; color: var(--text); }
+        .quick-sell-hero p { color: var(--text-secondary); font-size: 15px; line-height: 1.5; }
+        .quick-sell-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+        .quick-sell-fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .quick-sell-fee { padding: 16px; border-radius: 16px; background: var(--surface-secondary); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+        .quick-sell-fee span { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+        .quick-sell-fee strong { font-size: 24px; color: var(--text); font-weight: 800; }
+        .quick-sell-fee small { font-size: 11px; color: var(--text-secondary); line-height: 1.3; }
+        #quickSellForm { display: grid; gap: 18px; }
+        #quickSellForm label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: var(--text); }
+        #quickSellForm input, #quickSellForm textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-secondary); color: var(--text); font-family: inherit; font-size: 14px; outline: none; box-sizing: border-box; }
+        #quickSellForm textarea { min-height: 100px; resize: vertical; }
+        #quickSellForm .primary-btn { padding: 14px; border-radius: 14px; background: #2563eb; color: white; border: 0; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s ease; }
+        #quickSellForm .primary-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    </style>
+    <script>
+        (() => {
+            if (localStorage.getItem("gambasket-theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+    </script>
+</head>
+<body>
+
+<header class="desktop-app-header" style="display:flex;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface);">
+    <a href="index.html" style="font-weight:800;font-size:20px;text-decoration:none;color:var(--text);">
+        Gam<span style="color:#2563eb;">Basket</span>
+    </a>
+    <div style="flex:1;"></div>
+    <a href="index.html" style="font-size:14px;color:var(--text-secondary);text-decoration:none;font-weight:600;">
+        ← Back to Marketplace
+    </a>
+</header>
+
+<main class="quick-sell-page">
+    <section class="quick-sell-hero">
+        <div class="quick-sell-badge">⚡ QUICK SELL</div>
+        <h1>Sell one item without becoming a business seller.</h1>
+        <p>Perfect for personal items such as phones, laptops, furniture, vehicles and other goods.</p>
+    </section>
+
+    <section class="quick-sell-card">
+        <div class="quick-sell-fee-grid">
+            <div class="quick-sell-fee">
+                <span>Monthly subscription</span>
+                <strong>D 0</strong>
+                <small>No business seller subscription required.</small>
+            </div>
+            <div class="quick-sell-fee">
+                <span>Marketplace fee</span>
+                <strong>7%</strong>
+                <small>Applied to a successful Quick Sell transaction.</small>
+            </div>
+        </div>
+
+        <form id="quickSellForm">
+            <label>
+                Item name
+                <input id="quickSellName" required maxlength="120" placeholder="e.g. iPhone 15 Pro">
+            </label>
+            <label>
+                Price (GMD)
+                <input id="quickSellPrice" type="number" min="1" required placeholder="D">
+            </label>
+            <label>
+                Description
+                <textarea id="quickSellDescription" maxlength="2000" required placeholder="Describe your item's condition, features, and pickup location..."></textarea>
+            </label>
+            <button type="submit" class="primary-btn">
+                Continue to Submit
+            </button>
+        </form>
+    </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/quick-sell.js"></script>
+
+</body>
+</html>

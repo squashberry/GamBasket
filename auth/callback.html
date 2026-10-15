@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Connecting Account — GamBasket</title>
+
+    <!-- Root-relative favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="../css/auth.css">
+
+    <script>
+        (() => {
+            try {
+                const savedTheme = localStorage.getItem("gambasket-theme");
+
+                if (savedTheme === "dark") {
+                    document.documentElement.classList.add("dark");
+                }
+            } catch (error) {
+                // Theme preference is optional.
+            }
+        })();
+    </script>
+
+    <style>
+        .callback-card {
+            background: var(--surface, #ffffff);
+            border: 1px solid var(--border, #e2e8f0);
+            border-radius: var(--radius, 24px);
+            padding: 40px 32px;
+            max-width: 440px;
+            width: 100%;
+            margin: 40px auto;
+            text-align: center;
+            box-shadow: var(
+                --shadow,
+                0 25px 70px rgba(15, 23, 42, 0.1)
+            );
+        }
+
+        .spinner-large {
+            width: 48px;
+            height: 48px;
+            border: 3.5px solid rgba(37, 99, 235, 0.15);
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: cbSpin 0.8s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes cbSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: #dc2626;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="auth-page">
+
+    <header class="auth-topbar">
+        <a href="../index.html" class="auth-logo">
+            GamB<span>👜</span>sket
+        </a>
+    </header>
+
+    <main class="auth-main">
+        <div class="auth-container">
+
+            <div class="callback-card" id="callbackCard">
+
+                <!-- LOADING STATE -->
+                <div id="loadingState">
+
+                    <div class="spinner-large"></div>
+
+                    <h2
+                        style="
+                            font-size: 20px;
+                            font-weight: 700;
+                            margin: 0 0 8px;
+                            color: var(--text, #111827);
+                        "
+                    >
+                        Signing you in...
+                    </h2>
+
+                    <p
+                        style="
+                            font-size: 14px;
+                            color: var(--text-secondary, #64748b);
+                            margin: 0;
+                        "
+                    >
+                        Securing your GamBasket session with Google.
+                    </p>
+
+                </div>
+
+
+                <!-- ERROR STATE -->
+                <div id="errorState" style="display: none;">
+
+                    <div class="error-icon">
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            width="28"
+                            height="28"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+
+                    </div>
+
+                    <h2
+                        style="
+                            font-size: 20px;
+                            font-weight: 700;
+                            margin: 0 0 8px;
+                            color: var(--text, #111827);
+                        "
+                    >
+                        Sign-in Unsuccessful
+                    </h2>
+
+                    <p
+                        id="errorMessage"
+                        style="
+                            font-size: 14px;
+                            color: var(--text-secondary, #64748b);
+                            margin: 0 0 24px;
+                            line-height: 1.5;
+                        "
+                    >
+                        We couldn't complete your Google sign-in. Please try again.
+                    </p>
+
+                    <a
+                        href="../login.html"
+                        class="primary-btn"
+                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-decoration: none;
+                            padding: 12px 24px;
+                            border-radius: 12px;
+                            font-size: 14px;
+                        "
+                    >
+                        Return to Log In
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+
+<!-- SCRIPTS -->
+
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth-errors.js"></script>
+<script src="../js/auth-guard.js"></script>
+
+
+<script>
+(async function () {
+
+    "use strict";
+
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const errorMessage = document.getElementById("errorMessage");
+
+
+    /*
+     * ---------------------------------------------------------
+     * ERROR HANDLER
+     * ---------------------------------------------------------
+     */
+
+    function showError(rawError) {
+
+        if (loadingState) {
+            loadingState.style.display = "none";
+        }
+
+        if (errorState) {
+            errorState.style.display = "block";
+        }
+
+        let friendlyMessage =
+            "Unable to complete Google sign-in. Please try again.";
+
+        try {
+
+            if (window.getAuthErrorMessage) {
+
+                friendlyMessage =
+                    window.getAuthErrorMessage(rawError);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "[GamBasket Callback] Error translating auth error:",
+                error
+            );
+
+        }
+
+        if (errorMessage) {
+            errorMessage.textContent = friendlyMessage;
+        }
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * SAFE REDIRECT RESOLVER
+     * ---------------------------------------------------------
+     *
+     * Converts:
+     *
+     * orders.html
+     *
+     * into:
+     *
+     * /orders.html
+     *
+     * instead of:
+     *
+     * /auth/orders.html
+     *
+     * Also blocks external redirect attacks.
+     */
+
+    function getSafeRedirect(rawRedirect) {
+
+        const DEFAULT_REDIRECT = "/explore.html";
+
+        if (!rawRedirect) {
+            return DEFAULT_REDIRECT;
+        }
+
+        let destination = String(rawRedirect).trim();
+
+        if (!destination) {
+            return DEFAULT_REDIRECT;
+        }
+
+
+        /*
+         * Decode the value safely.
+         */
+
+        try {
+
+            destination = decodeURIComponent(destination);
+
+        } catch (error) {
+
+            return DEFAULT_REDIRECT;
+
+        }
+
+
+        destination = destination.trim();
+
+
+        /*
+         * Remove accidental backslashes.
+         *
+         * This prevents things like:
+         *
+         * \\evil.com
+         */
+
+        destination = destination.replace(/\\/g, "/");
+
+
+        /*
+         * Block protocol-relative URLs:
+         *
+         * //evil.com
+         */
+
+        if (destination.startsWith("//")) {
+            return DEFAULT_REDIRECT;
+        }
+
+
+        /*
+         * Block javascript:, data:, vbscript:
+         * and similar dangerous protocols.
+         */
+
+        const lowerDestination =
+            destination.toLowerCase();
+
+        if (
+            lowerDestination.startsWith("javascript:") ||
+            lowerDestination.startsWith("data:") ||
+            lowerDestination.startsWith("vbscript:")
+        ) {
+            return DEFAULT_REDIRECT;
+        }
+
+
+        /*
+         * If an absolute URL was supplied, only allow
+         * the current GamBasket origin.
+         */
+
+        try {
+
+            if (
+                destination.startsWith("http://") ||
+                destination.startsWith("https://")
+            ) {
+
+                const absoluteUrl =
+                    new URL(destination);
+
+                if (
+                    absoluteUrl.origin !==
+                    window.location.origin
+                ) {
+                    return DEFAULT_REDIRECT;
+                }
+
+                destination =
+                    absoluteUrl.pathname +
+                    absoluteUrl.search +
+                    absoluteUrl.hash;
+            }
+
+        } catch (error) {
+
+            return DEFAULT_REDIRECT;
+
+        }
+
+
+        /*
+         * Convert relative paths into root-relative paths.
+         *
+         * orders.html
+         * becomes
+         * /orders.html
+         */
+
+        if (!destination.startsWith("/")) {
+            destination = "/" + destination;
+        }
+
+
+        /*
+         * Never allow /auth/... to be accidentally generated
+         * for normal marketplace pages.
+         *
+         * The callback itself lives inside /auth/.
+         */
+
+        if (destination.startsWith("/auth/")) {
+
+            const authDestination =
+                destination.substring("/auth/".length);
+
+            const allowedAuthPages = [
+                "callback.html"
+            ];
+
+            if (!allowedAuthPages.includes(authDestination)) {
+                return DEFAULT_REDIRECT;
+            }
+
+        }
+
+
+        /*
+         * Final same-origin verification.
+         */
+
+        try {
+
+            const finalUrl =
+                new URL(
+                    destination,
+                    window.location.origin
+                );
+
+            if (
+                finalUrl.origin !==
+                window.location.origin
+            ) {
+                return DEFAULT_REDIRECT;
+            }
+
+            return (
+                finalUrl.pathname +
+                finalUrl.search +
+                finalUrl.hash
+            );
+
+        } catch (error) {
+
+            return DEFAULT_REDIRECT;
+
+        }
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * 1. CHECK FOR OAUTH ERRORS
+     * ---------------------------------------------------------
+     */
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const hashParams =
+        new URLSearchParams(
+            window.location.hash.replace(/^#/, "")
+        );
+
+
+    const queryError =
+        urlParams.get("error") ||
+        urlParams.get("error_description") ||
+        hashParams.get("error") ||
+        hashParams.get("error_description");
+
+
+    if (queryError) {
+
+        showError(queryError);
+
+        return;
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * 2. DETERMINE SAFE DESTINATION
+     * ---------------------------------------------------------
+     */
+
+    const rawRedirect =
+        urlParams.get("redirect") ||
+        hashParams.get("redirect") ||
+        "explore.html";
+
+
+    const safeRedirect =
+        getSafeRedirect(rawRedirect);
+
+
+    /*
+     * ---------------------------------------------------------
+     * 3. WAIT FOR SUPABASE SESSION VIA CENTRAL READY PROMISE
+     * ---------------------------------------------------------
+     */
+
+    let session = null;
+
+    try {
+        if (window.GamBasketAuth && typeof window.GamBasketAuth.ready === "function") {
+            const readyResult = await window.GamBasketAuth.ready();
+            session = readyResult.session || (await window.GamBasketAuth.getSession());
+        }
+    } catch (error) {
+        console.error("[GamBasket Callback] Session retrieval error:", error);
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * 4. FALLBACK USER CHECK
+     * ---------------------------------------------------------
+     */
+
+    if (!session) {
+
+        try {
+
+            if (
+                window.GamBasketAuth &&
+                typeof window.GamBasketAuth.getUser === "function"
+            ) {
+
+                const user =
+                    await window.GamBasketAuth.getUser();
+
+                if (user) {
+
+                    session = {
+                        user: user
+                    };
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "[GamBasket Callback] User fallback failed:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * 5. AUTHENTICATION FAILED
+     * ---------------------------------------------------------
+     */
+
+    if (
+        !session ||
+        !session.user
+    ) {
+
+        showError(
+            "Google sign-in timed out. Please try logging in again."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * 6. ENSURE PROFILE + BUYER ROLE
+     * ---------------------------------------------------------
+     */
+
+    try {
+
+        if (
+            window.GamBasketAuth &&
+            typeof window.GamBasketAuth.ensureProfileAndRoles === "function"
+        ) {
+
+            await window.GamBasketAuth
+                .ensureProfileAndRoles(
+                    session.user
+                );
+
+        }
+
+    } catch (error) {
+
+        /*
+         * Do not prevent login simply because profile
+         * synchronization had a non-critical issue.
+         */
+
+        console.warn(
+            "[GamBasket Callback] Profile sync notice:",
+            error
+        );
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * 7. CLEAN REDIRECT
+     * ---------------------------------------------------------
+     *
+     * Example:
+     *
+     * redirect=orders.html
+     *
+     * becomes:
+     *
+     * /orders.html
+     *
+     * NOT:
+     *
+     * /auth/orders.html
+     */
+
+    window.location.replace(
+        safeRedirect
+    );
+
+})();
+</script>
+
+    <script src="../js/states.js"></script>
+</body>
+</html>

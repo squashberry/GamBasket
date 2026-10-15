@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
+    <title>Affiliate Center — GamBasket</title>
+
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/affiliate.css">
+
+    <script>
+        (() => {
+            try {
+                if (localStorage.getItem("gambasket-theme") === "dark") {
+                    document.documentElement.classList.add("dark");
+                }
+            } catch (_) {}
+        })();
+    </script>
+</head>
+
+<body class="affiliate-page">
+
+<!-- ============================================================
+     ICON SPRITE
+============================================================ -->
+<svg
+    width="0"
+    height="0"
+    style="position:absolute;display:none"
+    aria-hidden="true"
+>
+    <defs>
+
+        <symbol id="aff-overview" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+        </symbol>
+
+        <symbol id="aff-product" viewBox="0 0 24 24">
+            <path
+                d="M4 8.5 12 4l8 4.5v8L12 21l-8-4.5v-8Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linejoin="round"
+            />
+            <path
+                d="m4.4 8.7 7.6 4.2 7.6-4.2M12 12.9V21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+        </symbol>
+
+        <symbol id="aff-link" viewBox="0 0 24 24">
+            <path
+                d="M10.5 13.5a4 4 0 0 0 5.66 0l2.12-2.12a4 4 0 1 0-5.66-5.66l-1.2 1.2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+            />
+            <path
+                d="M13.5 10.5a4 4 0 0 0-5.66 0l-2.12 2.12a4 4 0 1 0 5.66 5.66l1.2-1.2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+            />
+        </symbol>
+
+        <symbol id="aff-clicks" viewBox="0 0 24 24">
+            <path
+                d="m5 3 14 8-7 2 4 7-2.7 1.4-4-7-4.2 5.8V3Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linejoin="round"
+            />
+        </symbol>
+
+        <symbol id="aff-chart" viewBox="0 0 24 24">
+            <path
+                d="M4 19V5M4 19h16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+            />
+            <path
+                d="m7 15 3-4 3 2 4-6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </symbol>
+
+        <symbol id="aff-wallet" viewBox="0 0 24 24">
+            <path
+                d="M4 6a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V6Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+            <path
+                d="M4 7h15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+            <path
+                d="M15 12h3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+            />
+        </symbol>
+
+        <symbol id="aff-settings" viewBox="0 0 24 24">
+            <circle
+                cx="12"
+                cy="12"
+                r="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+            <path
+                d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7.1 4l.1.1a1.7 1.7 0 0 0 1.8.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8 1.7 1.7 0 0 0 1.5 1h.2a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+            />
+        </symbol>
+
+        <symbol id="aff-copy" viewBox="0 0 24 24">
+            <rect
+                x="8"
+                y="8"
+                width="11"
+                height="12"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+            <path
+                d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+        </symbol>
+
+        <symbol id="aff-share" viewBox="0 0 24 24">
+            <circle cx="18" cy="5" r="2.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <circle cx="6" cy="12" r="2.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <circle cx="18" cy="19" r="2.5"
+                fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <path
+                d="m8.3 10.8 7.3-4.3M8.3 13.2l7.3 4.3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+            />
+        </symbol>
+
+        <symbol id="aff-arrow" viewBox="0 0 24 24">
+            <path
+                d="m9 6 6 6-6 6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </symbol>
+
+        <symbol id="aff-bell" viewBox="0 0 24 24">
+            <path
+                d="M18 9.5C18 6.4 16 4 12 4S6 6.4 6 9.5C6 14 4 16 4 17.5h16C20 16 18 14 18 9.5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+            <path
+                d="M10 20c.5.7 1.2 1 2 1s1.5-.3 2-1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+            />
+        </symbol>
+
+        <symbol id="aff-search" viewBox="0 0 24 24">
+            <circle
+                cx="10.5"
+                cy="10.5"
+                r="6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+            />
+            <path
+                d="m15.5 15.5 5 5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+            />
+        </symbol>
+
+    </defs>
+</svg>
+
+
+<!-- ============================================================
+     LOADING EXPERIENCE
+============================================================ -->
+
+<div id="affiliateLoader" class="affiliate-loader">
+
+    <div class="affiliate-loader-orbit">
+        <span></span>
+        <span></span>
+        <span></span>
+
+        <div class="affiliate-loader-core">
+            GB
+        </div>
+    </div>
+
+    <div class="affiliate-loader-title">
+        Opening Affiliate Center
+    </div>
+
+    <div
+        id="affiliateLoaderText"
+        class="affiliate-loader-text"
+    >
+        Verifying your affiliate account
+    </div>
+
+    <div class="affiliate-loader-bar">
+        <span id="affiliateLoaderProgress"></span>
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     APPLICATION
+============================================================ -->
+
+<div id="affiliateApp" hidden>
+
+    <!-- DESKTOP SIDEBAR -->
+
+    <aside class="affiliate-sidebar">
+
+        <a
+            class="affiliate-brand"
+            href="../index.html"
+        >
+            <span class="affiliate-brand-mark">GB</span>
+
+            <span>
+                <strong>GamBasket</strong>
+                <small>Affiliate Center</small>
+            </span>
+        </a>
+
+
+        <div class="affiliate-profile-mini">
+
+            <div
+                id="affiliateMiniAvatar"
+                class="affiliate-mini-avatar"
+            >
+                A
+            </div>
+
+            <div>
+                <strong id="affiliateMiniName">
+                    Affiliate
+                </strong>
+
+                <small>
+                    Creator account
+                </small>
+            </div>
+
+        </div>
+
+
+        <nav class="affiliate-nav">
+
+            <span class="affiliate-nav-label">
+                PERFORMANCE
+            </span>
+
+            <button
+                class="affiliate-nav-item active"
+                data-tab="overview"
+                type="button"
+            >
+                <svg><use href="#aff-overview"></use></svg>
+                <span>Overview</span>
+            </button>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="analytics"
+                type="button"
+            >
+                <svg><use href="#aff-chart"></use></svg>
+                <span>Analytics</span>
+            </button>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="clicks"
+                type="button"
+            >
+                <svg><use href="#aff-clicks"></use></svg>
+                <span>Traffic</span>
+            </button>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="conversions"
+                type="button"
+            >
+                <svg><use href="#aff-product"></use></svg>
+                <span>Conversions</span>
+            </button>
+
+
+            <span class="affiliate-nav-label">
+                PROMOTION
+            </span>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="products"
+                type="button"
+            >
+                <svg><use href="#aff-product"></use></svg>
+                <span>Promote Products</span>
+            </button>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="links"
+                type="button"
+            >
+                <svg><use href="#aff-link"></use></svg>
+                <span>My Links</span>
+            </button>
+
+
+            <span class="affiliate-nav-label">
+                MONEY
+            </span>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="commissions"
+                type="button"
+            >
+                <svg><use href="#aff-wallet"></use></svg>
+                <span>Commissions</span>
+            </button>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="payouts"
+                type="button"
+            >
+                <svg><use href="#aff-wallet"></use></svg>
+                <span>Payouts</span>
+            </button>
+
+
+            <span class="affiliate-nav-label">
+                ACCOUNT
+            </span>
+
+            <button
+                class="affiliate-nav-item"
+                data-tab="settings"
+                type="button"
+            >
+                <svg><use href="#aff-settings"></use></svg>
+                <span>Affiliate Settings</span>
+            </button>
+
+        </nav>
+
+
+        <div class="affiliate-sidebar-footer">
+
+            <a href="../me.html">
+                Back to GamBasket
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MOBILE HEADER -->
+
+    <header class="affiliate-mobile-header">
+
+        <button
+            id="affiliateMenuToggle"
+            type="button"
+            class="affiliate-mobile-menu"
+            aria-label="Open menu"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div>
+            <strong>GamBasket</strong>
+            <small>Affiliate Center</small>
+        </div>
+
+        <button
+            id="affiliateMobileTheme"
+            type="button"
+            class="affiliate-mobile-action"
+        >
+            Theme
+        </button>
+
+    </header>
+
+
+    <div
+        id="affiliateMobileBackdrop"
+        class="affiliate-mobile-backdrop"
+        hidden
+    ></div>
+
+
+    <!-- MAIN -->
+
+    <main class="affiliate-main">
+
+        <header class="affiliate-topbar">
+
+            <div>
+
+                <span class="affiliate-breadcrumb">
+                    GamBasket / Affiliate
+                </span>
+
+                <h1 id="affiliatePageTitle">
+                    Overview
+                </h1>
+
+            </div>
+
+
+            <div class="affiliate-top-actions">
+
+                <button
+                    id="affiliateSearchButton"
+                    class="affiliate-search-button"
+                    type="button"
+                >
+                    <svg>
+                        <use href="#aff-search"></use>
+                    </svg>
+
+                    <span>
+                        Find products to promote
+                    </span>
+
+                    <kbd>/</kbd>
+                </button>
+
+
+                <button
+                    id="affiliateThemeButton"
+                    class="affiliate-top-icon"
+                    type="button"
+                    aria-label="Toggle theme"
+                >
+                    Theme
+                </button>
+
+
+                <button
+                    id="affiliateNotificationButton"
+                    class="affiliate-top-icon"
+                    type="button"
+                    aria-label="Notifications"
+                >
+                    <svg>
+                        <use href="#aff-bell"></use>
+                    </svg>
+                    <span></span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ====================================================
+             OVERVIEW
+        ===================================================== -->
+
+        <section
+            class="affiliate-section active"
+            data-section="overview"
+        >
+
+            <div class="affiliate-hero">
+
+                <div class="affiliate-hero-copy">
+
+                    <span class="affiliate-eyebrow">
+                        AFFILIATE PERFORMANCE
+                    </span>
+
+                    <h2>
+                        Turn attention into income.
+                    </h2>
+
+                    <p>
+                        Promote products from GamBasket,
+                        share your links anywhere, and earn
+                        when your referrals convert.
+                    </p>
+
+                    <div class="affiliate-hero-actions">
+
+                        <button
+                            class="affiliate-primary-button"
+                            data-open-tab="products"
+                            type="button"
+                        >
+                            Find products
+                            <svg>
+                                <use href="#aff-arrow"></use>
+                            </svg>
+                        </button>
+
+                        <button
+                            class="affiliate-ghost-button"
+                            data-open-tab="links"
+                            type="button"
+                        >
+                            View my links
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="affiliate-hero-visual">
+
+                    <div class="affiliate-orbit orbit-one"></div>
+                    <div class="affiliate-orbit orbit-two"></div>
+                    <div class="affiliate-orbit orbit-three"></div>
+
+                    <div class="affiliate-hero-token">
+                        <span>GB</span>
+                    </div>
+
+                    <div class="affiliate-floating-card one">
+                        <small>Today</small>
+                        <strong id="heroTodayCommission">
+                            D 0
+                        </strong>
+                    </div>
+
+                    <div class="affiliate-floating-card two">
+                        <small>Conversion</small>
+                        <strong id="heroConversionRate">
+                            0%
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="affiliate-stats-grid">
+
+                <article class="affiliate-stat-card blue">
+                    <div class="affiliate-stat-top">
+                        <span>Clicks</span>
+                        <svg>
+                            <use href="#aff-clicks"></use>
+                        </svg>
+                    </div>
+
+                    <strong
+                        id="overviewClicks"
+                        data-count="0"
+                    >
+                        0
+                    </strong>
+
+                    <small>
+                        Total tracked traffic
+                    </small>
+                </article>
+
+
+                <article class="affiliate-stat-card purple">
+                    <div class="affiliate-stat-top">
+                        <span>Conversions</span>
+                        <svg>
+                            <use href="#aff-product"></use>
+                        </svg>
+                    </div>
+
+                    <strong
+                        id="overviewConversions"
+                        data-count="0"
+                    >
+                        0
+                    </strong>
+
+                    <small>
+                        Referred orders
+                    </small>
+                </article>
+
+
+                <article class="affiliate-stat-card green">
+                    <div class="affiliate-stat-top">
+                        <span>Generated Sales</span>
+                        <svg>
+                            <use href="#aff-chart"></use>
+                        </svg>
+                    </div>
+
+                    <strong id="overviewSales">
+                        D 0
+                    </strong>
+
+                    <small>
+                        Customer spend attributed
+                    </small>
+                </article>
+
+
+                <article class="affiliate-stat-card gold">
+                    <div class="affiliate-stat-top">
+                        <span>Commission</span>
+                        <svg>
+                            <use href="#aff-wallet"></use>
+                        </svg>
+                    </div>
+
+                    <strong id="overviewCommission">
+                        D 0
+                    </strong>
+
+                    <small>
+                        Total commission generated
+                    </small>
+                </article>
+
+            </div>
+
+
+            <div class="affiliate-overview-grid">
+
+                <section class="affiliate-card affiliate-large-card">
+
+                    <header class="affiliate-card-header">
+
+                        <div>
+                            <span>
+                                PERFORMANCE
+                            </span>
+
+                            <h3>
+                                Earnings trajectory
+                            </h3>
+                        </div>
+
+                        <select id="affiliateRange">
+                            <option value="7">7 days</option>
+                            <option value="30">30 days</option>
+                            <option value="90">90 days</option>
+                        </select>
+
+                    </header>
+
+                    <div
+                        id="affiliateMainChart"
+                        class="affiliate-main-chart"
+                    ></div>
+
+                </section>
+
+
+                <section class="affiliate-card">
+
+                    <header class="affiliate-card-header">
+
+                        <div>
+                            <span>
+                                YOUR LINK
+                            </span>
+
+                            <h3>
+                                Affiliate identity
+                            </h3>
+                        </div>
+
+                    </header>
+
+                    <div class="affiliate-id-card">
+
+                        <div>
+                            <small>
+                                Affiliate code
+                            </small>
+
+                            <strong
+                                id="overviewAffiliateCode"
+                            >
+                                Loading...
+                            </strong>
+                        </div>
+
+                        <button
+                            id="copyMainCode"
+                            type="button"
+                        >
+                            <svg>
+                                <use href="#aff-copy"></use>
+                            </svg>
+                        </button>
+
+                    </div>
+
+
+                    <div class="affiliate-mini-metrics">
+
+                        <div>
+                            <span>
+                                Pending
+                            </span>
+
+                            <strong id="overviewPending">
+                                D 0
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>
+                                Paid
+                            </span>
+
+                            <strong id="overviewPaid">
+                                D 0
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <section class="affiliate-card affiliate-recent-card">
+
+                <header class="affiliate-card-header">
+
+                    <div>
+                        <span>
+                            RECENT
+                        </span>
+
+                        <h3>
+                            Recent commissions
+                        </h3>
+                    </div>
+
+                    <button
+                        class="affiliate-link-button"
+                        data-open-tab="commissions"
+                        type="button"
+                    >
+                        View all
+                    </button>
+
+                </header>
+
+                <div id="overviewRecentCommissions"></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             ANALYTICS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="analytics"
+        >
+
+            <div class="affiliate-section-heading">
+
+                <div>
+                    <span>ANALYTICS</span>
+                    <h2>Performance intelligence</h2>
+                    <p>
+                        Understand how your affiliate traffic
+                        is converting.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="affiliate-stats-grid">
+
+                <article class="affiliate-stat-card blue">
+                    <span>Conversion rate</span>
+                    <strong id="analyticsConversionRate">0%</strong>
+                </article>
+
+                <article class="affiliate-stat-card purple">
+                    <span>Average order</span>
+                    <strong id="analyticsAverageOrder">D 0</strong>
+                </article>
+
+                <article class="affiliate-stat-card green">
+                    <span>Average commission</span>
+                    <strong id="analyticsAverageCommission">D 0</strong>
+                </article>
+
+                <article class="affiliate-stat-card gold">
+                    <span>Top product</span>
+                    <strong id="analyticsTopProduct">—</strong>
+                </article>
+
+            </div>
+
+
+            <section class="affiliate-card">
+
+                <header class="affiliate-card-header">
+
+                    <div>
+                        <span>
+                            TRAFFIC
+                        </span>
+
+                        <h3>
+                            Referral activity
+                        </h3>
+                    </div>
+
+                </header>
+
+                <div id="affiliateAnalyticsChart" class="affiliate-main-chart"></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             CLICKS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="clicks"
+        >
+
+            <div class="affiliate-section-heading">
+                <div>
+                    <span>TRAFFIC</span>
+                    <h2>Referral traffic</h2>
+                    <p>
+                        Track the people discovering GamBasket
+                        through your links.
+                    </p>
+                </div>
+            </div>
+
+            <section class="affiliate-card">
+
+                <div
+                    id="affiliateClicksList"
+                    class="affiliate-record-list"
+                ></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             CONVERSIONS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="conversions"
+        >
+
+            <div class="affiliate-section-heading">
+                <div>
+                    <span>SALES</span>
+                    <h2>Conversions</h2>
+                    <p>
+                        Orders generated through your affiliate links.
+                    </p>
+                </div>
+            </div>
+
+            <section class="affiliate-card">
+
+                <div class="affiliate-filter-bar">
+
+                    <input
+                        id="conversionSearch"
+                        type="search"
+                        placeholder="Search order..."
+                    >
+
+                    <select id="conversionStatusFilter">
+                        <option value="all">All statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="paid">Paid</option>
+                    </select>
+
+                </div>
+
+                <div class="affiliate-table-wrap">
+
+                    <table class="affiliate-table">
+
+                        <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Product</th>
+                            <th>Sale</th>
+                            <th>Commission</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="affiliateConversionsTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             PRODUCTS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="products"
+        >
+
+            <div class="affiliate-section-heading">
+
+                <div>
+                    <span>DISCOVER</span>
+                    <h2>Products to promote</h2>
+                    <p>
+                        Find products with attractive commission
+                        opportunities.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <section class="affiliate-card">
+
+                <div class="affiliate-product-toolbar">
+
+                    <div class="affiliate-product-search">
+
+                        <svg>
+                            <use href="#aff-search"></use>
+                        </svg>
+
+                        <input
+                            id="affiliateProductSearch"
+                            type="search"
+                            placeholder="Search products..."
+                        >
+
+                    </div>
+
+                    <select id="affiliateCategoryFilter">
+                        <option value="all">All categories</option>
+                    </select>
+
+                </div>
+
+
+                <div
+                    id="affiliateProductsGrid"
+                    class="affiliate-products-grid"
+                ></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             LINKS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="links"
+        >
+
+            <div class="affiliate-section-heading">
+                <div>
+                    <span>YOUR CAMPAIGNS</span>
+                    <h2>My referral links</h2>
+                    <p>
+                        Manage and share your generated links.
+                    </p>
+                </div>
+            </div>
+
+
+            <section class="affiliate-card">
+
+                <div
+                    id="affiliateLinksGrid"
+                    class="affiliate-links-grid"
+                ></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             COMMISSIONS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="commissions"
+        >
+
+            <div class="affiliate-section-heading">
+                <div>
+                    <span>REVENUE</span>
+                    <h2>Commission center</h2>
+                    <p>
+                        See every commission generated by your activity.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="affiliate-stats-grid">
+
+                <article class="affiliate-stat-card green">
+                    <span>Total</span>
+                    <strong id="commissionTotal">
+                        D 0
+                    </strong>
+                </article>
+
+                <article class="affiliate-stat-card gold">
+                    <span>Pending</span>
+                    <strong id="commissionPending">
+                        D 0
+                    </strong>
+                </article>
+
+                <article class="affiliate-stat-card blue">
+                    <span>Approved</span>
+                    <strong id="commissionApproved">
+                        D 0
+                    </strong>
+                </article>
+
+                <article class="affiliate-stat-card purple">
+                    <span>Paid</span>
+                    <strong id="commissionPaid">
+                        D 0
+                    </strong>
+                </article>
+
+            </div>
+
+
+            <section class="affiliate-card">
+
+                <div class="affiliate-table-wrap">
+
+                    <table class="affiliate-table">
+
+                        <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Sale value</th>
+                            <th>Rate</th>
+                            <th>Commission</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="affiliateCommissionTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             PAYOUTS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="payouts"
+        >
+
+            <div class="affiliate-section-heading">
+                <div>
+                    <span>SETTLEMENT</span>
+                    <h2>Payouts</h2>
+                    <p>
+                        Track your affiliate earnings and
+                        payout requests.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="affiliate-payout-hero">
+
+                <div>
+
+                    <span>
+                        AVAILABLE FOR PAYOUT
+                    </span>
+
+                    <strong id="payoutAvailable">
+                        D 0
+                    </strong>
+
+                    <p>
+                        Your current approved affiliate balance.
+                    </p>
+
+                </div>
+
+                <button
+                    id="requestPayoutButton"
+                    class="affiliate-primary-button"
+                    type="button"
+                >
+                    Request payout
+                </button>
+
+            </div>
+
+
+            <section class="affiliate-card">
+
+                <header class="affiliate-card-header">
+
+                    <div>
+                        <span>PAYOUT HISTORY</span>
+                        <h3>Previous requests</h3>
+                    </div>
+
+                </header>
+
+                <div
+                    id="affiliatePayoutHistory"
+                    class="affiliate-record-list"
+                ></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- ====================================================
+             SETTINGS
+        ===================================================== -->
+
+        <section
+            class="affiliate-section"
+            data-section="settings"
+        >
+
+            <div class="affiliate-section-heading">
+                <div>
+                    <span>ACCOUNT</span>
+                    <h2>Affiliate settings</h2>
+                    <p>
+                        Control how your affiliate profile appears.
+                    </p>
+                </div>
+            </div>
+
+
+            <section class="affiliate-card">
+
+                <div class="affiliate-settings-identity">
+
+                    <div
+                        id="affiliateSettingsAvatar"
+                        class="affiliate-settings-avatar"
+                    >
+                        A
+                    </div>
+
+                    <div>
+
+                        <strong
+                            id="affiliateSettingsName"
+                        >
+                            Affiliate
+                        </strong>
+
+                        <span
+                            id="affiliateSettingsEmail"
+                        >
+                            Loading...
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="affiliate-settings-form">
+
+                    <label>
+                        <span>Display name</span>
+
+                        <input
+                            id="affiliateDisplayName"
+                            type="text"
+                            maxlength="120"
+                            placeholder="Your affiliate name"
+                        >
+                    </label>
+
+                    <label>
+                        <span>Affiliate code</span>
+
+                        <input
+                            id="affiliateCodeReadonly"
+                            type="text"
+                            disabled
+                        >
+                    </label>
+
+                </div>
+
+
+                <div class="affiliate-settings-actions">
+
+                    <button
+                        id="saveAffiliateSettings"
+                        class="affiliate-primary-button"
+                        type="button"
+                    >
+                        Save changes
+                    </button>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         MOBILE BOTTOM NAV
+    ========================================================== -->
+
+    <nav class="affiliate-bottom-nav">
+
+        <button
+            class="active"
+            data-tab="overview"
+            type="button"
+        >
+            <svg><use href="#aff-overview"></use></svg>
+            <span>Overview</span>
+        </button>
+
+        <button
+            data-tab="products"
+            type="button"
+        >
+            <svg><use href="#aff-product"></use></svg>
+            <span>Promote</span>
+        </button>
+
+        <button
+            data-tab="links"
+            type="button"
+        >
+            <svg><use href="#aff-link"></use></svg>
+            <span>Links</span>
+        </button>
+
+        <button
+            data-tab="commissions"
+            type="button"
+        >
+            <svg><use href="#aff-wallet"></use></svg>
+            <span>Earnings</span>
+        </button>
+
+        <button
+            data-tab="settings"
+            type="button"
+        >
+            <svg><use href="#aff-settings"></use></svg>
+            <span>Settings</span>
+        </button>
+
+    </nav>
+
+
+    <!-- =========================================================
+         PRODUCT SHARE MODAL
+    ========================================================== -->
+
+    <div
+        id="affiliateShareModal"
+        class="affiliate-modal"
+        hidden
+    >
+
+        <div class="affiliate-modal-panel">
+
+            <button
+                id="closeAffiliateShare"
+                class="affiliate-modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+            <span class="affiliate-eyebrow">
+                PROMOTE PRODUCT
+            </span>
+
+            <h2 id="shareProductTitle">
+                Product
+            </h2>
+
+            <p>
+                Create a personalized referral link and
+                share it anywhere.
+            </p>
+
+            <div class="affiliate-generated-link">
+
+                <input
+                    id="generatedAffiliateLink"
+                    readonly
+                >
+
+                <button
+                    id="copyGeneratedLink"
+                    type="button"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+            <div class="affiliate-share-actions">
+
+                <button
+                    id="nativeShareAffiliate"
+                    type="button"
+                >
+                    <svg>
+                        <use href="#aff-share"></use>
+                    </svg>
+                    Share
+                </button>
+
+                <a
+                    id="viewAffiliateProduct"
+                    href="#"
+                    target="_blank"
+                >
+                    View product
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         SEARCH MODAL
+    ========================================================== -->
+
+    <div
+        id="affiliateSearchModal"
+        class="affiliate-modal"
+        hidden
+    >
+
+        <div class="affiliate-modal-panel search">
+
+            <button
+                id="closeAffiliateSearch"
+                class="affiliate-modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+            <span class="affiliate-eyebrow">
+                DISCOVER PRODUCTS
+            </span>
+
+            <h2>
+                Find something to promote
+            </h2>
+
+            <div class="affiliate-generated-link">
+
+                <input
+                    id="affiliateGlobalSearchInput"
+                    placeholder="Search products..."
+                >
+
+            </div>
+
+            <div
+                id="affiliateSearchResults"
+                class="affiliate-search-results"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TOAST
+    ========================================================== -->
+
+    <div
+        id="affiliateToast"
+        class="affiliate-toast"
+        hidden
+    >
+        <strong id="affiliateToastTitle">
+            Done
+        </strong>
+
+        <span id="affiliateToastMessage">
+            Your action was completed.
+        </span>
+    </div>
+
+</div>
+
+
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth-errors.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/affiliate.js"></script>
+<script src="../js/affiliate-page.js"></script>
+
+</body>
+</html>

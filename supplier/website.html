@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Business Website - GamBasket</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/seller.css">
+    <link rel="stylesheet" href="../css/seller-website.css">
+    <script>
+        (() => {
+            try {
+                if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");
+            } catch (_) {}
+        })();
+    </script>
+</head>
+
+<body class="seller-page website-builder-page">
+
+<header class="desktop-app-header">
+    <a href="../index.html" class="desktop-app-brand">
+        <span>GamB</span>
+        <svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span>sket</span>
+    </a>
+    <div class="website-header-space"></div>
+    <div class="desktop-app-actions">
+        <button
+            class="icon-button"
+            id="desktopThemeToggle"
+            type="button"
+            aria-label="Toggle dark mode"
+            title="Toggle theme"
+        >
+            <svg
+                class="ui-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+            >
+                <path
+                    d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                />
+            </svg>
+        </button>
+        <a href="index.html" class="seller-button seller-button-secondary">Back to Seller Center</a>
+    </div>
+</header>
+
+<div class="seller-shell">
+    <aside class="seller-sidebar">
+        <div class="seller-brand">
+            <strong>GamBasket Seller</strong>
+            <span>Business Workspace</span>
+        </div>
+        <nav class="seller-nav">
+            <a href="index.html" class="seller-nav-link">Overview</a>
+            <a href="products.html" class="seller-nav-link">Products</a>
+            <a href="add-product.html" class="seller-nav-link">Add Product</a>
+            <a href="orders.html" class="seller-nav-link">Orders</a>
+            <a href="customers.html" class="seller-nav-link">Customers</a>
+            <a href="messages.html" class="seller-nav-link">Messages</a>
+            <a href="earnings.html" class="seller-nav-link">Earnings</a>
+            <a href="store.html" class="seller-nav-link">Storefront</a>
+            <a href="website.html" class="seller-nav-link active">Business Website</a>
+            <a href="settings.html" class="seller-nav-link">Settings</a>
+        </nav>
+        <div class="seller-sidebar-bottom">
+            <a href="../index.html" class="seller-switch-button" style="text-decoration:none;display:block;text-align:center;">← Switch to Buyer</a>
+        </div>
+    </aside>
+
+    <main class="seller-main website-builder-main">
+        <div class="website-builder">
+            <header class="website-builder-header">
+                <div>
+                    <span class="builder-eyebrow">BUSINESS WEBSITE</span>
+                    <h1>Build your own website.</h1>
+                    <p>Create a professional independent-looking website with your brand, products, contact details, and custom web address.</p>
+                </div>
+                <div class="builder-header-badge"><span></span>Powered by GamBasket</div>
+            </header>
+
+            <section class="builder-panel">
+                <div class="panel-heading"><div><span>01</span><h2>Choose your website style</h2></div><p>Start with a professionally designed template.</p></div>
+                <div class="template-grid" id="templateGrid">
+                    <button type="button" class="template-card selected" data-template="aurora"><div class="template-preview template-aurora"><i></i><b></b><em></em></div><strong>Aurora</strong><small>Modern &amp; vibrant</small></button>
+                    <button type="button" class="template-card" data-template="luxe"><div class="template-preview template-luxe"><i></i><b></b><em></em></div><strong>Luxe</strong><small>Premium &amp; elegant</small></button>
+                    <button type="button" class="template-card" data-template="commerce"><div class="template-preview template-commerce"><i></i><b></b><em></em></div><strong>Commerce</strong><small>Product focused</small></button>
+                    <button type="button" class="template-card" data-template="editorial"><div class="template-preview template-editorial"><i></i><b></b><em></em></div><strong>Editorial</strong><small>Clean &amp; sophisticated</small></button>
+                    <button type="button" class="template-card" data-template="nova"><div class="template-preview template-nova"><i></i><b></b><em></em></div><strong>Nova</strong><small>Bold &amp; contemporary</small></button>
+                </div>
+            </section>
+
+            <section class="website-builder-grid">
+                <form id="websiteBuilderForm" class="website-builder-form">
+                    <input type="hidden" id="businessTemplate" value="aurora">
+                    <div class="builder-panel">
+                        <div class="panel-heading compact"><div><span>02</span><h2>Business information</h2></div></div>
+                        <div class="builder-fields">
+                            <label class="builder-field"><span>Business name</span><input id="businessName" required maxlength="120" placeholder="e.g. Kairo Electronics"></label>
+                            <label class="builder-field"><span>Description</span><textarea id="businessDescription" maxlength="1000" placeholder="Tell visitors what your business does..."></textarea></label>
+                            <div class="builder-two-column"><label class="builder-field"><span>Location</span><input id="businessLocation" maxlength="200" placeholder="e.g. Kairaba Avenue"></label><label class="builder-field"><span>Phone</span><input id="businessPhone" type="tel" placeholder="+220 ..."></label></div>
+                            <label class="builder-field"><span>WhatsApp</span><input id="businessWhatsapp" type="tel" placeholder="+220 ..."></label>
+                        </div>
+                    </div>
+                    <div class="builder-panel">
+                        <div class="panel-heading compact"><div><span>03</span><h2>Branding</h2></div></div>
+                        <div class="upload-grid"><label class="upload-box"><input id="businessLogo" type="file" accept="image/*" hidden><strong>Upload logo</strong><small>PNG, JPG or WebP</small><img id="logoPreview" alt=""></label><label class="upload-box"><input id="businessCover" type="file" accept="image/*" hidden><strong>Upload cover</strong><small>Recommended 1600 x 900</small><img id="coverPreview" alt=""></label></div>
+                        <div class="builder-two-column"><label class="builder-field"><span>Colour palette</span><select id="businessPalette"><option value="blue">Ocean Blue</option><option value="green">Emerald</option><option value="purple">Royal Purple</option><option value="orange">Sunset Orange</option><option value="black">Premium Black</option></select></label><label class="builder-field"><span>Opening hours</span><input id="businessHours" placeholder="Mon-Sat 9AM-7PM"></label></div>
+                    </div>
+                    <button type="submit" class="create-website-button" id="createWebsiteButton"><span>Create My Website</span><b aria-hidden="true">&#8594;</b></button>
+                </form>
+
+                <aside class="website-preview-panel">
+                    <div class="preview-panel-top"><span>LIVE PREVIEW</span><span class="preview-status"><i></i> Updating</span></div>
+                    <div id="websitePreview" class="website-preview" data-template="aurora">
+                        <div class="preview-browser-bar"><span></span><span></span><span></span><b>yourbusiness.gambasket.com</b></div><div id="previewCover" class="preview-cover"></div>
+                        <div class="preview-page"><div class="preview-brand-row"><div id="previewLogo" class="preview-logo">GB</div><div><strong id="previewBusinessName">Your Business</strong><small>Official Website</small></div></div><div class="preview-content"><span>WELCOME</span><h2 id="previewHeading">Your business, beautifully online.</h2><p id="previewDescription">Your business description will appear here.</p><small id="previewLocation">The Gambia</small><div class="preview-actions"><button type="button">Shop Products</button><button type="button">Contact</button></div></div><div class="preview-products"><i></i><i></i><i></i></div></div>
+                    </div>
+                </aside>
+            </section>
+            <section class="websites-section"><div class="panel-heading"><div><span>YOUR SITES</span><h2>Published websites</h2></div><p>Manage every business website you've created.</p></div><div id="websiteList" class="website-list"></div></section>
+        </div>
+    </main>
+</div>
+
+<div class="building-overlay" id="buildingOverlay" hidden><div class="building-card"><div class="building-logo">GB</div><span class="building-eyebrow">GAMBASKET WEBSITE ENGINE</span><h2 id="buildingTitle">Preparing your website...</h2><p id="buildingDescription">We're getting everything ready.</p><div class="building-progress"><div id="buildingProgressBar"></div></div><div class="building-stages"><div data-stage="0"><i></i><span>Assembling your information</span></div><div data-stage="1"><i></i><span>Designing your brand system</span></div><div data-stage="2"><i></i><span>Combining your content</span></div><div data-stage="3"><i></i><span>Compiling your website</span></div><div data-stage="4"><i></i><span>Optimising animations</span></div><div data-stage="5"><i></i><span>Publishing your website</span></div></div><div id="buildingDone" class="building-done" hidden><strong>WEBSITE CREATED</strong><h3>You're live.</h3><p>Your business website is ready.</p><a id="buildingWebsiteLink" href="#" target="_blank" rel="noopener">View your website</a></div></div></div>
+
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/seller.js"></script>
+<script src="../js/seller-website.js"></script>
+
+</body>
+</html>

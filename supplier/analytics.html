@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Supplier Analytics — GamBasket</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/business-trust-growth.css">
+    <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+</head>
+<body>
+    <main class="business-dashboard supplier-mode">
+        <section class="business-hero">
+            <span class="business-role-badge">SUPPLIER WORKSPACE</span>
+            <h1>Wholesale analytics</h1>
+            <p>Track wholesale listings, buyer interest, minimum order quantities, and pricing. Retail checkout activity is intentionally kept separate.</p>
+        </section>
+        <section id="supplierAnalyticsStats" class="business-grid" aria-live="polite">
+            <article class="business-card"><span class="business-card-label">Wholesale products</span><strong class="business-card-value">—</strong></article>
+            <article class="business-card"><span class="business-card-label">Product views</span><strong class="business-card-value">—</strong></article>
+            <article class="business-card"><span class="business-card-label">Average MOQ</span><strong class="business-card-value">—</strong></article>
+            <article class="business-card"><span class="business-card-label">Average wholesale price</span><strong class="business-card-value">—</strong></article>
+        </section>
+        <section class="business-panel">
+            <div class="business-panel-header"><div><h2>Top wholesale products</h2><p class="business-empty" style="padding:0;text-align:left">Products are ranked by marketplace views; no sample supplier data is shown.</p></div><a class="business-button" href="add-product.html">Add wholesale product</a></div>
+            <div id="supplierAnalyticsProducts" class="business-list"><div class="business-empty">Loading supplier analytics…</div></div>
+        </section>
+    </main>
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/auth-errors.js"></script>
+    <script src="../js/auth-guard.js"></script>
+    <script src="../js/business-roles.js"></script>
+    <script src="../js/business-analytics.js"></script>
+    <script>
+        (async () => {
+            const roles = await window.GamBasketBusiness?.getCurrentRoles?.() || [];
+            if (!roles.includes("supplier") && !roles.includes("admin")) { window.GamBasketGuard?.showUnauthorized?.(); return; }
+            const client = window.GamBasketBusiness.getClient();
+            const { data: { user } } = await client.auth.getUser();
+            try {
+                const data = await window.GamBasketBusinessAnalytics.loadSupplierAnalytics(user.id);
+                const values = [data.wholesaleProducts, data.views.toLocaleString(), data.averageMinimumOrder.toFixed(1), `D ${data.averageWholesalePrice.toLocaleString()}`];
+                document.querySelectorAll("#supplierAnalyticsStats .business-card-value").forEach((node, index) => node.textContent = values[index]);
+                const list = document.getElementById("supplierAnalyticsProducts");
+                list.replaceChildren();
+                if (!data.products.length) { list.innerHTML = '<div class="business-empty">No wholesale products yet. Add your first wholesale listing to begin tracking demand.</div>'; return; }
+                data.products.sort((a, b) => Number(b.views_count || 0) - Number(a.views_count || 0)).slice(0, 8).forEach(product => {
+                    const row = document.createElement("div"); row.className = "business-list-row";
+                    row.innerHTML = '<div class="business-list-main"><strong></strong><span></span></div><span class="business-badge verified">WHOLESALE</span>';
+                    row.querySelector("strong").textContent = product.title;
+                    row.querySelector("span").textContent = `${Number(product.views_count || 0).toLocaleString()} views · MOQ ${product.min_order_quantity || 1} · D ${Number(product.wholesale_price || 0).toLocaleString()}`;
+                    list.append(row);
+                });
+            } catch (error) { document.getElementById("supplierAnalyticsProducts").textContent = error.message || "Unable to load wholesale analytics."; }
+        })();
+    </script>
+</body>
+</html>

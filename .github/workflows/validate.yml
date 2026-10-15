@@ -108,7 +108,7 @@ jobs:
               "server-side checkout RPC": "FUNCTION public.create_order" in all_sql,
               "courier identity derived from auth": "FUNCTION public.claim_delivery_job" in all_sql and "v_user := auth.uid()" in all_sql,
               "verification submission RPC": "FUNCTION public.submit_verification_request" in all_sql,
-              "private verification bucket": "verification-documents" in all_sql and "file_size_limit" in all_sql and "allowed_mime_types" in all_sql and "public=false" in all_sql.lower().replace(" ", ""),
+              "private verification bucket": "INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types)" in all_sql and "'verification-documents',\n  'verification-documents',\n  false," in all_sql,
               "role table write revocation": "REVOKE ALL ON TABLE public.user_roles FROM PUBLIC, anon, authenticated" in all_sql,
               "admin-only audit read policy": "platform_audit_logs_admin_read" in all_sql,
               "affiliate payout reconciliation": "FUNCTION public.admin_mark_affiliate_payout_paid" in all_sql,

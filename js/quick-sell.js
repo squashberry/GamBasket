@@ -38,6 +38,9 @@
 
         const estimatedFee = price * (QUICK_SELL_FEE / 100);
         const estimatedSellerAmount = price - estimatedFee;
+        const condition = document.getElementById("quickSellCondition")?.value || "Used - Good";
+        const suppliedImage = document.getElementById("quickSellImage")?.value.trim() || "";
+        const location = document.getElementById("quickSellLocation")?.value.trim() || "Greater Banjul";
 
         const confirmed = confirm(
             "Quick Sell fee: " + QUICK_SELL_FEE + "%\n\n" +
@@ -49,37 +52,40 @@
 
         if (!confirmed) return;
 
-        if (window.supabaseClient) {
-            try {
-                const { data, error } = await window.supabaseClient
-                    .from("products")
-                    .insert({
-                        name,
-                        title: name,
-                        price,
-                        description,
-                        stock: 1,
-                        status: "pending",
-                        seller_id: user.id,
-                        created_at: new Date().toISOString()
-                    })
-                    .select()
-                    .single();
-
-                if (error) throw error;
-
-                alert("Your Quick Sell listing has been submitted for marketplace review! 🎉");
-                window.location.href = "index.html";
-                return;
-            } catch (err) {
-                console.warn("Direct DB insert:", err.message);
-            }
+        const client = window.supabaseClient || window.GamBasketAuth?.getClient?.();
+        if (!client) {
+            alert("GamBasket could not connect to the listing service. Your item was not submitted.");
+            return;
         }
 
-        alert(
-            "Your Quick Sell listing has been submitted for review! " +
-            "You will be notified when your listing is active."
-        );
-        window.location.href = "index.html";
+        try {
+            const profile = await window.GamBasketAuth?.fetchUserProfile?.();
+            const listingLocation = location || [profile?.area, profile?.region].filter(Boolean).join(", ") || "Greater Banjul";
+            const { error } = await client
+                .from("products")
+                .insert({
+                    title: name,
+                    price,
+                    currency: "GMD",
+                    description,
+                    condition,
+                    stock: 1,
+                    status: "pending_review",
+                    seller_id: user.id,
+                    location: listingLocation,
+                    main_image: suppliedImage || "https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&w=800&q=80",
+                    created_at: new Date().toISOString()
+                });
+            if (error) throw error;
+
+            alert("Your Quick Sell listing has been submitted for marketplace review! It will stay private until approved.");
+            window.location.href = "index.html";
+        } catch (err) {
+            console.error("Quick Sell submission failed:", err);
+            const message = /seller or supplier role required|seller.*role|row-level security/i.test(err.message || "")
+                ? "Your account is not enabled to sell yet. Complete seller verification or contact GamBasket support before submitting a listing."
+                : (err.message || "The item could not be submitted. Please check the details and try again.");
+            alert(message);
+        }
     });
 })();

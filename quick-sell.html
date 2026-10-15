@@ -90,8 +90,13 @@
                 <input id="quickSellLocation" maxlength="120" required value="Greater Banjul" placeholder="e.g. Serrekunda, Kanifing">
             </label>
             <label>
-                Product photo URL (optional)
-                <input id="quickSellImage" type="url" maxlength="1000" placeholder="Paste an image link; you can add a hosted photo later">
+                Product photo (optional)
+                <input id="quickSellImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+                <small>JPG, PNG or WEBP, up to 5MB. Image uploads require the Cloudinary preset to be configured.</small>
+            </label>
+            <label>
+                Or paste a hosted photo URL
+                <input id="quickSellImage" type="url" maxlength="1000" placeholder="https://…">
             </label>
             <label>
                 Description

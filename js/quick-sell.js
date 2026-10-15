@@ -82,7 +82,7 @@
             window.location.href = "index.html";
         } catch (err) {
             console.error("Quick Sell submission failed:", err);
-            const message = /seller or supplier role required|seller.*role|row-level security/i.test(err.message || "")
+            const message = /seller or supplier|seller.*role|row-level security/i.test(err.message || "")
                 ? "Your account is not enabled to sell yet. Complete seller verification or contact GamBasket support before submitting a listing."
                 : (err.message || "The item could not be submitted. Please check the details and try again.");
             alert(message);

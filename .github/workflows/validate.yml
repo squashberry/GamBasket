@@ -106,7 +106,7 @@ jobs:
               "profile privacy projection": "public_profiles" in all_sql and "profiles_owner_or_admin_select" in all_sql,
               "buyer order cancellation RPC": "FUNCTION public.cancel_order" in all_sql,
               "server-side checkout RPC": "FUNCTION public.create_order" in all_sql,
-              "courier identity derived from auth": "FUNCTION public.claim_delivery_job" in all_sql and "v_user := auth.uid()" in all_sql,
+              "courier identity derived from auth": "FUNCTION public.claim_delivery_job" in all_sql and "v_user uuid := auth.uid()" in all_sql,
               "verification submission RPC": "FUNCTION public.submit_verification_request" in all_sql,
               "private verification bucket": "INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types)" in all_sql and "'verification-documents',\n  'verification-documents',\n  false," in all_sql,
               "role table write revocation": "REVOKE ALL ON TABLE public.user_roles FROM PUBLIC, anon, authenticated" in all_sql,

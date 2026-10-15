@@ -278,6 +278,7 @@
                 submitButton.textContent = "Submitting securely…";
                 statusBox.textContent = "Checking your account and uploading your private document…";
                 let uploadedDocumentPath = null;
+                let applicationSaved = false;
                 try {
                     await window.GamBasketAuth?.ready?.();
                     const { data: authData, error: authError } = await client.auth.getUser();
@@ -294,7 +295,7 @@
                     if (uploadError) throw uploadError;
 
                     if (workerType === "seller") {
-                        const { error } = await client.rpc("submit_verification_request", {
+                        const { data: verificationRequest, error } = await client.rpc("submit_verification_request", {
                             p_role_type: "seller",
                             p_business_name: fullName,
                             p_business_category: "Individual seller",
@@ -304,6 +305,15 @@
                             p_notes: bio || `Contact: ${phone}; area: ${area}`
                         });
                         if (error) throw error;
+                        if (verificationRequest?.identity_document_url !== documentPath) {
+                            await client.storage.from("verification-documents").remove([documentPath]);
+                            uploadedDocumentPath = null;
+                            statusBox.textContent = "You already have a pending seller verification request. The existing request was kept.";
+                            submitButton.disabled = false;
+                            submitButton.textContent = "Submit Application Securely";
+                            return;
+                        }
+                        applicationSaved = true;
                     } else {
                         const { error } = await client.from("worker_applications").insert({
                             user_id: user.id,
@@ -318,21 +328,26 @@
                             status: "pending"
                         });
                         if (error) throw error;
+                        applicationSaved = true;
                     }
 
-                    if (window.GamBasketNotifications) {
-                        window.GamBasketNotifications.add({
-                            type: "system",
-                            title: "Application Submitted",
-                            message: `Your ${workerType.replaceAll("_", " ")} application has been saved and is pending review.`
-                        });
+                    try {
+                        if (window.GamBasketNotifications) {
+                            window.GamBasketNotifications.add({
+                                type: "system",
+                                title: "Application Submitted",
+                                message: `Your ${workerType.replaceAll("_", " ")} application has been saved and is pending review.`
+                            });
+                        }
+                    } catch (notificationError) {
+                        console.warn("[GamBasket application] Local notification could not be saved:", notificationError?.message);
                     }
                     statusBox.textContent = "Application submitted successfully. The document is private and your request is pending review.";
                     alert(`Your ${workerType.replaceAll("_", " ")} application was submitted to GamBasket for review.`);
                     window.location.href = "me.html";
                 } catch (error) {
                     console.error("[GamBasket application]", error);
-                    if (uploadedDocumentPath) {
+                    if (uploadedDocumentPath && !applicationSaved) {
                         try {
                             await client.storage.from("verification-documents").remove([uploadedDocumentPath]);
                         } catch (cleanupError) {

@@ -65,7 +65,7 @@
 
                     const { data, error } = await query;
                     if (!error && data) {
-                        return { items: data, total: data.length };
+                        return { items: data.map(order => ({ ...order, status: order.order_status })), total: data.length };
                     }
                 } catch (e) {
                     console.warn("Orders query:", e);

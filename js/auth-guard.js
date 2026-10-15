@@ -36,22 +36,27 @@
 
         async getUserProfile(userId) {
             if (!userId) return null;
+            const client = window.supabaseClient || window.GamBasketAuth?.getClient?.();
+            if (!client) return { id: userId };
 
-            if (window.supabaseClient) {
-                try {
-                    const { data, error } = await window.supabaseClient
-                        .from("profiles")
-                        .select("*")
-                        .eq("id", userId)
-                        .maybeSingle();
-
-                    if (!error && data) return data;
-                } catch (err) {
-                    console.error("Profile lookup error:", err);
+            try {
+                const { data: authResult, error: authError } = await client.auth.getUser();
+                if (authError) throw authError;
+                const currentUser = authResult?.user;
+                if (!currentUser || currentUser.id !== userId) {
+                    return { id: userId };
                 }
+                const { data, error } = await client
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", currentUser.id)
+                    .maybeSingle();
+                if (error) throw error;
+                return data || { id: currentUser.id };
+            } catch (err) {
+                console.error("Profile lookup error:", err.message);
+                return { id: userId };
             }
-
-            return { id: userId };
         },
 
         normalizeRole(profile) {

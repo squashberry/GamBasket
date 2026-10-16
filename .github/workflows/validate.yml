@@ -153,14 +153,14 @@ jobs:
 
           checkout = Path("checkout.html").read_text(encoding="utf-8")
           def radio_tag(element_id):
-              return re.search(r"<input\\b(?=[^>]*\\bid=['\\\"]" + re.escape(element_id) + r"['\\\"])[^>]*>", checkout, re.IGNORECASE)
+              return re.search(r'<input[^>]*id="' + re.escape(element_id) + r'"[^>]*>', checkout, re.IGNORECASE)
           cod = radio_tag("cod")
-          assert cod and re.search(r"\\bchecked\\b", cod.group(0), re.IGNORECASE), "Cash on Delivery must be selected by default."
-          assert not re.search(r"\\bdisabled\\b", cod.group(0), re.IGNORECASE), "Cash on Delivery must remain enabled."
+          assert cod and re.search(r'\bchecked\b', cod.group(0), re.IGNORECASE), "Cash on Delivery must be selected by default."
+          assert not re.search(r'\bdisabled\b', cod.group(0), re.IGNORECASE), "Cash on Delivery must remain enabled."
           for provider in ("wave", "qmoney", "afrimoney"):
               radio = radio_tag(provider)
-              assert radio and re.search(r"\\bdisabled\\b", radio.group(0), re.IGNORECASE), f"{provider} must remain disabled until launch."
-              label = re.search(r"<label\\b[^>]*\\bfor=['\\\"]" + re.escape(provider) + r"['\\\"][^>]*>[\\s\\S]*?</label>", checkout, re.IGNORECASE)
+              assert radio and re.search(r'\bdisabled\b', radio.group(0), re.IGNORECASE), f"{provider} must remain disabled until launch."
+              label = re.search(r'<label[^>]*for="' + re.escape(provider) + r'"[^>]*>[\s\S]*?</label>', checkout, re.IGNORECASE)
               assert label and "Coming soon" in label.group(0), f"{provider} must be visibly marked Coming soon."
           assert "paymentAvailabilityNote" in checkout, "Checkout must explain the currently available payment method."
           print("Validated checkout payment availability: Cash on Delivery enabled; Wave, QMoney and Afrimoney disabled and labelled Coming soon.")

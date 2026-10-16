@@ -1,7 +1,7 @@
 /* =========================================================
    GAMBASKET — NOTIFICATION SYSTEM
    (Dropdown on desktop, Bottom-sheet on mobile, Toast alerts,
-   LocalStorage persistence & Supabase Realtime Sync)
+   Per-browser persistence for client-generated UI notices)
 ========================================================= */
 
 (function () {
@@ -30,53 +30,41 @@
     const STORAGE_KEY = "gambasket_notifications";
 
     /* -----------------------------------------------------
-       DEFAULT NOTIFICATIONS
+       LOAD REAL UI NOTICES — never seed fabricated activity
     ----------------------------------------------------- */
-    const defaultNotifications = [
-        {
-            id: "welcome-1",
-            type: "welcome",
-            title: "Welcome to GamBasket",
-            message: "Discover products and suppliers from across The Gambia.",
-            time: new Date().toISOString(),
-            read: false
-        },
-        {
-            id: "wishlist-1",
-            type: "wishlist",
-            title: "Build your wishlist",
-            message: "Save products you love so you can easily find them later.",
-            time: new Date(Date.now() - 3600000).toISOString(),
-            read: false
-        },
-        {
-            id: "explore-1",
-            type: "explore",
-            title: "New products available",
-            message: "Explore the latest products recently added to GamBasket.",
-            time: new Date(Date.now() - 86400000).toISOString(),
-            read: true
-        }
-    ];
+    const LEGACY_SAMPLE_IDS = new Set(["welcome-1", "wishlist-1", "explore-1"]);
 
-    /* -----------------------------------------------------
-       LOAD NOTIFICATIONS
-    ----------------------------------------------------- */
     function loadNotifications() {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (!saved) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultNotifications));
-                return [...defaultNotifications];
+                localStorage.setItem(STORAGE_KEY, "[]");
+                return [];
             }
+
             const parsed = JSON.parse(saved);
             if (!Array.isArray(parsed)) {
-                return [...defaultNotifications];
+                localStorage.setItem(STORAGE_KEY, "[]");
+                return [];
             }
-            return parsed;
+
+            // Clear sample notifications created by older builds while keeping
+            // genuine notices created by the user during the current browser session.
+            const actualNotices = parsed.filter(notification =>
+                notification &&
+                typeof notification === "object" &&
+                !LEGACY_SAMPLE_IDS.has(String(notification.id || "")) &&
+                typeof notification.title === "string" &&
+                typeof notification.message === "string"
+            );
+
+            if (actualNotices.length !== parsed.length) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(actualNotices));
+            }
+            return actualNotices;
         } catch (error) {
-            console.error("GamBasket notification load error:", error);
-            return [...defaultNotifications];
+            console.warn("GamBasket notification storage is unavailable:", error?.message || error);
+            return [];
         }
     }
 

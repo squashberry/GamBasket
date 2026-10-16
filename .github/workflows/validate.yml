@@ -111,7 +111,7 @@ jobs:
           assert migrations, "No version-controlled SQL migrations found."
           versions = []
           for migration in migrations:
-              match = re.match(r"^(\\d{14})_", migration.name)
+              match = re.match(r"^(\d{14})_", migration.name)
               assert match, f"Migration filename must begin with a 14-digit timestamp: {migration.name}"
               versions.append(match.group(1))
           duplicates = sorted({version for version in versions if versions.count(version) > 1})

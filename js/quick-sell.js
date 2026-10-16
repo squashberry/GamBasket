@@ -53,7 +53,7 @@
     try {
       const auth = window.GamBasketAuth;
       if (!auth?.uploadImage) throw new Error("The image service is not available. Reload the page and try again.");
-      selectedImageUrls = [...new Set(await Promise.all(files.map(file => auth.uploadImage(file, "products")))].slice(0, 8);
+      selectedImageUrls = [...new Set(await Promise.all(files.map(file => auth.uploadImage(file, "products"))))].slice(0, 8);
       imageUrlInput.value = selectedImageUrls[0] || "";
       status.textContent = `${selectedImageUrls.length} photo(s) uploaded. The first photo is the main image.`;
     } catch (error) {

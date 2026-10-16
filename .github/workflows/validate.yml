@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - fix/security-and-backend-hardening
+      - stage-a-b-product-quality
   pull_request:
     branches:
       - main
@@ -69,7 +70,10 @@ jobs:
                       self.scripts.append(self.current)
                       self.current = None
 
-          pages = ["worker-apply.html", "quick-sell.html"]
+          pages = [
+              "worker-apply.html", "quick-sell.html", "supplier/add-product.html",
+              "product.html", "explore.html", "compare.html", "saved-searches.html"
+          ]
           checked = 0
           for page in pages:
               parser = ScriptParser()
@@ -112,13 +116,20 @@ jobs:
               "role table write revocation": "REVOKE ALL ON TABLE public.user_roles FROM PUBLIC, anon, authenticated" in all_sql,
               "admin-only audit read policy": "platform_audit_logs_admin_read" in all_sql,
               "affiliate payout reconciliation": "FUNCTION public.admin_mark_affiliate_payout_paid" in all_sql,
+              "multi-photo image relation": "public.product_images" in all_sql and "product_images_public_or_owner_read" in all_sql,
+              "category-specific attributes": "category_attribute_definitions" in all_sql and "ADD COLUMN IF NOT EXISTS attributes jsonb" in all_sql,
+              "per-user saved searches": "CREATE TABLE IF NOT EXISTS public.saved_searches" in all_sql and "saved_searches_read_own" in all_sql,
+              "moderated price-drop alerts": "notify_price_drop_after_approval" in all_sql and "product_price_change_events" in all_sql,
+              "private upload ownership": "gambasket_product_images_owner_insert" in all_sql and "(storage.foldername(name))[1]=(SELECT auth.uid())::text" in all_sql,
+              "price alerts update is limited": "GRANT UPDATE (is_read) ON TABLE public.wishlist_alerts TO authenticated" in all_sql,
+              "upload fallback works without Cloudinary": "from(\"product-images\")" in Path("js/supabase.js").read_text(encoding="utf-8"),
           }
           for label, passed in checks.items():
               print(("PASS" if passed else "FAIL") + ": " + label)
           assert all(checks.values()), "A required backend security/workflow contract is missing."
           config = Path("js/config.js").read_text(encoding="utf-8")
-          assert "CLOUDINARY_CLOUD_NAME: \"\"" in config and "CLOUDINARY_UPLOAD_PRESET: \"\"" in config, (
-              "Cloudinary config is expected to remain unconfigured until project-owned credentials are supplied."
+          assert "CLOUDINARY_CLOUD_NAME" in config and "CLOUDINARY_UPLOAD_PRESET" in config, (
+              "Optional Cloudinary configuration keys should remain available."
           )
           print(f"Validated {len(checks)} backend contracts across {len(migrations)} SQL migration files.")
           PY

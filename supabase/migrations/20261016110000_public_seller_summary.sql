@@ -30,6 +30,7 @@ SET search_path TO ''
 AS $fn$
 DECLARE
   v_store_name text;
+  v_store_verified boolean := false;
   v_seller_name text;
   v_supplier_name text;
   v_seller_verified boolean := false;
@@ -39,8 +40,8 @@ DECLARE
 BEGIN
   IF p_user_id IS NULL THEN RETURN; END IF;
 
-  SELECT s.name
-    INTO v_store_name
+  SELECT s.name, COALESCE(s.is_verified,false)
+    INTO v_store_name,v_store_verified
     FROM public.stores s
    WHERE s.seller_id=p_user_id AND s.is_active IS TRUE
    ORDER BY s.updated_at DESC NULLS LAST, s.created_at DESC NULLS LAST
@@ -65,11 +66,15 @@ BEGIN
     SELECT 1 FROM public.stores s WHERE s.seller_id=p_user_id AND s.is_active IS TRUE
   ) INTO v_has_store;
 
-  v_business_name := NULLIF(btrim(COALESCE(v_store_name, v_supplier_name, v_seller_name)), '');
+  v_business_name := COALESCE(
+    NULLIF(btrim(v_store_name),''),
+    CASE WHEN COALESCE(v_supplier_verified,false) THEN NULLIF(btrim(v_supplier_name),'') ELSE NULL END,
+    CASE WHEN COALESCE(v_seller_verified,false) THEN NULLIF(btrim(v_seller_name),'') ELSE NULL END
+  );
   UPDATE public.public_profiles pp
      SET business_name=v_business_name,
-         seller_type=CASE WHEN v_business_name IS NULL THEN 'individual' ELSE 'business' END,
-         is_seller_verified=(COALESCE(v_seller_verified,false) OR COALESCE(v_supplier_verified,false)),
+         seller_type=CASE WHEN v_has_store OR COALESCE(v_supplier_verified,false) OR COALESCE(v_seller_verified,false) THEN 'business' ELSE 'individual' END,
+         is_seller_verified=(COALESCE(v_store_verified,false) OR COALESCE(v_seller_verified,false) OR COALESCE(v_supplier_verified,false)),
          has_business_store=v_has_store
    WHERE pp.id=p_user_id;
 END;
@@ -83,8 +88,12 @@ SECURITY DEFINER
 SET search_path TO ''
 AS $fn$
 BEGIN
-  PERFORM public.sync_public_profile_business_fields(COALESCE(NEW.user_id,OLD.user_id));
-  RETURN COALESCE(NEW,OLD);
+  IF TG_OP='DELETE' THEN
+    PERFORM public.sync_public_profile_business_fields(OLD.user_id);
+    RETURN OLD;
+  END IF;
+  PERFORM public.sync_public_profile_business_fields(NEW.user_id);
+  RETURN NEW;
 END;
 $fn$;
 REVOKE ALL ON FUNCTION public.trigger_sync_seller_public_fields() FROM PUBLIC,anon,authenticated;
@@ -96,8 +105,12 @@ SECURITY DEFINER
 SET search_path TO ''
 AS $fn$
 BEGIN
-  PERFORM public.sync_public_profile_business_fields(COALESCE(NEW.seller_id,OLD.seller_id));
-  RETURN COALESCE(NEW,OLD);
+  IF TG_OP='DELETE' THEN
+    PERFORM public.sync_public_profile_business_fields(OLD.seller_id);
+    RETURN OLD;
+  END IF;
+  PERFORM public.sync_public_profile_business_fields(NEW.seller_id);
+  RETURN NEW;
 END;
 $fn$;
 REVOKE ALL ON FUNCTION public.trigger_sync_store_public_fields() FROM PUBLIC,anon,authenticated;

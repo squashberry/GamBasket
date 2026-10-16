@@ -110,10 +110,10 @@
                                         <option value="Fashion">Fashion & Clothing</option>
                                         <option value="Home">Home & Kitchen</option>
                                         <option value="Beauty">Beauty & Personal Care</option>
-                                        <option value="Groceries">Food & Groceries</option>
+                                        <option value="Food">Food & Groceries</option>
                                         <option value="Solar">Solar & Energy</option>
-                                        <option value="Vehicles">Cars & Auto Parts</option>
-                                        <option value="Tools">Hardware & Tools</option>
+                                        <option value="Auto">Cars & Auto Parts</option>
+                                        <option value="Hardware">Hardware & Tools</option>
                                     </select>
                                 </div>
                                 <div>
@@ -170,9 +170,12 @@
                                 <textarea id="pDescription" class="seller-input" rows="4" style="width:100%;padding-top:10px;resize:vertical;" placeholder="Describe features, specifications, and warranty details..."></textarea>
                             </div>
 
+                            <div id="productAttributes" class="product-attributes-form" aria-live="polite"></div>
+
                             <div>
-                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Image Upload (Max 5MB)</label>
-                                <input type="file" id="pImageFile" accept="image/*" class="seller-input" style="width:100%;padding:8px;">
+                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Photos (up to 8, each max 5MB)</label>
+                                <input type="file" id="pImageFile" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="seller-input" style="width:100%;padding:8px;">
+                                <small id="pImageStatus" style="display:block;margin-top:6px;color:var(--text-secondary);">Add several real photos to help buyers assess the item. Existing photos are retained when editing unless you choose new photos.</small>
                                 <input type="hidden" id="pImageUrl">
                             </div>
 
@@ -217,6 +220,8 @@
     <script src="../js/growth-engine.js"></script>
     <script src="../js/seller.js"></script>
     <script src="../js/seller-products.js"></script>
+    <script src="../js/product-attributes.js"></script>
+    <link rel="stylesheet" href="../css/marketplace-enhancements.css">
 
     <script>
     (async () => {

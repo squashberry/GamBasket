@@ -21,6 +21,7 @@
         // Query database if available
         if (window.GamBasketAuth && window.GamBasketAuth.isConfigured()) {
             try {
+                await window.GamBasketAuth.ready?.();
                 const client = window.GamBasketAuth.getClient();
                 if (client) {
                     // Only publicly approved listings can resolve from a shareable URL.

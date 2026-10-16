@@ -93,13 +93,11 @@
       if (status) status.textContent = ids.length ? "Select at least two products to compare." : "Your comparison list is empty.";
       return;
     }
-    const client = window.GamBasketAuth?.getClient?.() || window.supabaseClient;
-    if (!client) {
-      if (status) status.textContent = "The marketplace service is unavailable. Reload and try again.";
-      return;
-    }
     if (status) status.textContent = "Loading approved product details…";
     try {
+      await window.GamBasketAuth?.ready?.();
+      const client = window.GamBasketAuth?.getClient?.() || window.supabaseClient;
+      if (!client) throw new Error("The marketplace service is unavailable. Reload and try again.");
       const { data, error } = await client.from("products")
         .select("id,title,price,currency,condition,category_id,location,main_image,attributes,stock,delivery_available,listing_type,wholesale_price,min_order_quantity,sales_count")
         .eq("status","approved").in("id",ids);

@@ -93,6 +93,15 @@
         event.preventDefault();
         if (state.submitting) return;
         if (!$("checkoutForm").reportValidity()) return;
+
+        // The UI disables future payment methods, and this guard prevents a
+        // tampered DOM from sending an unsupported method to the order RPC.
+        const selectedPayment = document.querySelector('input[name="payment"]:checked');
+        if (!selectedPayment || selectedPayment.disabled || selectedPayment.value !== "cash_on_delivery") {
+            showError("Only Cash on Delivery is available right now. Wave, QMoney and Afrimoney are coming soon.");
+            return;
+        }
+
         state.submitting = true;
         const button = $("placeOrderBtn");
         button.disabled = true;

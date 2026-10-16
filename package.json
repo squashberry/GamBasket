@@ -1,0 +1,12 @@
+{
+  "name": "gambasket-marketplace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "GamBasket test-stage browser and workflow checks",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

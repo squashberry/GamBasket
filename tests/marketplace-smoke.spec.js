@@ -196,6 +196,11 @@ async function mockBackend(page, options = {}) {
 test.beforeEach(async ({ page }) => {
   page.on("dialog", dialog => dialog.dismiss());
   page.on("pageerror", error => console.error("[browser page error]", error.message));
+  page.on("console", message => {
+    if (message.type() === "error" || message.text().includes("[GamBasket product")) {
+      console.log("[browser console]", message.type(), message.text());
+    }
+  });
 });
 
 test("Explore shows only live approved database listings, not fabricated demo inventory", async ({ page }) => {
@@ -221,7 +226,8 @@ test("Brand/model filtering uses actual category attributes", async ({ page }) =
 test("Product detail renders category specifications and switches photo thumbnails", async ({ page }) => {
   await mockBackend(page, {
     products: [iphone],
-    gallery: [{ image_url: "https://images.example.test/iphone-back.jpg", sort_order: 1 }]
+    gallery: [{ image_url: "https://images.example.test/iphone-back.jpg", sort_order: 1 }],
+    authenticated: true
   });
   await page.goto("/product.html?id=" + IPHONE_ID);
   await expect(page.locator("#detailName")).toHaveText("iPhone 13 128GB");
@@ -244,7 +250,7 @@ test("Removed or unapproved product URLs show an unavailable state instead of sa
 });
 
 test("Comparison page compares approved listings and supports removing one", async ({ page }) => {
-  await mockBackend(page, { products: [iphone, samsung] });
+  await mockBackend(page, { products: [iphone, samsung], authenticated: true });
   await page.addInitScript(({ key, ids }) => localStorage.setItem(key, JSON.stringify(ids)), {
     key: "gambasket_compare_products", ids: [IPHONE_ID, SAMSUNG_ID]
   });
@@ -298,7 +304,7 @@ test("Image upload falls back to Supabase Storage when Cloudinary is unset", asy
 });
 
 test("Quick Sell category selection renders relevant category fields", async ({ page }) => {
-  await mockBackend(page, {});
+  await mockBackend(page, { authenticated: true });
   await page.goto("/quick-sell.html");
   await expect(page.locator("#quickSellAttributes")).toContainText("Brand");
   await expect(page.locator("#quickSellAttributes")).toContainText("Model");

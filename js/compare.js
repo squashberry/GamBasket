@@ -35,9 +35,7 @@
       return {ok:true, selected:false, ids:readIds()};
     }
     if (ids.length >= 4) {
-      const result = {ok:false, message:"You can compare up to 4 products at a time. Remove one first."};
-      notify(result.message);
-      return result;
+      return {ok:false, message:"You can compare up to 4 products at a time. Remove one first."};
     }
     writeIds([...ids, productId]);
     notify("Product added to your comparison list.");
@@ -178,6 +176,10 @@
     if (document.getElementById("compareContent")) loadComparePage();
   });
   window.addEventListener("storage", event => { if (event.key === STORAGE_KEY) { renderDock(); updateCardButtons(); if (document.getElementById("compareContent")) loadComparePage(); } });
-  window.addEventListener("gambasket:compare:change", () => { if (document.getElementById("compareContent")) loadComparePage(); });
+  window.addEventListener("gambasket:compare:change", () => {
+    renderDock();
+    updateCardButtons();
+    if (document.getElementById("compareContent")) loadComparePage();
+  });
   window.GamBasketCompare = {toggle, clear, getSelected:readIds, loadComparePage};
 })();

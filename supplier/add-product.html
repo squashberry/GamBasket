@@ -170,6 +170,7 @@
                                 <textarea id="pDescription" class="seller-input" rows="4" style="width:100%;padding-top:10px;resize:vertical;" placeholder="Describe features, specifications, and warranty details..."></textarea>
                             </div>
 
+                            <label class="product-delivery-option"><span><strong>Delivery available</strong><small>Only tick this when you can arrange delivery for this listing. Delivery fees are confirmed at checkout.</small></span><input type="checkbox" id="pDeliveryAvailable"></label>
                             <div id="productAttributes" class="product-attributes-form" aria-live="polite"></div>
 
                             <div>
@@ -312,6 +313,7 @@
                     document.getElementById("pPrice").value = data.price || "";
                     document.getElementById("pStock").value = data.stock || 0;
                     document.getElementById("pLocation").value = data.location || "";
+                    document.getElementById("pDeliveryAvailable").checked = Boolean(data.delivery_available);
                     document.getElementById("pDescription").value = data.description || "";
                     document.getElementById("pImageUrl").value = data.main_image || data.image || "";
                     const client = window.GamBasketAuth?.getClient?.();
@@ -389,6 +391,7 @@
                     price: Number(document.getElementById("pPrice").value),
                     stock: Number(document.getElementById("pStock").value),
                     location: document.getElementById("pLocation").value.trim(),
+                    delivery_available: Boolean(document.getElementById("pDeliveryAvailable").checked),
                     description: document.getElementById("pDescription").value.trim(),
                     main_image: document.getElementById("pImageUrl").value.trim() || selectedImageUrls[0] || "",
                     attributes: window.GamBasketProductAttributes?.read(attributeContainer) || {},

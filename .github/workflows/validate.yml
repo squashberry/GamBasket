@@ -40,7 +40,9 @@ jobs:
             node --check "$file"
             count=$((count + 1))
           done < <(find js -type f -name '*.js' -print0 | sort -z)
-          echo "Successfully syntax-checked $count JavaScript files."
+          node --check tests/marketplace-smoke.spec.js
+          node --check tests/static-server.mjs
+          echo "Successfully syntax-checked $count application JavaScript files plus browser test scripts."
 
       - name: Check inline scripts on changed workflow pages
         run: |
@@ -123,6 +125,10 @@ jobs:
               "private upload ownership": "gambasket_product_images_owner_insert" in all_sql and "(storage.foldername(name))[1]=(SELECT auth.uid())::text" in all_sql,
               "price alerts update is limited": "GRANT UPDATE (is_read) ON TABLE public.wishlist_alerts TO authenticated" in all_sql,
               "upload fallback works without Cloudinary": "from(\"product-images\")" in Path("js/supabase.js").read_text(encoding="utf-8"),
+              "delivery availability is a product field": "ADD COLUMN IF NOT EXISTS delivery_available boolean NOT NULL DEFAULT false" in all_sql,
+              "safe public seller badges": "ADD COLUMN IF NOT EXISTS is_seller_verified boolean NOT NULL DEFAULT false" in all_sql and "ADD COLUMN IF NOT EXISTS has_business_store boolean NOT NULL DEFAULT false" in all_sql,
+              "coupon validation is authenticated only": "REVOKE ALL ON FUNCTION public.validate_coupon(character varying,numeric) FROM PUBLIC, anon" in all_sql,
+              "internal accounting tables deny client access": all(token in all_sql for token in ["deny_client_access ON public.affiliate_commissions", "deny_client_access ON public.campaign_products", "deny_client_access ON public.earning_rules", "deny_client_access ON public.payout_requests"]),
           }
           for label, passed in checks.items():
               print(("PASS" if passed else "FAIL") + ": " + label)

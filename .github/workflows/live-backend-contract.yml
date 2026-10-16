@@ -1,0 +1,31 @@
+name: GamBasket live backend contract checks
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly, read-only checks against the public test project's Data API.
+    - cron: "37 9 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gambasket-live-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  read-only-contracts:
+    name: Real Supabase public/private access contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run read-only live backend contract checks
+        run: node tests/live-supabase-contract.mjs

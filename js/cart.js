@@ -12,11 +12,24 @@
     }
 
     function normalizeLocalItems() {
-        return localCart().map(item => ({
-            product_id: item.id,
-            quantity: Number(item.quantity || 1),
-            product: { id: item.id, title: item.name, price: Number(item.price || 0), stock: Number(item.stock || 999), main_image: item.image || "", seller_name: item.seller || "GamBasket Seller", status: "approved" }
-        }));
+        return localCart().map(item => {
+            const stockKnown = item.stock !== null && item.stock !== undefined &&
+                item.stock !== "" && Number.isFinite(Number(item.stock));
+            return {
+                product_id: item.id,
+                quantity: Math.max(1, Math.min(99, Number(item.quantity || 1))),
+                product: {
+                    id: item.id,
+                    title: item.name,
+                    price: Number(item.price || 0),
+                    // A guest cart snapshot may be stale or incomplete. Never invent stock.
+                    stock: stockKnown ? Number(item.stock) : null,
+                    main_image: item.image || "",
+                    seller_name: item.seller || null,
+                    status: "unverified_snapshot"
+                }
+            };
+        });
     }
 
     async function migrateGuestCart() {
@@ -68,17 +81,26 @@
         const count = items.reduce((sum, item) => sum + Number(item.quantity || 1), 0);
         const subtotal = items.reduce((sum, item) => { const product = productFor(item); return sum + Number(product.price || 0) * Number(item.quantity || 1); }, 0);
         $("cartCount").textContent = `${count} ${count === 1 ? "item" : "items"}`;
-        $("cartSubtitle").textContent = `${count} ${count === 1 ? "item" : "items"} ready for checkout.`;
+        $("cartSubtitle").textContent = state.authenticated
+            ? `${count} ${count === 1 ? "item" : "items"} ready for checkout.`
+            : `${count} ${count === 1 ? "item" : "items"} saved locally. Sign in to verify current prices and availability.`;
         $("cartSubtotal").textContent = money(subtotal);
         $("cartTotal").textContent = money(subtotal);
         $("cartItems").innerHTML = items.map((item, index) => {
             const product = productFor(item);
             const quantity = Number(item.quantity || 1);
-            const stock = Number(product.stock ?? 0);
+            const stockKnown = product.stock !== null && product.stock !== undefined &&
+                product.stock !== "" && Number.isFinite(Number(product.stock));
+            const stock = stockKnown ? Number(product.stock) : 0;
+            const stockLabel = stockKnown
+                ? (stock > 0 ? `${stock} available` : "Out of stock")
+                : (state.authenticated ? "Availability not confirmed" : "Sign in to verify availability");
+            const sellerLabel = product.seller_name || product.seller ||
+                (state.authenticated ? "Seller details unavailable" : "Seller confirmed after sign-in");
             const productId = String(item.product_id || product.id);
             return `<article class="cart-item" data-index="${index}" data-id="${escapeHTML(productId)}">
                 <div class="cart-image"><img src="${escapeHTML(product.main_image || product.image || "")}" alt="${escapeHTML(product.title || product.name || "Product")}" loading="lazy"></div>
-                <div class="cart-info"><h3 class="cart-name">${escapeHTML(product.title || product.name || "Product")}</h3><p class="cart-seller">${escapeHTML(product.seller_name || product.seller || "GamBasket Seller")}</p><strong class="cart-price">${money(product.price)}</strong><p class="stock-text ${stock < 1 ? "out-of-stock" : ""}">${stock > 0 ? `${stock} available` : "Out of stock"}</p><div class="cart-controls"><button class="qty-btn" data-action="decrease" type="button" aria-label="Decrease quantity" ${quantity <= 1 ? "disabled" : ""}>-</button><span class="qty-value">${quantity}</span><button class="qty-btn" data-action="increase" type="button" aria-label="Increase quantity" ${quantity >= stock || stock < 1 ? "disabled" : ""}>+</button></div><button class="remove-btn" data-action="remove" type="button">Remove</button></div>
+                <div class="cart-info"><h3 class="cart-name">${escapeHTML(product.title || product.name || "Product")}</h3><p class="cart-seller">${escapeHTML(sellerLabel)}</p><strong class="cart-price">${money(product.price)}</strong><p class="stock-text ${stockKnown && stock < 1 ? "out-of-stock" : ""}">${stockLabel}</p><div class="cart-controls"><button class="qty-btn" data-action="decrease" type="button" aria-label="Decrease quantity" ${quantity <= 1 ? "disabled" : ""}>-</button><span class="qty-value">${quantity}</span><button class="qty-btn" data-action="increase" type="button" aria-label="Increase quantity" ${stockKnown ? (quantity >= stock || stock < 1 ? "disabled" : "") : (quantity >= 99 ? "disabled" : "")}>+</button></div><button class="remove-btn" data-action="remove" type="button">Remove</button></div>
                 <strong class="cart-line-total">${money(Number(product.price || 0) * quantity)}</strong>
             </article>`;
         }).join("");

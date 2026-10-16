@@ -1,6 +1,5 @@
--- Ensure saved searches with an in-stock filter only alert about available items.
+-- Ensure saved searches use the exact same filter predicates in listing notifications.
 BEGIN;
-
 CREATE OR REPLACE FUNCTION public.notify_saved_search_matches()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO ''
 AS $fn$
@@ -57,10 +56,12 @@ BEGIN
   RETURN NEW;
 END;
 $fn$;
-
+REVOKE ALL ON FUNCTION public.notify_saved_search_matches() FROM PUBLIC,anon,authenticated;
+DROP TRIGGER IF EXISTS trg_notify_saved_search_matches_insert ON public.products;
 DROP TRIGGER IF EXISTS trg_notify_saved_search_matches_update ON public.products;
+CREATE TRIGGER trg_notify_saved_search_matches_insert
+AFTER INSERT ON public.products FOR EACH ROW EXECUTE FUNCTION public.notify_saved_search_matches();
 CREATE TRIGGER trg_notify_saved_search_matches_update
-AFTER UPDATE OF status,title,description,price,category_id,location,condition,attributes,searchable,delivery_available,stock
+AFTER UPDATE OF status,title,description,price,category_id,location,condition,attributes,searchable,delivery_available
 ON public.products FOR EACH ROW EXECUTE FUNCTION public.notify_saved_search_matches();
-
 COMMIT;

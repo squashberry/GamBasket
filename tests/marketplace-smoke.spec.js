@@ -4,6 +4,7 @@ const PROJECT = "https://iwxcepbwmnnkxocskopx.supabase.co";
 const USER_ID = "22222222-2222-4222-8222-222222222222";
 const IPHONE_ID = "11111111-1111-4111-8111-111111111111";
 const SAMSUNG_ID = "33333333-3333-4333-8333-333333333333";
+const SAMSUNG_SELLER_ID = "44444444-4444-4444-8444-444444444444";
 const SESSION_KEY = "sb-iwxcepbwmnnkxocskopx-auth-token";
 
 const iphone = {
@@ -14,6 +15,7 @@ const iphone = {
   category_id: "Phones",
   location: "Serrekunda",
   condition: "Like New",
+  delivery_available: true,
   main_image: "https://images.example.test/iphone-front.jpg",
   description: "Factory unlocked test listing.",
   attributes: { brand: "Apple", model: "iPhone 13", storage: "128GB", battery_health: 92 },
@@ -41,7 +43,8 @@ const samsung = {
   searchable: true,
   sales_count: 4,
   listing_type: "retail",
-  seller_id: USER_ID,
+  seller_id: SAMSUNG_SELLER_ID,
+  delivery_available: false,
   created_at: "2026-10-14T10:00:00.000Z"
 };
 
@@ -147,10 +150,22 @@ async function mockBackend(page, options = {}) {
     if (path === "/rest/v1/marketplace_reviews") { await json([]); return; }
     if (path === "/rest/v1/category_attribute_definitions") { await json([]); return; }
     if (path === "/rest/v1/public_profiles" || path === "/rest/v1/profiles") {
+      let rows = path.endsWith("/public_profiles") ? [
+        { id: USER_ID, first_name: "Awa", last_name: "Store", avatar_url: null, area: "Serrekunda", region: "Kanifing", business_name: "Awa Mobile Store", seller_type: "business", is_seller_verified: true, has_business_store: true },
+        { id: SAMSUNG_SELLER_ID, first_name: "Individual", last_name: "Seller", avatar_url: null, area: "Brikama", region: "West Coast", business_name: null, seller_type: "individual", is_seller_verified: false, has_business_store: false }
+      ] : [];
+      const idParam = url.searchParams.get("id") || "";
+      if (idParam.startsWith("eq.")) rows = rows.filter(item => item.id === idParam.slice(3));
+      const inParam = url.searchParams.get("id") || "";
+      if (inParam.startsWith("in.(")) {
+        const ids = inParam.slice(4,-1).split(",");
+        rows = rows.filter(item => ids.includes(item.id));
+      }
       const accept = request.headers()["accept"] || "";
       if (accept.includes("vnd.pgrst.object+json")) {
-        await json({ code: "PGRST116", details: "The result contains 0 rows", hint: null, message: "No rows found" }, 406);
-      } else await json([]);
+        if (rows.length === 1) await json(rows[0]);
+        else await json({ code: "PGRST116", details: `The result contains ${rows.length} rows`, hint: null, message: "No rows found" }, 406);
+      } else await json(rows);
       return;
     }
     if (path === "/rest/v1/saved_searches" && method === "POST") {
@@ -290,6 +305,22 @@ test("Quick Sell category selection renders relevant category fields", async ({ 
   await page.locator("#quickSellCategory").selectOption("Auto");
   await expect(page.locator("#quickSellAttributes")).toContainText("Mileage (km)");
   await expect(page.locator("#quickSellAttributes")).toContainText("Transmission");
+});
+
+test("Verified-seller and delivery filters only show listings that qualify", async ({ page }) => {
+  await mockBackend(page, { products: [iphone, samsung] });
+  await page.goto("/explore.html");
+  await expect(page.locator("#productGrid .product-card")).toHaveCount(2);
+  await page.locator('input[name="workspaceSeller"][value="verified"]').check();
+  await expect(page.locator("#productGrid .product-card")).toHaveCount(1);
+  await expect(page.locator("#productGrid .product-name")).toHaveText("iPhone 13 128GB");
+  await expect(page.locator("#productGrid")).toContainText("Verified seller");
+
+  await page.locator('input[name="workspaceSeller"][value="all"]').check();
+  await page.locator("#workspaceDelivery").check();
+  await expect(page.locator("#productGrid .product-card")).toHaveCount(1);
+  await expect(page.locator("#productGrid .product-name")).toHaveText("iPhone 13 128GB");
+  await expect(page.locator("#productGrid")).toContainText("Delivery available");
 });
 
 test("Mobile Explore does not hide the key search/filters controls", async ({ page }) => {

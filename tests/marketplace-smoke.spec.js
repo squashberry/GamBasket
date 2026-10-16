@@ -344,26 +344,6 @@ test("Image upload falls back to Supabase Storage when Cloudinary is unset", asy
 test("Quick Sell category selection renders relevant category fields", async ({ page }) => {
   await mockBackend(page, { authenticated: true });
   await page.goto("/quick-sell.html");
-  const diagnostic = await page.evaluate(async () => {
-    const helper = window.GamBasketProductAttributes;
-    const container = document.getElementById("quickSellAttributes");
-    const category = document.getElementById("quickSellCategory").value;
-    const before = container?.innerHTML || "";
-    const fallback = helper?.fallbackDefinitions(category) || [];
-    await helper?.render(container, category);
-    return {
-      category,
-      fallbackKeys: fallback.map(item => item.attribute_key),
-      before,
-      after: container?.innerHTML || "",
-      fields: container?.querySelectorAll("[data-attribute-key]")?.length || 0,
-      styles: {
-        grid: getComputedStyle(container?.querySelector(".product-attributes-grid") || container).display,
-        labels: getComputedStyle(container?.querySelector(".product-attribute-field") || container).display
-      }
-    };
-  });
-  console.log("[attribute-debug]", JSON.stringify(diagnostic));
   await expect(page.locator("#quickSellAttributes")).toContainText("Brand");
   await expect(page.locator("#quickSellAttributes")).toContainText("Model");
   await page.locator("#quickSellCategory").selectOption("Auto");

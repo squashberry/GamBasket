@@ -45,7 +45,7 @@ BEGIN
   ORDER BY sl.created_at DESC NULLS LAST LIMIT 1;
 
   v_has_business := v_store_name IS NOT NULL OR v_supplier_name IS NOT NULL;
-  v_verified := v_store_verified OR v_supplier_verified OR COALESCE(v_seller_status IN ('verified','approved'),false);
+  v_verified := COALESCE(v_store_verified,false) OR COALESCE(v_supplier_verified,false) OR COALESCE(v_seller_status IN ('verified','approved'),false);
   v_business_name := COALESCE(
     NULLIF(v_store_name,''),
     NULLIF(v_supplier_name,''),

@@ -8,272 +8,7 @@
     /* =========================================================
        PRODUCTS CATALOG
     ========================================================= */
-    const defaultProducts = [
-        // Phones & Tablets
-        {
-            id: "p-1",
-            name: "iPhone 13 128GB",
-            price: 45000,
-            category: "Phones",
-            location: "Serrekunda",
-            condition: "Like New",
-            image: "https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-2",
-            name: "Samsung Galaxy S24 Ultra",
-            price: 52000,
-            category: "Phones",
-            location: "Kotu",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-3",
-            name: "Google Pixel 9 Pro",
-            price: 48000,
-            category: "Phones",
-            location: "Fajara",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-4",
-            name: "iPhone 15 Pro Max 256GB",
-            price: 78000,
-            category: "Phones",
-            location: "Kololi",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Fashion & Apparel
-        {
-            id: "p-5",
-            name: "Classic White Sneakers",
-            price: 2500,
-            category: "Fashion",
-            location: "Brikama",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-6",
-            name: "Premium Automatic Wrist Watch",
-            price: 3200,
-            category: "Fashion",
-            location: "Serrekunda",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-7",
-            name: "Nike Air Max Runners",
-            price: 5500,
-            category: "Fashion",
-            location: "Kololi",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-8",
-            name: "Handcrafted Leather Handbag",
-            price: 4200,
-            category: "Fashion",
-            location: "Kotu",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Groceries & Food
-        {
-            id: "p-9",
-            name: "50kg Premium American Long Grain Rice",
-            price: 2250,
-            category: "Food",
-            location: "Serrekunda",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-10",
-            name: "Pure Groundnut Cooking Oil (20L Jerrycan)",
-            price: 1850,
-            category: "Food",
-            location: "Brikama",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-11",
-            name: "Gambian Attaya Green Tea Box & Teapot Set",
-            price: 450,
-            category: "Food",
-            location: "Banjul",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Electronics & Laptops
-        {
-            id: "p-12",
-            name: "MacBook Air M2 256GB",
-            price: 58000,
-            category: "Electronics",
-            location: "Kololi",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-13",
-            name: "Wireless ANC Headphones",
-            price: 3800,
-            category: "Electronics",
-            location: "Kanifing",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-14",
-            name: "55-inch 4K Smart Android TV",
-            price: 24000,
-            category: "Electronics",
-            location: "Serrekunda",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-15",
-            name: "High Bass Portable Bluetooth Speaker",
-            price: 2800,
-            category: "Electronics",
-            location: "Bakau",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Solar & Energy
-        {
-            id: "p-16",
-            name: "3.5kVA Pure Sine Wave Solar Inverter",
-            price: 28500,
-            category: "Solar",
-            location: "Kanifing",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-17",
-            name: "450W Monocrystalline Solar Panel",
-            price: 5800,
-            category: "Solar",
-            location: "Serrekunda",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Beauty & Cosmetics
-        {
-            id: "p-18",
-            name: "Organic African Shea Butter & Coconut Oil",
-            price: 400,
-            category: "Beauty",
-            location: "Serrekunda",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1608248597359-2e697b0a7ea6?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-19",
-            name: "Luxury Arabic Arabian Oud Perfume 100ml",
-            price: 1800,
-            category: "Beauty",
-            location: "Kololi",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Home & Living
-        {
-            id: "p-20",
-            name: "Modern Ergonomic Accent Chair",
-            price: 8500,
-            category: "Home",
-            location: "Bakau",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-21",
-            name: "Minimalist Scandinavian Table Lamp",
-            price: 1800,
-            category: "Home",
-            location: "Bakau",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-22",
-            name: "Executive 3-Piece Luxury Living Sofa Set",
-            price: 32000,
-            category: "Home",
-            location: "Brufut",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: "p-23",
-            name: "Solid Wood Bedside Nightstand Table",
-            price: 4500,
-            category: "Home",
-            location: "Brikama",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Auto Parts
-        {
-            id: "p-24",
-            name: "Heavy-Duty 12V 75Ah Car Battery",
-            price: 4600,
-            category: "Auto",
-            location: "Kanifing",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Hardware & Building
-        {
-            id: "p-25",
-            name: "Professional Cordless Brushless Power Drill Set",
-            price: 3800,
-            category: "Hardware",
-            location: "Kanifing",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Baby & Kids
-        {
-            id: "p-26",
-            name: "Compact Lightweight Foldable Baby Stroller",
-            price: 4200,
-            category: "Baby",
-            location: "Kololi",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80"
-        },
-
-        // Sports & Fitness
-        {
-            id: "p-27",
-            name: "Official Gambia Scorpions National Team Jersey",
-            price: 1200,
-            category: "Sports",
-            location: "Banjul",
-            condition: "New",
-            image: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=800&q=80"
-        }
-    ];
+    const defaultProducts = []; // Public marketplace inventory must come from approved database listings.
 
     let allProducts = [...defaultProducts];
     let filteredProducts = [...defaultProducts];
@@ -365,35 +100,52 @@
         card.style.animationDelay = `${Math.min(index * 35, 210)}ms`;
 
         const isSaved = window.GamBasketAuth ? window.GamBasketAuth.isInWishlist(product.id) : savedWishlist.includes(product.id);
+        const imageWrap = document.createElement("div");
+        imageWrap.className = "product-image";
+        const img = document.createElement("img");
+        img.src = typeof product.image === "string" ? product.image : "";
+        img.alt = product.name || "Marketplace product";
+        img.loading = "lazy";
+        imageWrap.append(img);
 
-        card.innerHTML = `
-            <div class="product-image">
-                <img src="${product.image}" alt="${product.name}" loading="lazy">
-                <button class="product-heart ${isSaved ? "saved" : ""}" data-product-id="${product.id}" type="button" aria-label="Save ${product.name}">
-                    ${icon("heart")}
-                </button>
-            </div>
-            <div class="product-info">
-                <h3 class="product-name">${product.name}</h3>
-                <p class="product-price">D ${formatPrice(product.price)}</p>
-                <p class="product-location">${product.location}</p>
-            </div>
-        `;
+        const heartBtn = document.createElement("button");
+        heartBtn.type = "button";
+        heartBtn.className = `product-heart ${isSaved ? "saved" : ""}`;
+        heartBtn.dataset.productId = String(product.id || "");
+        heartBtn.setAttribute("aria-label", `Save ${product.name || "product"}`);
+        heartBtn.innerHTML = icon("heart");
+        imageWrap.append(heartBtn);
 
-        const img = card.querySelector("img");
+        const info = document.createElement("div");
+        info.className = "product-info";
+        const name = document.createElement("h3");
+        name.className = "product-name";
+        name.textContent = product.name || "Marketplace product";
+        const price = document.createElement("p");
+        price.className = "product-price";
+        price.textContent = `D ${formatPrice(Number(product.price || 0))}`;
+        const location = document.createElement("p");
+        location.className = "product-location";
+        location.textContent = product.location || "The Gambia";
+        info.append(name, price, location);
+
+        const compare = document.createElement("button");
+        compare.type = "button";
+        compare.className = "product-compare-button";
+        compare.dataset.compareProductId = String(product.id || "");
+        compare.textContent = "Compare";
+        compare.disabled = !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(product.id || ""));
+        card.append(imageWrap, info, compare);
         handleImageLoading(img);
 
-        card.addEventListener("click", (e) => {
-            if (e.target.closest(".product-heart")) return;
+        card.addEventListener("click", e => {
+            if (e.target.closest(".product-heart, [data-compare-product-id]")) return;
             openProductModal(product);
         });
-
-        const heartBtn = card.querySelector(".product-heart");
-        heartBtn.addEventListener("click", (e) => {
+        heartBtn.addEventListener("click", e => {
             e.stopPropagation();
             toggleWishlist(product.id, heartBtn);
         });
-
         return card;
     }
 
@@ -512,12 +264,15 @@
                 return false;
             }
 
+            if (externalFilters?.brandModel) {
+                const needle = String(externalFilters.brandModel).trim().toLowerCase();
+                if (needle && ![p.name, JSON.stringify(p.attributes || {})].filter(Boolean).join(" ").toLowerCase().includes(needle)) return false;
+            }
+
             // Search query
             if (query) {
-                const matchName = p.name.toLowerCase().includes(query);
-                const matchCategory = p.category.toLowerCase().includes(query);
-                const matchLocation = p.location.toLowerCase().includes(query);
-                if (!matchName && !matchCategory && !matchLocation) return false;
+                const text = [p.name,p.category,p.location,JSON.stringify(p.attributes || {})].filter(Boolean).join(" ").toLowerCase();
+                if (!text.includes(query)) return false;
             }
 
             return true;

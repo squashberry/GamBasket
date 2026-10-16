@@ -137,7 +137,7 @@
       input.name = key;
       input.dataset.attributeKey = key;
       input.required = Boolean(def.is_required);
-      input.maxLength = input.type === "text" ? 120 : input.maxLength;
+      if (input.type === "text") input.maxLength = 120;
       input.value = values[key] === undefined || values[key] === null ? "" : String(values[key]);
       label.append(caption, input);
       grid.append(label);

@@ -376,3 +376,51 @@ test("Mobile Explore does not hide the key search/filters controls", async ({ pa
   await expect(page.locator("#mobileFilterDrawer")).toHaveClass(/active/);
   await expect(page.locator("#mobileBrandModelFilter")).toBeVisible();
 });
+
+test("Checkout enables only Cash on Delivery and labels future methods Coming soon", async ({ page }) => {
+  // Inspect the shipped checkout contract without auth redirects obscuring the static controls.
+  await page.setJavaScriptEnabled(false);
+  await page.goto("/checkout.html");
+  await expect(page.locator("#cod")).toBeChecked();
+  await expect(page.locator("#cod")).toBeEnabled();
+  await expect(page.locator("#paymentAvailabilityNote")).toContainText("Cash on Delivery is available now");
+  for (const id of ["wave", "qmoney", "afrimoney"]) {
+    await expect(page.locator(`#${id}`)).toBeDisabled();
+    await expect(page.locator(`label[for="${id}"]`)).toContainText("Coming soon");
+  }
+});
+
+test("Guest cart never invents stock or a seller for stale local snapshots", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("gambasket_cart", JSON.stringify([{
+      id: "guest-snapshot-product",
+      name: "Saved phone snapshot",
+      price: 1250,
+      quantity: 1,
+      image: ""
+      // No stock or seller was stored in this older local-cart snapshot.
+    }]));
+  });
+  await mockBackend(page);
+  await page.goto("/cart.html");
+  await expect(page.locator("#cartItems")).toContainText("Sign in to verify availability");
+  await expect(page.locator("#cartItems")).toContainText("Seller confirmed after sign-in");
+  await expect(page.locator("#cartItems")).not.toContainText("999 available");
+  await expect(page.locator("#cartSubtitle")).toContainText("Sign in to verify current prices and availability");
+});
+
+test("Legacy sample notifications are removed instead of shown as activity", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("gambasket_notifications", JSON.stringify([
+      { id: "welcome-1", type: "welcome", title: "Welcome to GamBasket", message: "Discover products", time: new Date().toISOString(), read: false },
+      { id: "wishlist-1", type: "wishlist", title: "Build your wishlist", message: "Save products", time: new Date().toISOString(), read: false },
+      { id: "explore-1", type: "explore", title: "New products available", message: "Explore products", time: new Date().toISOString(), read: true }
+    ]));
+  });
+  await mockBackend(page);
+  await page.goto("/explore.html");
+  await expect.poll(() => page.evaluate(() => {
+    try { return JSON.parse(localStorage.getItem("gambasket_notifications") || "[]"); }
+    catch { return null; }
+  })).toEqual([]);
+});

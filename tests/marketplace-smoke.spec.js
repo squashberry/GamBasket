@@ -71,6 +71,7 @@ function fakeSession() {
 async function mockBackend(page, options = {}) {
   const products = options.products || [];
   const gallery = options.gallery || [];
+  const cartRows = options.cartRows || [];
   const writes = options.writes || [];
   const authenticated = Boolean(options.authenticated);
   if (authenticated) {
@@ -147,18 +148,20 @@ async function mockBackend(page, options = {}) {
       return;
     }
     if (path === "/rest/v1/product_images") { await json(gallery); return; }
+    if (path === "/rest/v1/cart_items") { await json(cartRows); return; }
     if (path === "/rest/v1/marketplace_reviews") { await json([]); return; }
     if (path === "/rest/v1/category_attribute_definitions") { await json([]); return; }
     if (path === "/rest/v1/public_profiles" || path === "/rest/v1/profiles") {
-      let rows = path.endsWith("/public_profiles") ? [
+      const publicRows = [
         { id: USER_ID, first_name: "Awa", last_name: "Store", avatar_url: null, area: "Serrekunda", region: "Kanifing", business_name: "Awa Mobile Store", seller_type: "business", is_seller_verified: true, has_business_store: true },
         { id: SAMSUNG_SELLER_ID, first_name: "Individual", last_name: "Seller", avatar_url: null, area: "Brikama", region: "West Coast", business_name: null, seller_type: "individual", is_seller_verified: false, has_business_store: false }
-      ] : [];
+      ];
+      const privateRows = [{ id: USER_ID, first_name: "Test", last_name: "Buyer", email: "gambasket-e2e@example.test", phone: "+2207000000", region: "West Coast Region", area: "Brikama", avatar_url: null }];
+      let rows = path.endsWith("/public_profiles") ? publicRows : privateRows;
       const idParam = url.searchParams.get("id") || "";
       if (idParam.startsWith("eq.")) rows = rows.filter(item => item.id === idParam.slice(3));
-      const inParam = url.searchParams.get("id") || "";
-      if (inParam.startsWith("in.(")) {
-        const ids = inParam.slice(4,-1).split(",");
+      if (idParam.startsWith("in.(")) {
+        const ids = idParam.slice(4,-1).split(",");
         rows = rows.filter(item => ids.includes(item.id));
       }
       const accept = request.headers()["accept"] || "";
@@ -166,6 +169,13 @@ async function mockBackend(page, options = {}) {
         if (rows.length === 1) await json(rows[0]);
         else await json({ code: "PGRST116", details: `The result contains ${rows.length} rows`, hint: null, message: "No rows found" }, 406);
       } else await json(rows);
+      return;
+    }
+    if (path === "/rest/v1/rpc/create_order" && method === "POST") {
+      let body = null;
+      try { body = request.postDataJSON(); } catch {}
+      writes.push({ table: "rpc/create_order", body });
+      await json({ id: "55555555-5555-4555-8555-555555555555", order_number: "GB-TEST-0001", order_status: "pending", payment_status: "pending", total: 14600, subtotal: 14500, delivery_fee: 100, currency: "GMD" });
       return;
     }
     if (path === "/rest/v1/saved_searches" && method === "POST") {
@@ -289,6 +299,34 @@ test("Authenticated saved-search form writes only the filter criteria contract",
   expect(insert.body.criteria.location).toBe("Serrekunda");
   expect(insert.body.criteria.minPrice).toBe(10000);
   expect(insert.body.criteria.brandModel).toBe("Apple");
+});
+
+test("Checkout submits cart items through the server-authoritative create_order RPC", async ({ page }) => {
+  const writes = [];
+  const cartRows = [{
+    id: "66666666-6666-4666-8666-666666666666",
+    user_id: USER_ID,
+    product_id: IPHONE_ID,
+    quantity: 1,
+    product: iphone
+  }];
+  await mockBackend(page, { products: [iphone], cartRows, authenticated: true, writes });
+  await page.goto("/checkout.html");
+  await expect(page.locator("#summaryItems")).toContainText("iPhone 13 128GB");
+  await page.locator("#fullName").fill("Test Buyer");
+  await page.locator("#email").fill("gambasket-e2e@example.test");
+  await page.locator("#phone").fill("+2207000000");
+  await page.locator("#region").selectOption({ label: "West Coast Region" });
+  await page.locator("#area").fill("Brikama");
+  await page.locator("#address").fill("Test Street");
+  await page.locator("#placeOrderBtn").click();
+  await expect(page.locator("#orderSuccess")).toHaveClass(/show/);
+  await expect(page.locator("#successOrderNumber")).toHaveText("GB-TEST-0001");
+  const orderCall = writes.find(row => row.table === "rpc/create_order");
+  expect(orderCall).toBeTruthy();
+  expect(orderCall.body.p_items).toEqual([{ product_id: IPHONE_ID, quantity: 1 }]);
+  expect(orderCall.body.p_delivery_area).toBe("Brikama");
+  expect(orderCall.body.p_fulfillment_type).toBe("delivery");
 });
 
 test("Image upload falls back to Supabase Storage when Cloudinary is unset", async ({ page }) => {

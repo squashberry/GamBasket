@@ -246,6 +246,7 @@ BEGIN
 
     IF category_filter IS NOT NULL AND category_filter NOT IN ('All',NEW.category_id) THEN CONTINUE; END IF;
     IF COALESCE((s.criteria->>'delivery')::boolean,false) AND NEW.delivery_available IS DISTINCT FROM true THEN CONTINUE; END IF;
+    IF COALESCE((s.criteria->>'inStock')::boolean,false) AND COALESCE(NEW.stock,0)<=0 THEN CONTINUE; END IF;
     IF location_filter IS NOT NULL AND location_filter<>'all' AND lower(NEW.location) NOT LIKE '%'||lower(location_filter)||'%' THEN CONTINUE; END IF;
     IF condition_filter IS NOT NULL AND condition_filter<>'all' AND NEW.condition IS DISTINCT FROM condition_filter THEN CONTINUE; END IF;
     IF min_price IS NOT NULL AND NEW.price<min_price THEN CONTINUE; END IF;

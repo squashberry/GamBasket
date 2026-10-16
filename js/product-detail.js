@@ -23,7 +23,8 @@
             try {
                 const client = window.GamBasketAuth.getClient();
                 if (client) {
-                    let query = client.from("products").select("*");
+                    // Only publicly approved listings can resolve from a shareable URL.
+                    let query = client.from("products").select("*").eq("status", "approved");
 
                     query = isUuid(productId)
                         ? query.eq("id", productId).single()
@@ -36,7 +37,7 @@
                         if (data.seller_id) {
                             const sellerResult = await client
                                 .from("public_profiles")
-                                .select("id, first_name, last_name, avatar_url, area, region")
+                                .select("id, first_name, last_name, avatar_url, area, region, business_name, seller_type, is_seller_verified, has_business_store")
                                 .eq("id", data.seller_id)
                                 .maybeSingle();
                             if (sellerResult.error) throw sellerResult.error;
@@ -63,8 +64,12 @@
                             images: galleryUrls,
                             attributes: data.attributes && typeof data.attributes === "object" ? data.attributes : {},
                             stock: Number(data.stock || 0),
-                            seller: seller ? `${seller.first_name || ""} ${seller.last_name || ""}`.trim() : "GamBasket Merchant",
+                            seller: seller?.business_name || `${seller?.first_name || ""} ${seller?.last_name || ""}`.trim() || "GamBasket member",
                             sellerId: data.seller_id,
+                            seller_verified: Boolean(seller?.is_seller_verified),
+                            seller_type: seller?.seller_type === "business" ? "business" : "individual",
+                            store_name: seller?.business_name || null,
+                            delivery_available: data.delivery_available === true,
                             description: data.description || "",
                             listing_type: data.listing_type || "retail",
                             wholesale_price: data.wholesale_price,
@@ -157,8 +162,48 @@
         document.getElementById("detailName").textContent = p.name;
         document.getElementById("detailPrice").textContent = `D ${formatPrice(p.price)}`;
         document.getElementById("detailCategory").textContent = p.category;
-        document.getElementById("detailCondition").textContent = p.condition || "Brand New";
+        document.getElementById("detailCondition").textContent = p.condition || "New";
         document.getElementById("locationText").textContent = p.location;
+        const stock = Number(p.stock || 0);
+        const stockNode = document.getElementById("detailStock");
+        if (stockNode) {
+            stockNode.replaceChildren();
+            const dot = document.createElement("span");
+            dot.className = "stock-dot";
+            stockNode.append(dot, document.createTextNode(stock > 0 ? `${stock} in stock` : "Out of stock"));
+            stockNode.classList.toggle("out-of-stock", stock <= 0);
+        }
+        const outOfStock = stock <= 0;
+        ["addToCartBtn", "orderNowBtn", "mobileStickyCart", "mobileStickyOrder"].forEach(id => {
+            const button = document.getElementById(id);
+            if (button) {
+                button.disabled = outOfStock;
+                button.setAttribute("aria-disabled", String(outOfStock));
+                button.title = outOfStock ? "This listing is currently out of stock." : "";
+            }
+        });
+        const verifiedBadge = document.getElementById("sellerVerifiedBadge");
+        if (verifiedBadge) verifiedBadge.hidden = !p.seller_verified;
+        const sellerSubtitle = document.getElementById("sellerSubtitle");
+        if (sellerSubtitle) sellerSubtitle.textContent = p.seller_verified
+            ? "Verified seller on GamBasket"
+            : (p.seller_type === "business" ? "Business store on GamBasket" : "Individual seller on GamBasket");
+        const listingBadge = document.getElementById("productListingBadge");
+        if (listingBadge) {
+            listingBadge.hidden = !p.seller_verified;
+            listingBadge.textContent = p.seller_verified ? "Verified seller" : "";
+        }
+        const delivery = document.getElementById("deliveryFulfillment");
+        if (delivery) {
+            delivery.hidden = !p.delivery_available;
+            const note = delivery.querySelector("[data-delivery-note]");
+            if (note) note.textContent = "The seller offers delivery. Charges and service area are confirmed at checkout.";
+        }
+        const compareButton = document.getElementById("detailCompareBtn");
+        if (compareButton) {
+            compareButton.disabled = !isUuid(p.id);
+            compareButton.setAttribute("aria-disabled", String(!isUuid(p.id)));
+        }
         renderGallery(p);
         document.getElementById("detailDescription").textContent = p.description;
         const attributeCard = document.getElementById("detailAttributesCard");

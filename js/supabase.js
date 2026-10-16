@@ -1368,43 +1368,71 @@
         uploadImage: async function (file, folder = "product-images") {
             if (!file) throw new Error("No file selected.");
 
-            const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-            if (!allowedTypes.includes(String(file.type || "").toLowerCase())) {
-                throw new Error("Invalid image type. Please select a JPG, PNG, or WEBP file.");
+            const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+            const contentType = String(file.type || "").toLowerCase();
+            if (!allowedTypes.includes(contentType)) {
+                throw new Error("Invalid image type. Please select a JPG, PNG, WEBP, or GIF image.");
             }
-
-            const MAX_SIZE_BYTES = 5 * 1024 * 1024;
-            if (file.size > MAX_SIZE_BYTES) {
+            if (file.size > 5 * 1024 * 1024) {
                 throw new Error("Image file is too large. Maximum allowed size is 5MB.");
             }
 
+            await this.ready();
+            const session = await this.getSession();
+            const client = this.getClient();
+            if (!session?.user || !client) throw new Error("Sign in before uploading product images.");
+
             const config = window.GAMBASKET_CONFIG || {};
-            if (!config.isCloudinaryConfigured || !config.isCloudinaryConfigured()) {
-                throw new Error("Image hosting is not configured yet. Add the Cloudinary cloud name and restricted unsigned upload preset in js/config.js.");
+            if (config.isCloudinaryConfigured?.()) {
+                const cloudName = config.CLOUDINARY_CLOUD_NAME;
+                const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
+                const safeFolder = String(folder || "products")
+                    .replace(/[^a-zA-Z0-9/_-]/g, "")
+                    .replace(/^\/+|\/+$/g, "") || "products";
+                const payload = new FormData();
+                payload.append("file", file);
+                payload.append("upload_preset", uploadPreset);
+                payload.append("folder", `gambasket/${safeFolder}`);
+                const response = await fetch(
+                    `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
+                    { method: "POST", body: payload }
+                );
+                let result = null;
+                try { result = await response.json(); } catch {}
+                if (!response.ok || !result?.secure_url) {
+                    throw new Error(result?.error?.message || `Image upload failed (HTTP ${response.status}).`);
+                }
+                return result.secure_url;
             }
 
-            const cloudName = config.CLOUDINARY_CLOUD_NAME;
-            const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
-            const safeFolder = String(folder || "product-images")
-                .replace(/[^a-zA-Z0-9/_-]/g, "")
-                .replace(/^\/+|\/+$/g, "") || "product-images";
-            const payload = new FormData();
-            payload.append("file", file);
-            payload.append("upload_preset", uploadPreset);
-            payload.append("folder", `gambasket/${safeFolder}`);
-
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
-                { method: "POST", body: payload }
-            );
-
-            let result = null;
-            try { result = await response.json(); } catch {}
-            if (!response.ok || !result?.secure_url) {
-                const reason = result?.error?.message || `Cloudinary upload failed (HTTP ${response.status}).`;
-                throw new Error(reason);
-            }
-            return result.secure_url;
+            // Default to the project's public Supabase Storage bucket. This works
+            // without an external media account and restricts uploads to the user's
+            // own UUID-prefixed folder through Storage RLS.
+            const extensions = {
+                "image/jpeg": "jpg",
+                "image/png": "png",
+                "image/webp": "webp",
+                "image/gif": "gif"
+            };
+            const safeFolder = String(folder || "products")
+                .split("/")
+                .map(part => part.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40))
+                .filter(Boolean)
+                .slice(0, 3)
+                .join("/") || "products";
+            const filename = `${Date.now()}_${crypto.randomUUID()}.${extensions[contentType]}`;
+            const objectPath = `${session.user.id}/${safeFolder}/${filename}`;
+            const { data, error } = await client.storage
+                .from("product-images")
+                .upload(objectPath, file, {
+                    cacheControl: "31536000",
+                    contentType,
+                    upsert: false
+                });
+            if (error) throw new Error(error.message || "The image could not be uploaded.");
+            const { data: publicData } = client.storage.from("product-images").getPublicUrl(data.path);
+            if (!publicData?.publicUrl) throw new Error("Image uploaded, but its public URL could not be created.");
+            return publicData.publicUrl;
         }
     };
 

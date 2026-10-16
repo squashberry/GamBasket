@@ -1,7 +1,7 @@
 /* GamBasket saved searches and price-drop alerts. */
 (() => {
   "use strict";
-  const STORAGE_CRITERIA_KEYS = ["query","category","location","condition","minPrice","maxPrice","inStock","brandModel","sort"];
+  const STORAGE_CRITERIA_KEYS = ["query","category","location","condition","minPrice","maxPrice","inStock","delivery","brandModel","sort"];
   const $ = id => document.getElementById(id);
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
   let latestFilters = {
@@ -43,6 +43,7 @@
       if (raw !== "" && raw !== null && raw !== undefined && Number.isFinite(Number(raw)) && Number(raw)>=0) criteria[key] = Number(raw);
     }
     criteria.inStock = Boolean(state.inStock);
+    if (state.delivery) criteria.delivery = true;
     const brandModel = String(state.brandModel || "").trim().slice(0,80);
     if (brandModel) criteria.brandModel = brandModel;
     const sorts = ["newest","price_asc","price_desc","popular"];
@@ -56,6 +57,9 @@
     if (criteria.location && criteria.location !== "all") params.set("location",criteria.location);
     if (criteria.minPrice !== undefined) params.set("min",String(criteria.minPrice));
     if (criteria.maxPrice !== undefined) params.set("max",String(criteria.maxPrice));
+    if (criteria.condition) params.set("condition",criteria.condition);
+    if (criteria.inStock) params.set("stock","1");
+    if (criteria.delivery) params.set("delivery","1");
     if (criteria.sort && criteria.sort !== "newest") params.set("sort",criteria.sort);
     if (criteria.brandModel) params.set("brandModel",criteria.brandModel);
     return "explore.html" + (params.size ? "?" + params.toString() : "");
@@ -69,6 +73,7 @@
     if (criteria.maxPrice !== undefined) parts.push(`up to D ${Number(criteria.maxPrice).toLocaleString("en-GM")}`);
     if (criteria.condition) parts.push(criteria.condition);
     if (criteria.inStock) parts.push("in stock");
+    if (criteria.delivery) parts.push("delivery available");
     if (criteria.brandModel) parts.push(criteria.brandModel);
     return parts.join(" · ") || "All products";
   }

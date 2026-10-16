@@ -218,7 +218,7 @@
             }
 
             // Location filter
-            if (location !== "all" && p.location !== location) {
+            if (location !== "all" && !String(p.location || "").toLowerCase().includes(String(location).toLowerCase())) {
                 return false;
             }
 
@@ -243,11 +243,14 @@
                 return false;
             }
 
-            if (externalFilters?.delivery && p.delivery_available === false) {
+            if (externalFilters?.delivery && p.delivery_available !== true) {
                 return false;
             }
 
-            if (externalFilters?.seller !== "all" && p.seller_type && p.seller_type !== externalFilters.seller) {
+            if (externalFilters?.seller === "verified" && !p.seller_verified) {
+                return false;
+            }
+            if (externalFilters?.seller === "business" && p.seller_type !== "business") {
                 return false;
             }
 

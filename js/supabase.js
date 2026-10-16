@@ -787,40 +787,27 @@
                 if (!data.length) return [];
 
                 const sellerIds = [...new Set(data.map(row => row.seller_id).filter(id => isUuid(id)))];
-                const storesBySeller = new Map();
-                const suppliersBySeller = new Map();
-                const sellerVerification = new Map();
-
+                const publicBadges = new Map();
                 if (sellerIds.length) {
-                    const [storesResult, suppliersResult, sellerResult] = await Promise.all([
-                        client.from("stores")
-                            .select("seller_id,name,is_verified,category,location")
-                            .eq("is_active", true).in("seller_id", sellerIds),
-                        client.from("supplier_profiles")
-                            .select("user_id,business_name,is_verified,business_category,location")
-                            .eq("is_active", true).in("user_id", sellerIds),
-                        client.from("seller_profiles")
-                            .select("user_id,business_name,business_category,verification_status,rating,total_reviews,is_active")
-                            .eq("is_active", true).in("user_id", sellerIds)
-                            .in("verification_status", ["verified", "approved"])
-                    ]);
-
-                    if (!storesResult.error) (storesResult.data || []).forEach(row => storesBySeller.set(row.seller_id, row));
-                    if (!suppliersResult.error) (suppliersResult.data || []).forEach(row => suppliersBySeller.set(row.user_id, row));
-                    if (!sellerResult.error) (sellerResult.data || []).forEach(row => sellerVerification.set(row.user_id, row));
+                    try {
+                        const { data: badgeRows, error: badgeError } = await client
+                            .from("public_profiles")
+                            .select("id,business_name,seller_type,is_seller_verified,has_business_store")
+                            .in("id", sellerIds);
+                        if (!badgeError) (badgeRows || []).forEach(row => publicBadges.set(row.id, row));
+                    } catch (badgeError) {
+                        console.warn("[GamBasket seller badges]", badgeError?.message);
+                    }
                 }
 
                 return data.map(row => {
-                    const store = storesBySeller.get(row.seller_id) || null;
-                    const supplier = suppliersBySeller.get(row.seller_id) || null;
-                    const verifiedSeller = sellerVerification.get(row.seller_id) || null;
-                    const isBusiness = Boolean(store || supplier);
+                    const badge = publicBadges.get(row.seller_id) || null;
                     return this.cacheProductRow({
                         ...row,
-                        seller: store?.name || supplier?.business_name || verifiedSeller?.business_name || "GamBasket member",
-                        seller_type: isBusiness ? "business" : "individual",
-                        seller_verified: Boolean(store?.is_verified || supplier?.is_verified || verifiedSeller),
-                        store_name: store?.name || supplier?.business_name || null
+                        seller: badge?.business_name || "GamBasket member",
+                        seller_type: badge?.seller_type === "business" ? "business" : "individual",
+                        seller_verified: Boolean(badge?.is_seller_verified),
+                        store_name: badge?.business_name || null
                     });
                 }).filter(Boolean);
             } catch (err) {

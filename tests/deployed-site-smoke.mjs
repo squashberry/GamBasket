@@ -12,6 +12,10 @@ const pages = [
   ["cart", "cart.html", /class=["']cart-shell["']/i],
   ["checkout", "checkout.html", /id=["']checkoutForm["']/i],
   ["login", "login.html", /<title[^>]*>[^<]*(login|log in|gambasket)/i],
+  ["About GamBasket", "about.html", /The Unified Digital Marketplace of The Gambia/i],
+  ["Help Center payment guidance", "help.html", /Cash on Delivery is available now/i],
+  ["How It Works payment guidance", "how-it-works.html", /Cash on Delivery is available now/i],
+  ["Customer care payment guidance", "customer-care.html", /Cash on Delivery is available now/i],
   ["seller quick sell", "quick-sell.html", /<html[^>]*lang=["']en/i],
   ["seller product form", "supplier/add-product.html", /<html[^>]*lang=["']en/i]
 ];

@@ -7621,3 +7621,44 @@ html.dark .gb-cart-empty-icon {
     font-size: 13px;
     color: #64748b;
 }
+
+/* Checkout: clearly distinguish unavailable future payment providers. */
+.payment-grid .choice input:disabled + label {
+    cursor: not-allowed;
+    opacity: .68;
+    background: var(--surface-secondary);
+    border-style: dashed;
+}
+.payment-grid .choice input:disabled + label strong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.payment-coming-soon-badge,
+.payment-availability-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 850;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.payment-coming-soon-badge {
+    background: #f1f5f9;
+    color: #475569;
+}
+.payment-availability-badge {
+    background: #dcfce7;
+    color: #166534;
+}
+.dark .payment-coming-soon-badge {
+    background: #334155;
+    color: #e2e8f0;
+}
+.dark .payment-availability-badge {
+    background: #14532d;
+    color: #bbf7d0;
+}

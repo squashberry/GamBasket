@@ -53,6 +53,23 @@ await Promise.all(pages.map(async ([label, path, sentinel]) => {
   }
 }));
 
+// The live preview must never imply that unsupported online payment methods work.
+try {
+  const { response, body } = await fetchText("checkout.html");
+  const radioTag = id => body.match(new RegExp("<input\\b(?=[^>]*\\bid=\"" + id + "\"(?:\\s|>))[^>]*>", "i"))?.[0] || "";
+  const labelFor = id => body.match(new RegExp("<label\\b[^>]*\\bfor=\"" + id + "\"[^>]*>[\\s\\S]*?</label>", "i"))?.[0] || "";
+  const codTag = radioTag("cod");
+  const onlyCodAvailable = /\bchecked\b/i.test(codTag) && !/\bdisabled\b/i.test(codTag) &&
+    ["wave", "qmoney", "afrimoney"].every(id =>
+      /\bdisabled\b/i.test(radioTag(id)) && /Coming soon/i.test(labelFor(id))
+    ) && /id="paymentAvailabilityNote"/i.test(body);
+  report(response.status === 200 && onlyCodAvailable,
+    "checkout payment availability",
+    "HTTP " + response.status + "; COD enabled and future methods clearly disabled");
+} catch (error) {
+  report(false, "checkout payment availability", error?.message || "request failed");
+}
+
 await Promise.all(assets.map(async ([label, path, expectedType]) => {
   try {
     const { response, body, url } = await fetchText(path);

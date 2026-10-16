@@ -20,6 +20,9 @@
         if (state.minPrice) params.set("min", state.minPrice);
         if (state.maxPrice) params.set("max", state.maxPrice);
         if (state.brandModel) params.set("brandModel", state.brandModel);
+        if (state.conditions.length) params.set("condition", state.conditions[0]);
+        if (state.inStock) params.set("stock", "1");
+        if (state.delivery) params.set("delivery", "1");
         if (state.sort !== "newest") params.set("sort", state.sort);
         history.replaceState(null, "", `${location.pathname}${params.toString() ? `?${params}` : ""}`);
     }
@@ -37,6 +40,8 @@
         if (state.minPrice) filters.push(["minPrice", `D ${state.minPrice}+`]);
         if (state.maxPrice) filters.push(["maxPrice", `Up to D ${state.maxPrice}`]);
         if (state.brandModel) filters.push(["brandModel", `Brand / model: ${state.brandModel}`]);
+        if (state.inStock) filters.push(["stock", "In stock"]);
+        if (state.delivery) filters.push(["delivery", "Delivery available"]);
         state.conditions.forEach(value => filters.push(["condition", value]));
         if (state.inStock) filters.push(["stock", "In stock"]);
         if (state.delivery) filters.push(["delivery", "Delivery"]);
@@ -57,6 +62,10 @@
         ["minPriceFilter", "mobileMinPrice"].forEach(id => { const el = document.getElementById(id); if (el) el.value = state.minPrice; });
         ["maxPriceFilter", "mobileMaxPrice"].forEach(id => { const el = document.getElementById(id); if (el) el.value = state.maxPrice; });
         ["brandModelFilter", "mobileBrandModelFilter"].forEach(id => { const el = document.getElementById(id); if (el) el.value = state.brandModel; });
+        ["workspaceInStock", "mobileWorkspaceInStock"].forEach(id => { const el = document.getElementById(id); if (el) el.checked = state.inStock; });
+        ["workspaceDelivery", "mobileWorkspaceDelivery"].forEach(id => { const el = document.getElementById(id); if (el) el.checked = state.delivery; });
+        document.querySelectorAll("[data-workspace-condition]").forEach(el => { el.checked = state.conditions.includes(el.value); });
+        document.querySelectorAll(".quick-filter").forEach(el => el.classList.toggle("active", (el.dataset.quickFilter === "in_stock" && state.inStock) || (el.dataset.quickFilter === "delivery" && state.delivery) || (el.dataset.quickFilter === "all" && !state.inStock && !state.delivery && state.discovery === "all")));
         document.querySelectorAll("[data-workspace-condition]").forEach(el => { el.checked = state.conditions.includes(el.value); });
         ["workspaceInStock", "mobileWorkspaceInStock"].forEach(id => { const el = document.getElementById(id); if (el) el.checked = state.inStock; });
         ["workspaceDelivery", "mobileWorkspaceDelivery"].forEach(id => { const el = document.getElementById(id); if (el) el.checked = state.delivery; });
@@ -103,6 +112,9 @@
     if (params.get("min")) state.minPrice = params.get("min");
     if (params.get("max")) state.maxPrice = params.get("max");
     if (params.get("brandModel")) state.brandModel = params.get("brandModel").slice(0,80);
+    if (params.get("condition")) state.conditions = [params.get("condition")].filter(value => ["New","Like New","Refurbished","Used - Good","Used - Fair"].includes(value));
+    state.inStock = params.get("stock") === "1";
+    state.delivery = params.get("delivery") === "1";
     if (params.get("sort")) state.sort = params.get("sort");
     sync();
     renderSummary();

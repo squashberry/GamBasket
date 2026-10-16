@@ -143,6 +143,7 @@
         status: "pending_review",
         seller_id: user.id,
         location: listingLocation,
+        delivery_available: Boolean($("quickSellDelivery")?.checked),
         main_image: selectedImageUrls[0],
         created_at: new Date().toISOString()
       }).select("id").single();

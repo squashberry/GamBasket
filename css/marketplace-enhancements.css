@@ -1,0 +1,92 @@
+/* GamBasket marketplace quality improvements */
+.product-attributes-form {
+  margin: 14px 0;
+  padding: 16px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+.product-attributes-heading { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.product-attributes-heading strong { font-size:14px; color:var(--text,#111827); }
+.product-attributes-heading span { font-size:11px; color:var(--text-secondary,#6b7280); }
+.product-attributes-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.product-attribute-field { display:grid; gap:6px; min-width:0; }
+.product-attribute-field > span { font-size:12px; font-weight:650; color:var(--text,#111827); }
+.product-attribute-field input,.product-attribute-field select {
+  min-width:0; width:100%; border:1px solid var(--border,#d1d5db); border-radius:9px;
+  padding:10px 11px; background:var(--surface-secondary,#f9fafb); color:var(--text,#111827); font:inherit; font-size:13px;
+}
+.product-attributes-empty { font-size:12px; color:var(--text-secondary,#6b7280); }
+.product-attributes-readonly { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; margin:0; }
+.product-attributes-readonly > div { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--border,#e5e7eb); }
+.product-attributes-readonly dt { font-size:12px; color:var(--text-secondary,#6b7280); }
+.product-attributes-readonly dd { margin:0; max-width:55%; text-align:right; font-size:12px; font-weight:650; color:var(--text,#111827); overflow-wrap:anywhere; }
+.product-gallery-thumbs { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px; }
+.product-gallery-thumb { padding:0; width:64px; height:64px; border:2px solid transparent; border-radius:10px; overflow:hidden; background:var(--surface-secondary,#f3f4f6); cursor:pointer; }
+.product-gallery-thumb.active { border-color:#2563eb; }
+.product-gallery-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.product-compare-action,.product-compare-button {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  border:1px solid var(--border,#d1d5db); background:var(--surface,#fff); color:var(--text,#111827);
+  border-radius:9px; padding:9px 12px; font:inherit; font-size:12px; font-weight:700; cursor:pointer;
+}
+.product-compare-action[aria-pressed="true"],.product-compare-button[aria-pressed="true"] { border-color:#2563eb; background:#eff6ff; color:#1d4ed8; }
+.product-compare-button { margin-top:9px; min-height:34px; }
+.product-compare-button:disabled { opacity:.45; cursor:not-allowed; }
+.gambasket-compare-dock {
+ position:fixed; z-index:10020; left:50%; bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateX(-50%);
+ width:min(600px,calc(100% - 24px)); display:flex; align-items:center; justify-content:space-between; gap:14px;
+ padding:12px 14px; border:1px solid var(--border,#d1d5db); border-radius:16px;
+ background:var(--surface,#fff); color:var(--text,#111827); box-shadow:0 14px 48px #0002;
+}
+.gambasket-compare-dock[hidden] { display:none!important; }
+.gambasket-compare-dock strong { font-size:13px; }
+.gambasket-compare-dock small { display:block; color:var(--text-secondary,#6b7280); font-size:11px; margin-top:2px; }
+.gambasket-compare-dock-actions { display:flex; align-items:center; gap:8px; }
+.gambasket-compare-dock a { border-radius:9px; padding:10px 13px; text-decoration:none; background:#2563eb; color:#fff; font-weight:750; font-size:12px; white-space:nowrap; }
+.gambasket-compare-dock button { border:0; background:transparent; color:var(--text-secondary,#6b7280); font-weight:700; cursor:pointer; font-size:12px; }
+.gambasket-save-search {
+ display:inline-flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap;
+ border:1px solid var(--border,#d1d5db); background:var(--surface,#fff); color:var(--text,#111827);
+ border-radius:10px; padding:9px 12px; font-size:12px; font-weight:750; cursor:pointer;
+}
+.gambasket-save-search:hover { border-color:#2563eb; color:#1d4ed8; }
+.gambasket-save-search-modal { position:fixed; inset:0; z-index:10030; display:grid; place-items:center; padding:20px; background:#11182788; }
+.gambasket-save-search-modal[hidden] { display:none!important; }
+.gambasket-save-search-card { width:min(440px,100%); background:var(--surface,#fff); color:var(--text,#111827); border:1px solid var(--border,#e5e7eb); border-radius:20px; padding:22px; box-shadow:0 20px 70px #0003; }
+.gambasket-save-search-card h2 { margin:0 0 6px; font-size:20px; }
+.gambasket-save-search-card p { margin:0 0 18px; color:var(--text-secondary,#6b7280); font-size:13px; line-height:1.5; }
+.gambasket-save-search-card label { display:grid; gap:6px; font-size:12px; font-weight:700; margin:12px 0; }
+.gambasket-save-search-card input[type=text] { width:100%; box-sizing:border-box; border:1px solid var(--border,#d1d5db); border-radius:10px; padding:11px; background:var(--surface-secondary,#f9fafb); color:var(--text,#111827); }
+.gambasket-save-search-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
+.gambasket-save-search-actions button { border:1px solid var(--border,#d1d5db); border-radius:10px; padding:10px 14px; cursor:pointer; font-weight:750; }
+.gambasket-save-search-actions [data-save-confirm] { background:#2563eb; border-color:#2563eb; color:#fff; }
+.gambasket-saved-search-list { display:grid; gap:12px; }
+.gambasket-saved-search-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border:1px solid var(--border,#e5e7eb); border-radius:14px; background:var(--surface,#fff); }
+.gambasket-saved-search-item strong { display:block; font-size:14px; }
+.gambasket-saved-search-item small { display:block; margin-top:4px; color:var(--text-secondary,#6b7280); font-size:12px; }
+.gambasket-saved-search-item .gambasket-actions { display:flex; align-items:center; flex-wrap:wrap; gap:7px; }
+.gambasket-saved-search-item a,.gambasket-saved-search-item button { font-size:12px; font-weight:750; text-decoration:none; padding:8px 10px; border-radius:9px; border:1px solid var(--border,#d1d5db); background:transparent; color:var(--text,#111827); cursor:pointer; }
+.gambasket-price-alert { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border,#e5e7eb); }
+.gambasket-price-alert img { width:64px; height:64px; object-fit:cover; border-radius:10px; background:var(--surface-secondary,#f3f4f6); }
+.gambasket-price-alert strong { font-size:13px; }
+.gambasket-price-alert p { margin:4px 0; color:var(--text-secondary,#6b7280); font-size:12px; }
+.gambasket-price-alert a { font-weight:750; font-size:12px; color:#2563eb; }
+.gambasket-compare-table-wrap { width:100%; overflow-x:auto; border:1px solid var(--border,#e5e7eb); border-radius:16px; }
+.gambasket-compare-table { min-width:620px; border-collapse:collapse; width:100%; background:var(--surface,#fff); color:var(--text,#111827); }
+.gambasket-compare-table th,.gambasket-compare-table td { padding:13px; border-bottom:1px solid var(--border,#e5e7eb); text-align:left; font-size:13px; vertical-align:top; }
+.gambasket-compare-table thead th { background:var(--surface-secondary,#f9fafb); min-width:160px; }
+.gambasket-compare-table tbody th { min-width:120px; color:var(--text-secondary,#6b7280); font-weight:700; }
+.gambasket-compare-product img { width:100%; max-width:170px; aspect-ratio:1; object-fit:cover; border-radius:10px; background:var(--surface-secondary,#f3f4f6); }
+.gambasket-compare-product strong { display:block; margin:8px 0; }
+.gambasket-compare-product a { color:#2563eb; font-weight:750; text-decoration:none; }
+.gambasket-compare-product button { display:block; margin-top:8px; border:1px solid var(--border,#d1d5db); background:transparent; color:var(--text,#111827); border-radius:8px; padding:7px 9px; cursor:pointer; }
+.quick-sell-status { margin:0; color:var(--text-secondary,#6b7280); font-size:12px; line-height:1.5; }
+@media(max-width:640px) {
+ .product-attributes-grid,.product-attributes-readonly { grid-template-columns:1fr; }
+ .product-gallery-thumb { width:56px; height:56px; }
+ .gambasket-compare-dock { align-items:flex-start; padding:10px 11px; }
+ .gambasket-compare-dock-actions { flex-direction:column; align-items:stretch; }
+ .gambasket-compare-dock-actions a { text-align:center; }
+ .gambasket-saved-search-item { align-items:flex-start; flex-direction:column; }
+}

@@ -183,7 +183,10 @@
             }
         });
         const verifiedBadge = document.getElementById("sellerVerifiedBadge");
-        if (verifiedBadge) verifiedBadge.hidden = !p.seller_verified;
+        if (verifiedBadge) {
+            verifiedBadge.hidden = !p.seller_verified;
+            verifiedBadge.style.display = p.seller_verified ? "" : "none";
+        }
         const sellerSubtitle = document.getElementById("sellerSubtitle");
         if (sellerSubtitle) sellerSubtitle.textContent = p.seller_verified
             ? "Verified seller on GamBasket"
@@ -191,11 +194,13 @@
         const listingBadge = document.getElementById("productListingBadge");
         if (listingBadge) {
             listingBadge.hidden = !p.seller_verified;
+            listingBadge.style.display = p.seller_verified ? "" : "none";
             listingBadge.textContent = p.seller_verified ? "Verified seller" : "";
         }
         const delivery = document.getElementById("deliveryFulfillment");
         if (delivery) {
             delivery.hidden = !p.delivery_available;
+            delivery.style.display = p.delivery_available ? "" : "none";
             const note = delivery.querySelector("[data-delivery-note]");
             if (note) note.textContent = "The seller offers delivery. Charges and service area are confirmed at checkout.";
         }

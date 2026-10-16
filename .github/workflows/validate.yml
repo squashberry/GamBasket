@@ -105,8 +105,17 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
+          import re
+
           migrations = sorted(Path("supabase/migrations").glob("*.sql"))
           assert migrations, "No version-controlled SQL migrations found."
+          versions = []
+          for migration in migrations:
+              match = re.match(r"^(\\d{14})_", migration.name)
+              assert match, f"Migration filename must begin with a 14-digit timestamp: {migration.name}"
+              versions.append(match.group(1))
+          duplicates = sorted({version for version in versions if versions.count(version) > 1})
+          assert not duplicates, f"Duplicate Supabase migration timestamps found: {duplicates}"
           all_sql = "\n".join(p.read_text(encoding="utf-8") for p in migrations)
           checks = {
               "profile privacy projection": "public_profiles" in all_sql and "profiles_owner_or_admin_select" in all_sql,

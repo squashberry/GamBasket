@@ -45,7 +45,13 @@
         const { data, error } = await client.from("category_attribute_definitions")
           .select("attribute_key,label,input_type,options,is_required,sort_order")
           .eq("category_id", name).eq("is_active", true).order("sort_order");
-        if (!error && Array.isArray(data) && data.length) return data;
+        const valid = !error && Array.isArray(data)
+          ? data.filter(def => def
+              && /^[a-z][a-z0-9_]{0,39}$/.test(String(def.attribute_key || ""))
+              && String(def.label || "").trim()
+              && ["text","number","select","date","checkbox"].includes(def.input_type))
+          : [];
+        if (valid.length) return valid;
       }
     } catch (error) {
       console.warn("[GamBasket attributes] Using local field definitions:", error?.message);

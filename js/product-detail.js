@@ -38,7 +38,7 @@
                         if (data.seller_id) {
                             const sellerResult = await client
                                 .from("public_profiles")
-                                .select("id, first_name, last_name, avatar_url, area, region, business_name, seller_type, is_seller_verified, has_business_store")
+                                .select("id, first_name, last_name, avatar_url, area, region")
                                 .eq("id", data.seller_id)
                                 .maybeSingle();
                             if (sellerResult.error) throw sellerResult.error;
@@ -65,11 +65,11 @@
                             images: galleryUrls,
                             attributes: data.attributes && typeof data.attributes === "object" ? data.attributes : {},
                             stock: Number(data.stock || 0),
-                            seller: seller?.business_name || `${seller?.first_name || ""} ${seller?.last_name || ""}`.trim() || "GamBasket member",
+                            seller: `${seller?.first_name || ""} ${seller?.last_name || ""}`.trim() || "GamBasket member",
                             sellerId: data.seller_id,
-                            seller_verified: Boolean(seller?.is_seller_verified),
-                            seller_type: seller?.seller_type === "business" ? "business" : "individual",
-                            store_name: seller?.business_name || null,
+                            seller_verified: false,
+                            seller_type: "individual",
+                            store_name: null,
                             delivery_available: data.delivery_available === true,
                             description: data.description || "",
                             listing_type: data.listing_type || "retail",

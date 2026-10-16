@@ -118,6 +118,25 @@
 
         const info = document.createElement("div");
         info.className = "product-info";
+        const badges = document.createElement("div");
+        badges.className = "product-badges";
+        if (product.seller_verified) {
+            const badge = document.createElement("span");
+            badge.className = "product-trust-badge verified";
+            badge.textContent = "Verified seller";
+            badges.append(badge);
+        } else if (product.seller_type === "business") {
+            const badge = document.createElement("span");
+            badge.className = "product-trust-badge business";
+            badge.textContent = "Business store";
+            badges.append(badge);
+        }
+        if (product.delivery_available) {
+            const badge = document.createElement("span");
+            badge.className = "product-trust-badge delivery";
+            badge.textContent = "Delivery available";
+            badges.append(badge);
+        }
         const name = document.createElement("h3");
         name.className = "product-name";
         name.textContent = product.name || "Marketplace product";
@@ -127,6 +146,7 @@
         const location = document.createElement("p");
         location.className = "product-location";
         location.textContent = product.location || "The Gambia";
+        if (badges.childElementCount) info.append(badges);
         info.append(name, price, location);
 
         const compare = document.createElement("button");

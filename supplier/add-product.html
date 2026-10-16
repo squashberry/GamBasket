@@ -110,10 +110,10 @@
                                         <option value="Fashion">Fashion & Clothing</option>
                                         <option value="Home">Home & Kitchen</option>
                                         <option value="Beauty">Beauty & Personal Care</option>
-                                        <option value="Groceries">Food & Groceries</option>
+                                        <option value="Food">Food & Groceries</option>
                                         <option value="Solar">Solar & Energy</option>
-                                        <option value="Vehicles">Cars & Auto Parts</option>
-                                        <option value="Tools">Hardware & Tools</option>
+                                        <option value="Auto">Cars & Auto Parts</option>
+                                        <option value="Hardware">Hardware & Tools</option>
                                     </select>
                                 </div>
                                 <div>
@@ -170,10 +170,14 @@
                                 <textarea id="pDescription" class="seller-input" rows="4" style="width:100%;padding-top:10px;resize:vertical;" placeholder="Describe features, specifications, and warranty details..."></textarea>
                             </div>
 
+                            <label class="product-delivery-option"><span><strong>Delivery available</strong><small>Only tick this when you can arrange delivery for this listing. Delivery fees are confirmed at checkout.</small></span><input type="checkbox" id="pDeliveryAvailable"></label>
+                            <div id="productAttributes" class="product-attributes-form" aria-live="polite"></div>
+
                             <div>
-                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Image Upload (Max 5MB)</label>
-                                <input type="file" id="pImageFile" accept="image/*" class="seller-input" style="width:100%;padding:8px;">
-                                <input type="hidden" id="pImageUrl">
+                                <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Photos (up to 8, each max 5MB)</label>
+                                <input type="file" id="pImageFile" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="seller-input" style="width:100%;padding:8px;">
+                                <small id="pImageStatus" style="display:block;margin-top:6px;color:var(--text-secondary);">Add several real photos to help buyers assess the item. Existing photos are retained when editing unless you choose new photos.</small>
+                                <input type="url" id="pImageUrl" class="seller-input" style="width:100%;margin-top:8px;" placeholder="Or paste a hosted photo URL (https://…)" maxlength="1200">
                             </div>
 
                             <div style="display:flex;gap:10px;margin-top:10px;">
@@ -217,6 +221,8 @@
     <script src="../js/growth-engine.js"></script>
     <script src="../js/seller.js"></script>
     <script src="../js/seller-products.js"></script>
+    <script src="../js/product-attributes.js"></script>
+    <link rel="stylesheet" href="../css/marketplace-enhancements.css">
 
     <script>
     (async () => {
@@ -257,6 +263,28 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const editId = urlParams.get("id");
+        const attributeContainer = document.getElementById("productAttributes");
+        let productAttributeValues = {};
+        let selectedImageUrls = [];
+
+        async function renderCategoryAttributes() {
+            if (window.GamBasketProductAttributes) {
+                await window.GamBasketProductAttributes.render(attributeContainer, document.getElementById("pCategory").value, productAttributeValues);
+            }
+        }
+        document.getElementById("pCategory").addEventListener("change", async () => {
+            productAttributeValues = {};
+            await renderCategoryAttributes();
+        });
+        await renderCategoryAttributes();
+
+        document.getElementById("pImageUrl").addEventListener("input", () => {
+            const url = document.getElementById("pImageUrl").value.trim();
+            if (url) {
+                selectedImageUrls = [url, ...selectedImageUrls.slice(1)].slice(0, 8);
+                document.getElementById("prevImg").src = url;
+            }
+        });
 
         function updatePreview() {
             document.getElementById("prevTitle").textContent = document.getElementById("pTitle").value || "Product Title";
@@ -285,8 +313,20 @@
                     document.getElementById("pPrice").value = data.price || "";
                     document.getElementById("pStock").value = data.stock || 0;
                     document.getElementById("pLocation").value = data.location || "";
+                    document.getElementById("pDeliveryAvailable").checked = Boolean(data.delivery_available);
                     document.getElementById("pDescription").value = data.description || "";
                     document.getElementById("pImageUrl").value = data.main_image || data.image || "";
+                    const client = window.GamBasketAuth?.getClient?.();
+                    if (client && data.id) {
+                        const { data: imageRows, error: imageError } = await client.from("product_images")
+                            .select("image_url,sort_order").eq("product_id", data.id).order("sort_order", { ascending: true });
+                        if (imageError) console.warn("[GamBasket photos] Existing gallery load failed:", imageError.message);
+                        selectedImageUrls = [...new Set([data.main_image || data.image, ...(imageRows || []).map(row => row.image_url)].filter(url => /^https?:\/\//i.test(String(url || ""))))].slice(0, 8);
+                    } else {
+                        selectedImageUrls = [data.main_image || data.image].filter(Boolean);
+                    }
+                    productAttributeValues = data.attributes && typeof data.attributes === "object" ? data.attributes : {};
+                    await renderCategoryAttributes();
                     if (data.listing_type && isSupplier) {
                         listingType.value = data.listing_type;
                         document.getElementById("wholesalePrice").value = data.wholesale_price || "";
@@ -300,32 +340,39 @@
             }
         }
 
-        // Image file picker
+        // Multi-photo uploader. No data-URL fallback: it creates huge, unhosted values.
         document.getElementById("pImageFile")?.addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.size > 5 * 1024 * 1024) {
-                alert("File exceeds maximum 5MB limit.");
+            const files = Array.from(e.target.files || []);
+            const status = document.getElementById("pImageStatus");
+            if (!files.length) return;
+            if (files.length > 8) {
+                e.target.value = "";
+                status.textContent = "Choose no more than 8 photos.";
                 return;
             }
-            try {
-                if (window.GamBasketAuth?.uploadImage) {
-                    const url = await window.GamBasketAuth.uploadImage(file, "product-images");
-                    if (url) {
-                        document.getElementById("pImageUrl").value = url;
-                        document.getElementById("prevImg").src = url;
-                        return;
-                    }
-                }
-            } catch (err) {
-                console.warn("[GamBasket Image Upload fallback]", err);
+            const accepted = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+            const bad = files.find(file => !accepted.includes(file.type) || file.size > 5 * 1024 * 1024);
+            if (bad) {
+                e.target.value = "";
+                status.textContent = "Each photo must be JPG, PNG, WEBP or GIF and no larger than 5MB.";
+                return;
             }
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                document.getElementById("pImageUrl").value = ev.target.result;
-                document.getElementById("prevImg").src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
+            status.textContent = `Uploading ${files.length} photo(s)…`;
+            const picker = e.target;
+            picker.disabled = true;
+            try {
+                const uploaded = await Promise.all(files.map(file => window.GamBasketAuth.uploadImage(file, "products")));
+                selectedImageUrls = [...new Set(uploaded)].slice(0, 8);
+                document.getElementById("pImageUrl").value = selectedImageUrls[0] || "";
+                document.getElementById("prevImg").src = selectedImageUrls[0] || "";
+                status.textContent = `${selectedImageUrls.length} photo(s) uploaded. The first photo is the main listing image.`;
+            } catch (err) {
+                console.error("[GamBasket image upload]", err);
+                status.textContent = err.message || "Photo upload failed. Try again or paste a hosted image URL.";
+                picker.value = "";
+            } finally {
+                picker.disabled = false;
+            }
         });
 
         // Form Submit
@@ -344,16 +391,41 @@
                     price: Number(document.getElementById("pPrice").value),
                     stock: Number(document.getElementById("pStock").value),
                     location: document.getElementById("pLocation").value.trim(),
+                    delivery_available: Boolean(document.getElementById("pDeliveryAvailable").checked),
                     description: document.getElementById("pDescription").value.trim(),
-                    main_image: document.getElementById("pImageUrl").value,
+                    main_image: document.getElementById("pImageUrl").value.trim() || selectedImageUrls[0] || "",
+                    attributes: window.GamBasketProductAttributes?.read(attributeContainer) || {},
                     listing_type: isSupplier ? listingType.value : "retail",
                     wholesale_enabled: isSupplier && listingType.value !== "retail",
                     wholesale_price: isSupplier && listingType.value !== "retail" ? Number(document.getElementById("wholesalePrice").value) : null,
                     min_order_quantity: isSupplier && listingType.value !== "retail" ? Number(document.getElementById("minimumOrderQuantity").value || 1) : 1
                 };
 
-                await window.GamBasketSellerProducts.save(payload);
-                alert("Product saved and submitted for catalog review.");
+                if (!/^https?:\/\//i.test(payload.main_image)) throw new Error("Add at least one product photo or paste a valid hosted image URL.");
+                if (selectedImageUrls.length && payload.main_image !== selectedImageUrls[0]) selectedImageUrls = [payload.main_image, ...selectedImageUrls.filter(url => url !== payload.main_image)].slice(0, 8);
+                else if (!selectedImageUrls.length) selectedImageUrls = [payload.main_image];
+
+                const savedProduct = await window.GamBasketSellerProducts.save(payload);
+                const client = window.GamBasketAuth?.getClient?.();
+                let galleryWarning = "";
+                if (client && savedProduct?.id) {
+                    const { error: deleteError } = await client.from("product_images").delete().eq("product_id", savedProduct.id);
+                    if (deleteError) {
+                        galleryWarning = deleteError.message;
+                    } else if (selectedImageUrls.length > 1) {
+                        const { error: galleryError } = await client.from("product_images").insert(
+                            selectedImageUrls.slice(1).map((image_url, index) => ({
+                                product_id: savedProduct.id, image_url, sort_order: index + 1
+                            }))
+                        );
+                        if (galleryError) galleryWarning = galleryError.message;
+                    }
+                }
+                if (galleryWarning) {
+                    alert("The product was saved, but the extra photos could not be attached. Please edit the listing and try the gallery again. Details: " + galleryWarning);
+                } else {
+                    alert("Product saved and submitted for catalog review.");
+                }
                 window.location.href = "products.html";
             } catch (err) {
                 alert("Error saving product: " + (err.message || "Please try again."));

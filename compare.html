@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Compare products — GamBasket</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/business-trust-growth.css">
+  <link rel="stylesheet" href="css/marketplace-enhancements.css">
+  <style>
+    .compare-page{max-width:1240px;margin:28px auto 110px;padding:0 20px}
+    .compare-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:18px 0 24px}
+    .compare-hero h1{font-size:clamp(27px,4vw,40px);letter-spacing:-.04em;margin:6px 0 8px;color:var(--text)}
+    .compare-hero p{margin:0;color:var(--text-secondary);max-width:650px;line-height:1.65;font-size:14px}
+    .compare-eyebrow{font-size:10px;font-weight:850;letter-spacing:.16em;color:#2563eb}
+    .compare-empty{padding:40px 22px;border:1px dashed var(--border);border-radius:18px;text-align:center;background:var(--surface)}
+    .compare-empty h2{margin:0 0 8px;color:var(--text)}
+    .compare-empty p{margin:0 auto 18px;max-width:480px;color:var(--text-secondary);line-height:1.6;font-size:13px}
+    .compare-empty a,.compare-back{display:inline-flex;align-items:center;justify-content:center;padding:11px 15px;border-radius:10px;background:#2563eb;color:white;text-decoration:none;font-size:13px;font-weight:800}
+    #compareStatus{margin:0 0 14px;color:var(--text-secondary);font-size:12px}
+    @media(max-width:650px){.compare-page{padding:0 12px}.compare-hero{align-items:flex-start;flex-direction:column}.compare-hero h1{font-size:28px}}
+  </style>
+  <script>try{if(localStorage.getItem("gambasket-theme")==="dark")document.documentElement.classList.add("dark")}catch(_){}</script>
+</head>
+<body>
+  <header class="desktop-app-header">
+    <a href="index.html" class="desktop-app-brand"><span>GamB</span><span class="brand-bag-icon">🛍️</span><span>sket</span></a>
+    <div class="desktop-app-search"><a href="explore.html" class="desktop-search-fake-input"><span>Search Gambian products, electronics, fashion...</span></a></div>
+    <nav class="desktop-app-nav">
+      <a href="index.html" class="desktop-app-nav-link"><span>Home</span></a>
+      <a href="explore.html" class="desktop-app-nav-link"><span>Explore</span></a>
+      <a href="saved-searches.html" class="desktop-app-nav-link"><span>Saved searches</span></a>
+    </nav>
+    <div class="desktop-app-actions"><a class="icon-button" href="cart.html">Cart</a><a class="icon-button" href="me.html">Me</a></div>
+  </header>
+  <header class="mobile-header"><div class="header-top"><a href="index.html" class="brand"><span>GamB</span><span class="brand-bag-icon">🛍️</span><span>sket</span></a><a href="explore.html" class="icon-button">Explore</a></div></header>
+  <main class="compare-page">
+    <section class="compare-hero">
+      <div><span class="compare-eyebrow">SHOP SMARTER</span><h1>Compare products</h1><p>Compare real approved GamBasket listings side by side. Prices, condition, location and category specifications help you make a clearer decision.</p></div>
+      <a href="explore.html" class="compare-back">Browse products</a>
+    </section>
+    <p id="compareStatus" role="status" aria-live="polite">Your selected listings will appear here.</p>
+    <section id="compareEmpty" class="compare-empty" hidden><h2>Choose products to compare</h2><p>Open any approved listing or use Explore to add up to four products. We only show products currently approved for the marketplace.</p><a href="explore.html">Explore marketplace</a></section>
+    <section id="compareContent" aria-label="Product comparison table"></section>
+  </main>
+  <nav class="bottom-navigation">
+    <a class="nav-item" href="index.html"><span class="nav-label">Home</span></a>
+    <a class="nav-item" href="explore.html"><span class="nav-label">Explore</span></a>
+    <a class="nav-item" href="orders.html"><span class="nav-label">Orders</span></a>
+    <a class="nav-item" href="wishlist.html"><span class="nav-label">Wishlist</span></a>
+    <a class="nav-item" href="me.html"><span class="nav-label">Me</span></a>
+  </nav>
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth-errors.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/product-attributes.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/compare.js"></script>
+</body>
+</html>

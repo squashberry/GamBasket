@@ -726,37 +726,9 @@
            MASTER CATALOG & PRODUCT RESOLUTION
         ========================================================= */
         getCatalog: function () {
-            return [
-                { id: "1", name: "iPhone 13 128GB", price: 45000, category: "Phones", location: "Serrekunda", condition: "Like New", seller: "Alieu Gadgets", image: "https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&w=800&q=80" },
-                { id: "2", name: "Samsung Galaxy S24 Ultra", price: 52000, category: "Phones", location: "Kotu", condition: "New", seller: "Kotu Electronics Hub", image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=800&q=80" },
-                { id: "3", name: "Google Pixel 9 Pro", price: 48000, category: "Phones", location: "Fajara", condition: "New", seller: "Fajara Tech Store", image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80" },
-                { id: "4", name: "iPhone 15 Pro Max 256GB", price: 78000, category: "Phones", location: "Kololi", condition: "New", seller: "Senegambia Mobile", image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80" },
-                { id: "5", name: "Classic White Sneakers", price: 2500, category: "Fashion", location: "Brikama", condition: "New", seller: "Brikama Footwear", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" },
-                { id: "6", name: "Premium Automatic Wrist Watch", price: 3200, category: "Fashion", location: "Serrekunda", condition: "New", seller: "Gambia Timepieces", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" },
-                { id: "7", name: "Nike Air Max Runners", price: 5500, category: "Fashion", location: "Kololi", condition: "New", seller: "Kololi Sports Mart", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" },
-                { id: "8", name: "Handcrafted Leather Handbag", price: 4200, category: "Fashion", location: "Kotu", condition: "New", seller: "Kotu Crafts & Leather", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80" },
-                { id: "9", name: "50kg Premium American Long Grain Rice", price: 2250, category: "Food", location: "Serrekunda", condition: "New", seller: "Banjul Wholesalers", image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80" },
-                { id: "10", name: "Pure Groundnut Cooking Oil (20L Jerrycan)", price: 1850, category: "Food", location: "Brikama", condition: "New", seller: "West Coast Agri Supply", image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80" },
-                { id: "11", name: "Gambian Attaya Green Tea Box & Teapot Set", price: 450, category: "Food", location: "Banjul", condition: "New", seller: "Senegambia Tradings", image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80" },
-                { id: "12", name: "MacBook Air M2 256GB", price: 58000, category: "Electronics", location: "Kololi", condition: "New", seller: "Mac Center Gambia", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80" },
-                { id: "13", name: "Wireless ANC Headphones", price: 3800, category: "Electronics", location: "Kanifing", condition: "New", seller: "Digital Oasis Gambia", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" },
-                { id: "14", name: "55-inch 4K Smart Android TV", price: 24000, category: "Electronics", location: "Serrekunda", condition: "New", seller: "Westfield Appliance Store", image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80" },
-                { id: "15", name: "High Bass Portable Bluetooth Speaker", price: 2800, category: "Electronics", location: "Bakau", condition: "New", seller: "Atlantic Sounds", image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=80" },
-                { id: "16", name: "3.5kVA Pure Sine Wave Solar Inverter", price: 28500, category: "Solar", location: "Kanifing", condition: "New", seller: "Gambia Solar Energy Co.", image: "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80" },
-                { id: "17", name: "450W Monocrystalline Solar Panel", price: 5800, category: "Solar", location: "Serrekunda", condition: "New", seller: "SunPower Gambia", image: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&w=800&q=80" },
-                { id: "18", name: "Organic African Shea Butter & Coconut Oil", price: 400, category: "Beauty", location: "Serrekunda", condition: "New", seller: "Kairaba Naturals", image: "https://images.unsplash.com/photo-1608248597359-2e697b0a7ea6?auto=format&fit=crop&w=800&q=80" },
-                { id: "19", name: "Luxury Arabic Arabian Oud Perfume 100ml", price: 1800, category: "Beauty", location: "Kololi", condition: "New", seller: "Oud Boutique Banjul", image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80" },
-                { id: "20", name: "Modern Ergonomic Accent Chair", price: 8500, category: "Home", location: "Bakau", condition: "New", seller: "Bakau Home Living", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80" },
-                { id: "21", name: "Minimalist Scandinavian Table Lamp", price: 1800, category: "Home", location: "Bakau", condition: "New", seller: "Bakau Design Studio", image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80" },
-                { id: "22", name: "Executive 3-Piece Luxury Living Sofa Set", price: 32000, category: "Home", location: "Brufut", condition: "New", seller: "Brufut Furnishings", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80" },
-                { id: "23", name: "Solid Wood Bedside Nightstand Table", price: 4500, category: "Home", location: "Brikama", condition: "New", seller: "Kombo Timber & Furniture", image: "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=800&q=80" },
-                { id: "24", name: "Heavy-Duty 12V 75Ah Car Battery", price: 4600, category: "Auto", location: "Kanifing", condition: "New", seller: "Kanifing Auto Spare World", image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80" },
-                { id: "25", name: "Professional Cordless Brushless Power Drill Set", price: 3800, category: "Hardware", location: "Kanifing", condition: "New", seller: "Gambia Hardware Depot", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=800&q=80" },
-                { id: "26", name: "Compact Lightweight Foldable Baby Stroller", price: 4200, category: "Baby", location: "Kololi", condition: "New", seller: "Baby Haven Gambia", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80" },
-                { id: "27", name: "Official Gambia Scorpions National Team Jersey", price: 1200, category: "Sports", location: "Banjul", condition: "New", seller: "Gambia Sports Emporium", image: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=800&q=80" }
-            ];
+            // Do not display fabricated demo items as real marketplace inventory.
+            return [];
         },
-
         getProductById: function (id) {
             if (!id) return null;
             const productId = String(id);
@@ -772,12 +744,24 @@
                 id: row.id,
                 name: row.title || row.name || "Marketplace Product",
                 price: Number(row.price || 0),
+                currency: row.currency || "GMD",
                 category: row.category_id || row.category || "General",
                 location: row.location || "The Gambia",
                 condition: row.condition || "New",
-                image: row.main_image || row.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
-                seller: row.seller || "GamBasket Verified Merchant",
-                description: row.description || "Genuine verified merchandise on GamBasket The Gambia."
+                image: row.main_image || row.image || "",
+                images: Array.isArray(row.images) ? row.images : [],
+                attributes: row.attributes && typeof row.attributes === "object" ? row.attributes : {},
+                stock: Number(row.stock || 0),
+                sales_count: Number(row.sales_count || 0),
+                created_at: row.created_at || null,
+                seller_id: row.seller_id || null,
+                seller: row.seller || row.store_name || "GamBasket member",
+                seller_type: row.seller_type === "business" ? "business" : "individual",
+                seller_verified: Boolean(row.seller_verified),
+                delivery_available: row.delivery_available === true,
+                fulfillment_type: row.fulfillment_type || null,
+                store_name: row.store_name || null,
+                description: row.description || ""
             };
             currentProductsById.set(String(product.id), product);
             return product;
@@ -800,8 +784,32 @@
                     .order("created_at", { ascending: false });
 
                 if (error || !Array.isArray(data)) return [];
+                if (!data.length) return [];
 
-                return data.map(row => this.cacheProductRow(row)).filter(Boolean);
+                const sellerIds = [...new Set(data.map(row => row.seller_id).filter(id => isUuid(id)))];
+                const publicBadges = new Map();
+                if (sellerIds.length) {
+                    try {
+                        const { data: badgeRows, error: badgeError } = await client
+                            .from("public_profiles")
+                            .select("id,business_name,seller_type,is_seller_verified,has_business_store")
+                            .in("id", sellerIds);
+                        if (!badgeError) (badgeRows || []).forEach(row => publicBadges.set(row.id, row));
+                    } catch (badgeError) {
+                        console.warn("[GamBasket seller badges]", badgeError?.message);
+                    }
+                }
+
+                return data.map(row => {
+                    const badge = publicBadges.get(row.seller_id) || null;
+                    return this.cacheProductRow({
+                        ...row,
+                        seller: badge?.business_name || "GamBasket member",
+                        seller_type: badge?.seller_type === "business" ? "business" : "individual",
+                        seller_verified: Boolean(badge?.is_seller_verified),
+                        store_name: badge?.business_name || null
+                    });
+                }).filter(Boolean);
             } catch (err) {
                 console.warn("[GamBasket] Product query warning:", err.message);
                 return [];
@@ -1368,43 +1376,71 @@
         uploadImage: async function (file, folder = "product-images") {
             if (!file) throw new Error("No file selected.");
 
-            const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-            if (!allowedTypes.includes(String(file.type || "").toLowerCase())) {
-                throw new Error("Invalid image type. Please select a JPG, PNG, or WEBP file.");
+            const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+            const contentType = String(file.type || "").toLowerCase();
+            if (!allowedTypes.includes(contentType)) {
+                throw new Error("Invalid image type. Please select a JPG, PNG, WEBP, or GIF image.");
             }
-
-            const MAX_SIZE_BYTES = 5 * 1024 * 1024;
-            if (file.size > MAX_SIZE_BYTES) {
+            if (file.size > 5 * 1024 * 1024) {
                 throw new Error("Image file is too large. Maximum allowed size is 5MB.");
             }
 
+            await this.ready();
+            const session = await this.getSession();
+            const client = this.getClient();
+            if (!session?.user || !client) throw new Error("Sign in before uploading product images.");
+
             const config = window.GAMBASKET_CONFIG || {};
-            if (!config.isCloudinaryConfigured || !config.isCloudinaryConfigured()) {
-                throw new Error("Image hosting is not configured yet. Add the Cloudinary cloud name and restricted unsigned upload preset in js/config.js.");
+            if (config.isCloudinaryConfigured?.()) {
+                const cloudName = config.CLOUDINARY_CLOUD_NAME;
+                const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
+                const safeFolder = String(folder || "products")
+                    .replace(/[^a-zA-Z0-9/_-]/g, "")
+                    .replace(/^\/+|\/+$/g, "") || "products";
+                const payload = new FormData();
+                payload.append("file", file);
+                payload.append("upload_preset", uploadPreset);
+                payload.append("folder", `gambasket/${safeFolder}`);
+                const response = await fetch(
+                    `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
+                    { method: "POST", body: payload }
+                );
+                let result = null;
+                try { result = await response.json(); } catch {}
+                if (!response.ok || !result?.secure_url) {
+                    throw new Error(result?.error?.message || `Image upload failed (HTTP ${response.status}).`);
+                }
+                return result.secure_url;
             }
 
-            const cloudName = config.CLOUDINARY_CLOUD_NAME;
-            const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
-            const safeFolder = String(folder || "product-images")
-                .replace(/[^a-zA-Z0-9/_-]/g, "")
-                .replace(/^\/+|\/+$/g, "") || "product-images";
-            const payload = new FormData();
-            payload.append("file", file);
-            payload.append("upload_preset", uploadPreset);
-            payload.append("folder", `gambasket/${safeFolder}`);
-
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
-                { method: "POST", body: payload }
-            );
-
-            let result = null;
-            try { result = await response.json(); } catch {}
-            if (!response.ok || !result?.secure_url) {
-                const reason = result?.error?.message || `Cloudinary upload failed (HTTP ${response.status}).`;
-                throw new Error(reason);
-            }
-            return result.secure_url;
+            // Default to the project's public Supabase Storage bucket. This works
+            // without an external media account and restricts uploads to the user's
+            // own UUID-prefixed folder through Storage RLS.
+            const extensions = {
+                "image/jpeg": "jpg",
+                "image/png": "png",
+                "image/webp": "webp",
+                "image/gif": "gif"
+            };
+            const safeFolder = String(folder || "products")
+                .split("/")
+                .map(part => part.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40))
+                .filter(Boolean)
+                .slice(0, 3)
+                .join("/") || "products";
+            const filename = `${Date.now()}_${crypto.randomUUID()}.${extensions[contentType]}`;
+            const objectPath = `${session.user.id}/${safeFolder}/${filename}`;
+            const { data, error } = await client.storage
+                .from("product-images")
+                .upload(objectPath, file, {
+                    cacheControl: "31536000",
+                    contentType,
+                    upsert: false
+                });
+            if (error) throw new Error(error.message || "The image could not be uploaded.");
+            const { data: publicData } = client.storage.from("product-images").getPublicUrl(data.path);
+            if (!publicData?.publicUrl) throw new Error("Image uploaded, but its public URL could not be created.");
+            return publicData.publicUrl;
         }
     };
 

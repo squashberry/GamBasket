@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - fix/security-and-backend-hardening
+      - stage-a-b-product-quality
   pull_request:
     branches:
       - main
@@ -39,7 +40,9 @@ jobs:
             node --check "$file"
             count=$((count + 1))
           done < <(find js -type f -name '*.js' -print0 | sort -z)
-          echo "Successfully syntax-checked $count JavaScript files."
+          node --check tests/marketplace-smoke.spec.js
+          node --check tests/static-server.mjs
+          echo "Successfully syntax-checked $count application JavaScript files plus browser test scripts."
 
       - name: Check inline scripts on changed workflow pages
         run: |
@@ -69,7 +72,10 @@ jobs:
                       self.scripts.append(self.current)
                       self.current = None
 
-          pages = ["worker-apply.html", "quick-sell.html"]
+          pages = [
+              "worker-apply.html", "quick-sell.html", "supplier/add-product.html",
+              "product.html", "explore.html", "compare.html", "saved-searches.html"
+          ]
           checked = 0
           for page in pages:
               parser = ScriptParser()
@@ -99,8 +105,17 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
+          import re
+
           migrations = sorted(Path("supabase/migrations").glob("*.sql"))
           assert migrations, "No version-controlled SQL migrations found."
+          versions = []
+          for migration in migrations:
+              match = re.match(r"^(\d{14})_", migration.name)
+              assert match, f"Migration filename must begin with a 14-digit timestamp: {migration.name}"
+              versions.append(match.group(1))
+          duplicates = sorted({version for version in versions if versions.count(version) > 1})
+          assert not duplicates, f"Duplicate Supabase migration timestamps found: {duplicates}"
           all_sql = "\n".join(p.read_text(encoding="utf-8") for p in migrations)
           checks = {
               "profile privacy projection": "public_profiles" in all_sql and "profiles_owner_or_admin_select" in all_sql,
@@ -112,13 +127,24 @@ jobs:
               "role table write revocation": "REVOKE ALL ON TABLE public.user_roles FROM PUBLIC, anon, authenticated" in all_sql,
               "admin-only audit read policy": "platform_audit_logs_admin_read" in all_sql,
               "affiliate payout reconciliation": "FUNCTION public.admin_mark_affiliate_payout_paid" in all_sql,
+              "multi-photo image relation": "public.product_images" in all_sql and "product_images_public_or_owner_read" in all_sql,
+              "category-specific attributes": "category_attribute_definitions" in all_sql and "ADD COLUMN IF NOT EXISTS attributes jsonb" in all_sql,
+              "per-user saved searches": "CREATE TABLE IF NOT EXISTS public.saved_searches" in all_sql and "saved_searches_read_own" in all_sql,
+              "moderated price-drop alerts": "notify_price_drop_after_approval" in all_sql and "product_price_change_events" in all_sql,
+              "private upload ownership": "gambasket_product_images_owner_insert" in all_sql and "(storage.foldername(name))[1]=(SELECT auth.uid())::text" in all_sql,
+              "price alerts update is limited": "GRANT UPDATE (is_read) ON TABLE public.wishlist_alerts TO authenticated" in all_sql,
+              "upload fallback works without Cloudinary": "from(\"product-images\")" in Path("js/supabase.js").read_text(encoding="utf-8"),
+              "delivery availability is a product field": "ADD COLUMN IF NOT EXISTS delivery_available boolean NOT NULL DEFAULT false" in all_sql,
+              "safe public seller badges": "ADD COLUMN IF NOT EXISTS is_seller_verified boolean NOT NULL DEFAULT false" in all_sql and "ADD COLUMN IF NOT EXISTS has_business_store boolean NOT NULL DEFAULT false" in all_sql,
+              "coupon validation is authenticated only": "REVOKE ALL ON FUNCTION public.validate_coupon(character varying,numeric) FROM PUBLIC, anon" in all_sql,
+              "internal accounting tables deny client access": all(token in all_sql for token in ["deny_client_access ON public.affiliate_commissions", "deny_client_access ON public.campaign_products", "deny_client_access ON public.earning_rules", "deny_client_access ON public.payout_requests"]),
           }
           for label, passed in checks.items():
               print(("PASS" if passed else "FAIL") + ": " + label)
           assert all(checks.values()), "A required backend security/workflow contract is missing."
           config = Path("js/config.js").read_text(encoding="utf-8")
-          assert "CLOUDINARY_CLOUD_NAME: \"\"" in config and "CLOUDINARY_UPLOAD_PRESET: \"\"" in config, (
-              "Cloudinary config is expected to remain unconfigured until project-owned credentials are supplied."
+          assert "CLOUDINARY_CLOUD_NAME" in config and "CLOUDINARY_UPLOAD_PRESET" in config, (
+              "Optional Cloudinary configuration keys should remain available."
           )
           print(f"Validated {len(checks)} backend contracts across {len(migrations)} SQL migration files.")
           PY

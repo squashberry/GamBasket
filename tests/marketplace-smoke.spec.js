@@ -378,8 +378,12 @@ test("Mobile Explore does not hide the key search/filters controls", async ({ pa
 });
 
 test("Checkout enables only Cash on Delivery and labels future methods Coming soon", async ({ page }) => {
-  // Inspect the shipped checkout contract without auth redirects obscuring the static controls.
-  await page.setJavaScriptEnabled(false);
+  // Inspect shipped HTML controls without app JavaScript triggering auth redirects.
+  await page.route("**/js/**", route => route.fulfill({
+    status: 200,
+    contentType: "application/javascript",
+    body: ""
+  }));
   await page.goto("/checkout.html");
   await expect(page.locator("#cod")).toBeChecked();
   await expect(page.locator("#cod")).toBeEnabled();

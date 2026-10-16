@@ -39,6 +39,11 @@
 
   async function loadDefinitions(category) {
     const name = canonicalCategory(category);
+    const local = fallbackDefinitions(name);
+    if (!local.length) return [];
+
+    // Keep a known-good field contract for every category. Remote field metadata
+    // may relabel local fields, but cannot silently remove/mangle every input.
     try {
       const client = window.GamBasketAuth?.getClient?.() || window.supabaseClient;
       if (client) {
@@ -51,12 +56,26 @@
               && String(def.label || "").trim()
               && ["text","number","select","date","checkbox"].includes(def.input_type))
           : [];
-        if (valid.length) return valid;
+        const localKeys = new Set(local.map(def => def.attribute_key));
+        const normalized = valid.filter(def => localKeys.has(def.attribute_key));
+        const byKey = new Map(normalized.map(def => [def.attribute_key, def]));
+        return local.map(def => {
+          const remote = byKey.get(def.attribute_key);
+          if (!remote) return def;
+          const allowedOptions = Array.isArray(remote.options) ? remote.options.filter(value => ["string","number"].includes(typeof value)).slice(0,40) : def.options;
+          return {
+            ...def,
+            label: String(remote.label).slice(0,80),
+            input_type: remote.input_type,
+            options: remote.input_type === "select" ? (allowedOptions.length ? allowedOptions : def.options) : [],
+            is_required: Boolean(remote.is_required)
+          };
+        });
       }
     } catch (error) {
       console.warn("[GamBasket attributes] Using local field definitions:", error?.message);
     }
-    return fallbackDefinitions(name);
+    return local;
   }
 
   async function render(container, category, values = {}) {
@@ -86,11 +105,16 @@
 
     const grid = document.createElement("div");
     grid.className = "product-attributes-grid";
+    grid.style.display = "grid";
+    grid.style.gridTemplateColumns = "repeat(2,minmax(0,1fr))";
+    grid.style.gap = "12px";
     for (const def of definitions) {
       const key = String(def.attribute_key || "");
       if (!/^[a-z][a-z0-9_]{0,39}$/.test(key)) continue;
       const label = document.createElement("label");
       label.className = "product-attribute-field";
+      label.style.display = "grid";
+      label.style.gap = "6px";
       label.htmlFor = `productAttribute_${key}`;
       const caption = document.createElement("span");
       caption.textContent = `${def.label || key.replaceAll("_", " ")}${def.is_required ? " *" : ""}`;

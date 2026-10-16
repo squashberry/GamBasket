@@ -72,6 +72,22 @@
                 <input id="quickSellName" required maxlength="120" placeholder="e.g. iPhone 15 Pro">
             </label>
             <label>
+                Category
+                <select id="quickSellCategory" required>
+                    <option value="Phones">Phones &amp; tablets</option>
+                    <option value="Electronics">Electronics &amp; computers</option>
+                    <option value="Fashion">Fashion &amp; clothing</option>
+                    <option value="Home">Home &amp; kitchen</option>
+                    <option value="Beauty">Beauty &amp; personal care</option>
+                    <option value="Food">Food &amp; groceries</option>
+                    <option value="Solar">Solar &amp; energy</option>
+                    <option value="Auto">Vehicles &amp; auto parts</option>
+                    <option value="Hardware">Hardware &amp; tools</option>
+                    <option value="Baby">Baby &amp; kids</option>
+                    <option value="Sports">Sports &amp; fitness</option>
+                </select>
+            </label>
+            <label>
                 Price (GMD)
                 <input id="quickSellPrice" type="number" min="1" required placeholder="D">
             </label>
@@ -89,14 +105,15 @@
                 Listing location
                 <input id="quickSellLocation" maxlength="120" required value="Greater Banjul" placeholder="e.g. Serrekunda, Kanifing">
             </label>
+            <div id="quickSellAttributes" class="product-attributes-form" aria-live="polite"></div>
             <label>
-                Product photo (optional)
-                <input id="quickSellImageFile" type="file" accept="image/jpeg,image/png,image/webp">
-                <small>JPG, PNG or WEBP, up to 5MB. Image uploads require the Cloudinary preset to be configured.</small>
+                Product photos (required, up to 8; 5MB each)
+                <input id="quickSellImageFiles" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+                <small>Use real photos. Uploads use GamBasket's image storage and are visible when the listing is approved.</small>
             </label>
             <label>
-                Or paste a hosted photo URL
-                <input id="quickSellImage" type="url" maxlength="1000" placeholder="https://…">
+                Or paste a hosted main photo URL
+                <input id="quickSellImage" type="url" maxlength="1200" placeholder="https://…">
             </label>
             <label>
                 Description
@@ -109,8 +126,10 @@
     </section>
 </main>
 
+<link rel="stylesheet" href="css/marketplace-enhancements.css">
 <script src="js/config.js"></script>
 <script src="js/supabase.js"></script>
+<script src="js/product-attributes.js"></script>
 <script src="js/quick-sell.js"></script>
 
 </body>

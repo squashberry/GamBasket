@@ -101,7 +101,7 @@
     if (status) status.textContent = "Loading approved product details…";
     try {
       const { data, error } = await client.from("products")
-        .select("id,title,price,currency,condition,category_id,location,main_image,attributes,stock,listing_type,wholesale_price,min_order_quantity,sales_count")
+        .select("id,title,price,currency,condition,category_id,location,main_image,attributes,stock,delivery_available,listing_type,wholesale_price,min_order_quantity,sales_count")
         .eq("status","approved").in("id",ids);
       if (error) throw error;
       const byId = new Map((data || []).map(row => [row.id,row]));
@@ -140,6 +140,7 @@
         ["Category", p => p.category_id || "Not specified"],
         ["Location", p => p.location || "Not specified"],
         ["In stock", p => Number(p.stock || 0) > 0 ? `Yes · ${Number(p.stock)} available` : "Currently unavailable"],
+        ["Delivery available", p => p.delivery_available === true ? "Yes (fee confirmed at checkout)" : "Not listed as available"],
         ["Listing type", p => p.listing_type || "Retail"],
         ["Wholesale price", p => p.wholesale_price == null ? "Not offered" : `D ${Number(p.wholesale_price).toLocaleString("en-GM",{maximumFractionDigits:2})}`],
         ...attrKeys.map(key => [key.replaceAll("_"," ").replace(/\b\w/g,ch=>ch.toUpperCase()), p => {

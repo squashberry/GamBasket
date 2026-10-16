@@ -5,13 +5,7 @@
 (function () {
     "use strict";
 
-    const defaultCatalog = [
-        { id: "1", name: "iPhone 13 128GB", price: 45000, category: "Phones", location: "Serrekunda", condition: "Like New", image: "https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&w=800&q=80", seller: "Alhaji Electronics Ltd", description: "Clean, genuine factory unlocked iPhone 13 in excellent condition with complete accessories. Tested and verified for all Gambian SIM networks (Africell, QCell, Gamcel, Comium)." },
-        { id: "2", name: "Classic White Sneakers", price: 2500, category: "Fashion", location: "Brikama", condition: "Brand New", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80", seller: "Brikama Fashion Store", description: "Comfortable and durable white sneakers for daily wear. Available in Gambian sizes 39 to 45." },
-        { id: "3", name: "MacBook Air M2", price: 58000, category: "Electronics", location: "Kololi", condition: "Brand New", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80", seller: "Kololi Tech Hub", description: "Brand new Apple MacBook Air M2 chip, 8GB unified memory, 256GB SSD storage. 100% pristine battery health." },
-        { id: "4", name: "Modern Living Room Chair", price: 8500, category: "Home", location: "Bakau", condition: "Brand New", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80", seller: "Bakau Furniture & Living", description: "High quality ergonomic accent armchair with premium hardwood legs and stain-resistant fabric." },
-        { id: "5", name: "Samsung Galaxy S24", price: 52000, category: "Phones", location: "Kotu", condition: "Brand New", image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=800&q=80", seller: "Kotu Mobile Solutions", description: "Latest flagship Samsung Galaxy with Galaxy AI features and dynamic AMOLED display." }
-    ];
+    const defaultCatalog = [];
 
     let currentProduct = null;
 
@@ -48,6 +42,16 @@
                             if (sellerResult.error) throw sellerResult.error;
                             seller = sellerResult.data;
                         }
+                        let imageRows = [];
+                        try {
+                            const gallery = await client.from("product_images")
+                                .select("image_url,sort_order").eq("product_id", data.id).order("sort_order", { ascending: true });
+                            if (!gallery.error) imageRows = gallery.data || [];
+                        } catch (galleryError) {
+                            console.warn("[GamBasket product gallery]", galleryError?.message);
+                        }
+                        const galleryUrls = [...new Set([data.main_image, ...imageRows.map(row => row.image_url)]
+                            .filter(url => typeof url === "string" && /^https?:\/\//i.test(url)))].slice(0, 8);
                         currentProduct = {
                             id: data.id,
                             name: data.title,
@@ -55,10 +59,13 @@
                             category: data.category_id || "Phones",
                             location: data.location || "Greater Banjul",
                             condition: data.condition || "Brand New",
-                            image: data.main_image || "https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&w=800&q=80",
-                            seller: seller ? `${seller.first_name || ""} ${seller.last_name || ""}`.trim() : "GamBasket Verified Merchant",
+                            image: galleryUrls[0] || data.main_image || "",
+                            images: galleryUrls,
+                            attributes: data.attributes && typeof data.attributes === "object" ? data.attributes : {},
+                            stock: Number(data.stock || 0),
+                            seller: seller ? `${seller.first_name || ""} ${seller.last_name || ""}`.trim() : "GamBasket Merchant",
                             sellerId: data.seller_id,
-                            description: data.description || "Genuine verified merchandise on GamBasket The Gambia.",
+                            description: data.description || "",
                             listing_type: data.listing_type || "retail",
                             wholesale_price: data.wholesale_price,
                             min_order_quantity: data.min_order_quantity || data.minimum_order_quantity || 1,
@@ -72,12 +79,8 @@
         }
 
         if (!currentProduct) {
-            if (window.GamBasketAuth && typeof window.GamBasketAuth.getProductById === 'function') {
-                currentProduct = window.GamBasketAuth.getProductById(productId);
-            }
-            if (!currentProduct) {
-                currentProduct = defaultCatalog.find(p => String(p.id) === String(productId)) || defaultCatalog[0];
-            }
+            showProductUnavailable();
+            return;
         }
 
         renderProduct(currentProduct);
@@ -88,15 +91,79 @@
         return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ""));
     }
 
+    function showProductUnavailable() {
+        document.title = "Listing unavailable — GamBasket";
+        const set = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
+        set("detailName", "This listing is not available");
+        set("detailCategory", "UNAVAILABLE");
+        set("detailCondition", "LISTING UNAVAILABLE");
+        set("detailPrice", "—");
+        set("mobileStickyPrice", "—");
+        set("locationText", "The Gambia");
+        set("detailDescription", "This item may have been removed, is still under review, or is no longer available. Browse current approved listings to find alternatives.");
+        set("sellerName", "GamBasket");
+        const image = document.getElementById("detailImage");
+        if (image) { image.removeAttribute("src"); image.alt = "Listing unavailable"; }
+        document.getElementById("detailImageThumbs")?.replaceChildren();
+        document.getElementById("detailStock")?.replaceChildren(document.createTextNode("Unavailable"));
+        ["addToCartBtn","orderNowBtn","mobileStickyCart","mobileStickyOrder","detailWishlistBtn","messageSellerBtn","detailCompareBtn"].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) { element.disabled = true; element.setAttribute("aria-disabled","true"); }
+        });
+        document.querySelector(".purchase-panel")?.setAttribute("hidden","");
+        document.querySelector(".seller-card")?.setAttribute("hidden","");
+        const reviews = document.getElementById("productReviews");
+        if (reviews) reviews.textContent = "Reviews are unavailable because this listing is not public.";
+    }
+
+    function renderGallery(product) {
+        const main = document.getElementById("detailImage");
+        const thumbs = document.getElementById("detailImageThumbs");
+        if (!main || !thumbs) return;
+        const urls = [...new Set([product.image, ...(Array.isArray(product.images) ? product.images : [])])]
+            .filter(url => typeof url === "string" && /^https?:\/\//i.test(url)).slice(0, 8);
+        thumbs.replaceChildren();
+        if (!urls.length) {
+            main.removeAttribute("src");
+            return;
+        }
+        main.src = urls[0];
+        main.alt = product.name || "Product photo";
+        urls.forEach((url, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "product-gallery-thumb" + (index === 0 ? " active" : "");
+            button.setAttribute("aria-label", `Show product photo ${index + 1}`);
+            button.setAttribute("aria-pressed", String(index === 0));
+            const image = document.createElement("img");
+            image.src = url;
+            image.alt = `${product.name || "Product"} photo ${index + 1}`;
+            image.loading = "lazy";
+            button.append(image);
+            button.addEventListener("click", () => {
+                main.src = url;
+                main.alt = image.alt;
+                thumbs.querySelectorAll("button").forEach(item => {
+                    const active = item === button;
+                    item.classList.toggle("active", active);
+                    item.setAttribute("aria-pressed", String(active));
+                });
+            });
+            thumbs.append(button);
+        });
+    }
+
     function renderProduct(p) {
         document.getElementById("detailName").textContent = p.name;
         document.getElementById("detailPrice").textContent = `D ${formatPrice(p.price)}`;
         document.getElementById("detailCategory").textContent = p.category;
         document.getElementById("detailCondition").textContent = p.condition || "Brand New";
         document.getElementById("locationText").textContent = p.location;
-        document.getElementById("detailImage").src = p.image;
-        document.getElementById("detailImage").alt = p.name;
+        renderGallery(p);
         document.getElementById("detailDescription").textContent = p.description;
+        const attributeCard = document.getElementById("detailAttributesCard");
+        window.GamBasketProductAttributes?.renderDisplay(document.getElementById("detailAttributes"), p.attributes || {});
+        if (attributeCard) attributeCard.hidden = !Object.keys(p.attributes || {}).length;
         document.getElementById("sellerName").textContent = p.seller;
         if (p.sellerId) document.getElementById("sellerName").href = `seller.html?id=${encodeURIComponent(p.sellerId)}`;
 
@@ -109,6 +176,10 @@
             heartBtn.classList.toggle("saved", isSaved);
         }
 
+        document.getElementById("detailCompareBtn")?.addEventListener("click", () => {
+            const result = window.GamBasketCompare?.toggle(p.id);
+            if (result?.ok === false) window.alert(result.message || "This product cannot be compared yet.");
+        });
         // Set document title
         document.title = `${p.name} — GamBasket The Gambia`;
     }

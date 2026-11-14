@@ -100,6 +100,78 @@
 
                 <section class="seller-panel" style="margin-top:20px;">
                     <div class="seller-panel-header">
+                        <h2 class="seller-panel-title">Seller Wallet</h2>
+                        <span class="seller-status warning">Financial setup</span>
+                    </div>
+                    <p class="seller-page-subtitle">Your earnings stay pending until delivery is confirmed by both the courier and buyer, followed by the 24-hour dispute window.</p>
+                    <div class="seller-stat-grid" style="margin-top:16px;">
+                        <div class="seller-stat-card"><div class="seller-stat-label">Pending</div><div class="seller-stat-value" id="walletPending">D 0.00</div><div class="seller-stat-meta">Awaiting delivery release</div></div>
+                        <div class="seller-stat-card"><div class="seller-stat-label">Available</div><div class="seller-stat-value" id="walletAvailable">D 0.00</div><div class="seller-stat-meta">Eligible for withdrawal</div></div>
+                        <div class="seller-stat-card"><div class="seller-stat-label">Payout in transit</div><div class="seller-stat-value" id="walletInTransit">D 0.00</div><div class="seller-stat-meta">Reserved for a payout request</div></div>
+                        <div class="seller-stat-card"><div class="seller-stat-label">Withdrawn</div><div class="seller-stat-value" id="walletWithdrawn">D 0.00</div><div class="seller-stat-meta">Provider-confirmed payouts</div></div>
+                    </div>
+                    <div id="walletMessage" hidden role="status" aria-live="polite" style="margin-top:16px;padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:13px;"></div>
+                </section>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px;margin-top:18px;">
+                    <section class="seller-panel">
+                        <div class="seller-panel-header"><h2 class="seller-panel-title">Request a withdrawal</h2></div>
+                        <form id="withdrawForm" style="display:grid;gap:12px;">
+                            <label for="withdrawAmount">Amount (GMD)</label>
+                            <input id="withdrawAmount" type="number" min="0.01" step="0.01" required placeholder="e.g. 500">
+                            <label for="withdrawMethod">Approved payout destination</label>
+                            <select id="withdrawMethod" required><option value="">Choose an approved destination</option></select>
+                            <button id="withdrawSubmit" class="seller-button seller-button-primary" type="submit" disabled>Request withdrawal</button>
+                            <p id="withdrawHint" class="seller-page-subtitle">Payout destinations must be verified by GamBasket before withdrawals can be requested.</p>
+                        </form>
+                    </section>
+
+                    <section class="seller-panel">
+                        <div class="seller-panel-header"><h2 class="seller-panel-title">Add payout destination</h2></div>
+                        <form id="payoutMethodForm" style="display:grid;gap:12px;">
+                            <label for="payoutNetwork">Mobile-money network</label>
+                            <select id="payoutNetwork" name="network" required>
+                                <option value="wave">Wave</option>
+                                <option value="afrimoney">Afrimoney</option>
+                            </select>
+                            <label for="payoutAccountNumber">Mobile-money number</label>
+                            <input id="payoutAccountNumber" name="account_number" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+220...">
+                            <label for="payoutBeneficiary">Account holder name</label>
+                            <input id="payoutBeneficiary" name="beneficiary_name" type="text" autocomplete="name" required maxlength="120" placeholder="Name registered with the network">
+                            <button class="seller-button seller-button-primary" type="submit">Submit for verification</button>
+                        </form>
+                        <div id="payoutMethods" style="display:grid;gap:10px;margin-top:16px;"></div>
+                    </section>
+                </div>
+
+                <section class="seller-panel" style="margin-top:18px;">
+                    <div class="seller-panel-header"><h2 class="seller-panel-title">Automatic payouts</h2></div>
+                    <form id="autoPayoutForm" style="display:grid;gap:12px;max-width:560px;">
+                        <label style="display:flex;gap:10px;align-items:center;">
+                            <input id="autoPayoutEnabled" type="checkbox">
+                            Enable automatic payouts
+                        </label>
+                        <label for="autoPayoutThreshold">Payout when available balance reaches (GMD)</label>
+                        <input id="autoPayoutThreshold" type="number" min="1" step="0.01" placeholder="Set your minimum balance">
+                        <label for="autoPayoutMethod">Approved payout destination</label>
+                        <select id="autoPayoutMethod"><option value="">Choose an approved destination</option></select>
+                        <button id="saveAutoPayout" class="seller-button seller-button-secondary" type="submit">Save payout preferences</button>
+                    </form>
+                    <p class="seller-page-subtitle" style="margin-top:12px;">Automatic payout settings can be saved now. Scheduled transfers will only start after GamBasket deploys and enables its payout processor.</p>
+                </section>
+
+                <section class="seller-panel" style="margin-top:18px;">
+                    <div class="seller-panel-header"><h2 class="seller-panel-title">Withdrawal history</h2></div>
+                    <div class="seller-table-wrap">
+                        <table class="seller-table">
+                            <thead><tr><th>Date</th><th>Amount</th><th>Request type</th><th>Status</th></tr></thead>
+                            <tbody id="payoutHistory"><tr><td colspan="4" style="text-align:center;padding:20px;">Loading withdrawal history...</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="seller-panel" style="margin-top:20px;">
+                    <div class="seller-panel-header">
                         <h2 class="seller-panel-title">Transaction Ledger</h2>
                         <span id="promoBadge" class="seller-status success" hidden>Active Fee Waiver Promotion</span>
                     </div>
@@ -130,12 +202,13 @@
         <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
     </defs></svg>
 
-    <script src="../js/config.js"></script><script src="../js/supabase.js"></script><script src="../js/auth-errors.js"></script><script src="../js/auth-guard.js"></script><script src="../js/states.js"></script><script src="../js/seller.js"></script><script src="../js/seller-orders.js"></script><script src="../js/seller-earnings.js"></script>
+    <script src="../js/config.js"></script><script src="../js/supabase.js"></script><script src="../js/auth-errors.js"></script><script src="../js/auth-guard.js"></script><script src="../js/states.js"></script><script src="../js/seller.js"></script><script src="../js/seller-orders.js"></script><script src="../js/seller-earnings.js"></script><script src="../js/seller-wallet.js"></script>
     <script>
     (async () => {
         "use strict";
         if (window.GamBasketGuard?.gatePage && !await window.GamBasketGuard.gatePage("seller")) return;
         document.getElementById("sellerProtectedContent").hidden = false;
+        await window.GamBasketSellerWallet?.init();
         try {
             const sum = await window.GamBasketSellerEarnings.getFinancialSummary();
             window.GamBasketSellerEarnings.renderSellerEarnings(sum);

@@ -1,4 +1,4 @@
-/* GAMBASKET BUSINESS SITE CLIENT */
+/* JULADIRECT BUSINESS SITE CLIENT */
 (() => {
     "use strict";
 
@@ -9,7 +9,7 @@
     if (draft) {
         try {
             const data = JSON.parse(draft);
-            document.title = data.businessName + " — GamBasket";
+            document.title = data.businessName + " — JulaDirect";
             document.getElementById("siteName").textContent = data.businessName;
             document.getElementById("heroBusinessName").textContent = data.businessName;
             if (data.description) document.getElementById("heroDescription").textContent = data.description;

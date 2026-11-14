@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>My Wishlist — GamBasket</title>
+    <title>My Wishlist — JulaDirect</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/style.css">
     <script>
@@ -60,7 +60,7 @@
     <!-- DESKTOP MARKETPLACE APPLICATION HEADER -->
     <header class="desktop-app-header">
         <a href="index.html" class="desktop-app-brand">
-            <span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span>
+            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </a>
         <div class="desktop-app-search">
             <a href="explore.html" class="desktop-search-fake-input">
@@ -108,7 +108,7 @@
     <header class="mobile-header">
         <div class="header-top">
             <a href="index.html" class="brand">
-                <span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span>
+                <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </a>
 
             <div class="header-actions">
@@ -307,7 +307,7 @@
                                 </div>
                                 <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 8px; color: var(--text);">Your wishlist is empty</h2>
                                 <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0 auto 24px; max-width: 340px;">
-                                    Save products you love while exploring the GamBasket marketplace and they will appear here.
+                                    Save products you love while exploring the JulaDirect marketplace and they will appear here.
                                 </p>
                                 <a href="explore.html" class="primary-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: #2563eb; color: #fff;">
                                     <svg class="ui-icon" style="width: 16px; height: 16px;"><use href="#icon-search"></use></svg>
@@ -379,7 +379,7 @@
                     container.innerHTML = html;
 
                 } catch (err) {
-                    console.error("[GamBasket Wishlist Error]", err);
+                    console.error("[JulaDirect Wishlist Error]", err);
                     if (countBadge) countBadge.textContent = "Error Loading";
                     container.innerHTML = `
                         <div style="text-align: center; padding: 60px 20px; background: var(--surface); border-radius: 20px; border: 1px solid var(--border); max-width: 440px; margin: 20px auto;">
@@ -404,7 +404,7 @@
                     await window.GamBasketAuth.removeFromWishlist(id);
                     renderWishlist();
                 } catch (e) {
-                    console.warn("[GamBasket] Remove wishlist item failed:", e);
+                    console.warn("[JulaDirect] Remove wishlist item failed:", e);
                 }
             };
 

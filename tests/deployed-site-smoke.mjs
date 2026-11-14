@@ -1,4 +1,4 @@
-const configuredBase = process.env.GAMBASKET_SITE_URL || "https://squashberry.github.io/GamBasket/";
+const configuredBase = process.env.JULADIRECT_SITE_URL || "https://juladirect.pages.dev/";
 const base = new URL(configuredBase);
 if (base.protocol !== "https:") throw new Error("The deployed-site smoke test requires HTTPS.");
 if (!base.pathname.endsWith("/")) base.pathname += "/";
@@ -6,13 +6,13 @@ if (!base.pathname.endsWith("/")) base.pathname += "/";
 const pages = [
   ["home", "index.html", /<body[^>]*is-homepage/i],
   ["marketplace exploration", "explore.html", /id=["']productGrid["']/i],
-  ["product detail", "product.html", /<title[^>]*>[^<]*(product|gambasket)/i],
-  ["product comparison", "compare.html", /<title[^>]*>[^<]*(compare|gambasket)/i],
+  ["product detail", "product.html", /<title[^>]*>[^<]*(product|juladirect)/i],
+  ["product comparison", "compare.html", /<title[^>]*>[^<]*(compare|juladirect)/i],
   ["saved searches and alerts", "saved-searches.html", /id=["']savedSearchList["']/i],
   ["cart", "cart.html", /class=["']cart-shell["']/i],
   ["checkout", "checkout.html", /id=["']checkoutForm["']/i],
-  ["login", "login.html", /<title[^>]*>[^<]*(login|log in|gambasket)/i],
-  ["About GamBasket", "about.html", /The Unified Digital Marketplace of The Gambia/i],
+  ["login", "login.html", /<title[^>]*>[^<]*(login|log in|juladirect)/i],
+  ["About JulaDirect", "about.html", /The Unified Digital Marketplace of The Gambia/i],
   ["Help Center payment guidance", "help.html", /Cash on Delivery is available now/i],
   ["How It Works payment guidance", "how-it-works.html", /Cash on Delivery is available now/i],
   ["Customer care payment guidance", "customer-care.html", /Cash on Delivery is available now/i],
@@ -39,7 +39,7 @@ async function fetchText(path) {
   return { response, body, url };
 }
 
-console.log("GamBasket deployed Pages release smoke checks");
+console.log("JulaDirect deployed Pages release smoke checks");
 console.log(`Target: ${base.origin}${base.pathname}\n`);
 
 await Promise.all(pages.map(async ([label, path, sentinel]) => {
@@ -57,7 +57,7 @@ await Promise.all(pages.map(async ([label, path, sentinel]) => {
   }
 }));
 
-// The live preview must never imply that unsupported online payment methods work.
+// The live site must never imply that unsupported online payment methods work.
 try {
   const { response, body } = await fetchText("checkout.html");
   const radioTag = id => body.match(new RegExp("<input\\b(?=[^>]*\\bid=\"" + id + "\"(?:\\s|>))[^>]*>", "i"))?.[0] || "";

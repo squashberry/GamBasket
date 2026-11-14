@@ -216,7 +216,7 @@ test.beforeEach(async ({ page }) => {
   page.on("dialog", dialog => dialog.dismiss());
   page.on("pageerror", error => console.error("[browser page error]", error.message));
   page.on("console", message => {
-    if (message.type() === "error" || message.text().includes("[GamBasket product")) {
+    if (message.type() === "error" || message.text().includes("[JulaDirect product")) {
       console.log("[browser console]", message.type(), message.text());
     }
   });
@@ -425,7 +425,7 @@ test("Guest cart never invents stock or a seller for stale local snapshots", asy
 test("Legacy sample notifications are removed instead of shown as activity", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("gambasket_notifications", JSON.stringify([
-      { id: "welcome-1", type: "welcome", title: "Welcome to GamBasket", message: "Discover products", time: new Date().toISOString(), read: false },
+      { id: "welcome-1", type: "welcome", title: "Welcome to JulaDirect", message: "Discover products", time: new Date().toISOString(), read: false },
       { id: "wishlist-1", type: "wishlist", title: "Build your wishlist", message: "Save products", time: new Date().toISOString(), read: false },
       { id: "explore-1", type: "explore", title: "New products available", message: "Explore products", time: new Date().toISOString(), read: true }
     ]));

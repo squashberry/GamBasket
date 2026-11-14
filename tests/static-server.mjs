@@ -28,6 +28,6 @@ const server = http.createServer((req,res)=>{
     fs.createReadStream(target).pipe(res);
   });
 });
-server.listen(port,"127.0.0.1",()=>console.log(`GamBasket test server listening at http://127.0.0.1:${port}`));
+server.listen(port,"127.0.0.1",()=>console.log(`JulaDirect test server listening at http://127.0.0.1:${port}`));
 process.on("SIGTERM",()=>server.close(()=>process.exit(0)));
 process.on("SIGINT",()=>server.close(()=>process.exit(0)));

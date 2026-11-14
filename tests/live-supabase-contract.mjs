@@ -45,7 +45,7 @@ async function request(path, method = "GET") {
   return { response, body };
 }
 
-console.log("GamBasket read-only live Supabase contract checks");
+console.log("JulaDirect read-only live Supabase contract checks");
 console.log(`Project host: ${new URL(supabaseUrl).host}`);
 console.log("No rows are written, no users are created, and no checkout/payment RPC is called.\n");
 

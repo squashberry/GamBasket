@@ -50,6 +50,6 @@ assert.ok(checkoutGuard, "Online checkout must remain locked until signed provid
 const checkoutHtml = readFileSync("checkout.html", "utf8");
 assert.match(checkoutHtml, /id="cod"[^>]*checked/i, "Cash on Delivery should remain the default payment option.");
 
-console.log("PASS: GamBasket financial foundation schema and security contracts.");
+console.log("PASS: JulaDirect financial foundation schema and security contracts.");
 console.log("PASS: 5% commission, 24-hour release policy, seller payout reservations and private OTP records.");
 console.log("PASS: Cash on Delivery remains enabled while online payment integration is incomplete.");

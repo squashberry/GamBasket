@@ -352,6 +352,7 @@
 
                                 ${order.status === "out_for_delivery" ? '<button type="button" data-delivery-code="' + order.order_id + '" style="width:100%;margin:6px 0 12px;padding:11px;border:1px solid #2563eb;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-weight:700;cursor:pointer;">Generate buyer handoff code</button>' : ""}
                                 ${order.payment_status === "paid" && order.status !== "cancelled" ? '<button type="button" data-refund-order="' + order.order_id + '" data-refund-total="' + Number(order.total_amount || 0) + '" style="width:100%;margin:0 0 12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--text);font-weight:700;cursor:pointer;">Request a refund</button>' : ""}
+                                ${["pending","failed"].includes(order.payment_status) && ["wave","qmoney","afrimoney"].includes(order.payment_method) ? '<button type="button" data-retry-payment="' + order.order_id + '" data-payment-method="' + order.payment_method + '" style="width:100%;margin:0 0 12px;padding:11px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;">Continue secure payment</button>' : ""}
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border);">
                                     <span style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">Total</span>
                                     <strong style="font-size: 18px; font-weight: 800; color: #2563eb;">D ${formatPrice(order.total_amount || 0)}</strong>
@@ -368,6 +369,26 @@
 
                     html += `</div>`;
                     container.innerHTML = html;
+                    container.querySelectorAll("[data-retry-payment]").forEach(button => button.addEventListener("click", async () => {
+                        button.disabled = true;
+                        button.textContent = "Opening ModemPay…";
+                        try {
+                            const client = window.GamBasketAuth.getClient();
+                            const { data, error } = await client.functions.invoke("gambasket-modempay-checkout", {
+                                body: {
+                                    order_id: button.dataset.retryPayment,
+                                    payment_method: button.dataset.paymentMethod,
+                                    idempotency_key: window.crypto.randomUUID()
+                                }
+                            });
+                            if (error || !data?.payment_url) throw new Error(data?.error || error?.message || "Unable to reopen secure checkout.");
+                            window.location.assign(data.payment_url);
+                        } catch (error) {
+                            button.disabled = false;
+                            button.textContent = "Continue secure payment";
+                            window.alert(error.message || "Unable to open ModemPay checkout.");
+                        }
+                    }));
                     container.querySelectorAll("[data-delivery-code]").forEach(button => button.addEventListener("click", async () => {
                         button.disabled = true;
                         button.textContent = "Creating code…";

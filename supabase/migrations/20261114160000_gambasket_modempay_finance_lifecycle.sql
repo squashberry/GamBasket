@@ -632,9 +632,11 @@ BEGIN
   WHERE e.account_owner_id=v_order.seller_id
     AND (e.account_code='seller_available' OR (e.account_code='seller_pending' AND e.order_id=v_order.id));
   SELECT COALESCE(SUM(e.credit-e.debit),0)::numeric(14,2) INTO v_commission_balance
-  FROM public.seller_wallet_ledger_entries e WHERE e.account_code='platform_commission';
+  FROM public.seller_wallet_ledger_entries e
+  WHERE e.account_code='platform_commission' AND e.payment_id=v_payment.id;
   SELECT COALESCE(SUM(e.credit-e.debit),0)::numeric(14,2) INTO v_delivery_balance
-  FROM public.seller_wallet_ledger_entries e WHERE e.account_code='delivery_payable';
+  FROM public.seller_wallet_ledger_entries e
+  WHERE e.account_code='delivery_payable' AND e.payment_id=v_payment.id;
   IF v_pending+v_available<v_seller_refund OR v_commission_balance<v_commission_refund
      OR v_delivery_balance<v_delivery_refund THEN
     RAISE EXCEPTION 'REFUND_REQUIRES_MANUAL_FINANCIAL_REVIEW';

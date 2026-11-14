@@ -1,4 +1,4 @@
-/* GamBasket seller wallet UI. Money is read from trusted RPCs; the browser never edits balances. */
+/* JulaDirect seller wallet UI. Money is read from trusted RPCs; the browser never edits balances. */
 (() => {
   "use strict";
 
@@ -54,7 +54,7 @@
     if ($("saveAutoPayout")) $("saveAutoPayout").disabled = false;
     if ($("withdrawHint")) $("withdrawHint").textContent = enabled
       ? "Withdrawals are reserved from your available balance while the provider processes them."
-      : "Payout destinations must be verified by GamBasket before withdrawals can be requested.";
+      : "Payout destinations must be verified by JulaDirect before withdrawals can be requested.";
   }
 
   function renderRequests() {
@@ -129,10 +129,10 @@
       });
       if (error) throw error;
       form.reset();
-      message("Payout destination added. It will become usable after GamBasket verifies it.");
+      message("Payout destination added. It will become usable after JulaDirect verifies it.");
       await load();
     } catch (error) {
-      console.error("[GamBasket wallet] add payout method failed", error);
+      console.error("[JulaDirect wallet] add payout method failed", error);
       message(error.message || "Could not add the payout destination.", true);
     } finally {
       if (submit) submit.disabled = false;
@@ -176,14 +176,14 @@
             payoutMessage += " " + (transfer?.message || "The transfer is queued or awaiting ModemPay confirmation.");
           }
         } catch (transferError) {
-          console.error("[GamBasket wallet] provider payout processing failed", transferError);
+          console.error("[JulaDirect wallet] provider payout processing failed", transferError);
           payoutMessage += " The request is saved; provider processing is pending.";
         }
       }
       message(payoutMessage);
       await load();
     } catch (error) {
-      console.error("[GamBasket wallet] payout request failed", error);
+      console.error("[JulaDirect wallet] payout request failed", error);
       message(error.message || "Could not submit the withdrawal request.", true);
     } finally {
       if (submit) submit.disabled = state.methods.every(method => method.verification_status !== "active");
@@ -207,7 +207,7 @@
       message("Automatic payout preferences saved. Eligible balances will be sent on scheduled runs once ModemPay payouts are enabled.");
       await load();
     } catch (error) {
-      console.error("[GamBasket wallet] preference update failed", error);
+      console.error("[JulaDirect wallet] preference update failed", error);
       message(error.message || "Could not save automatic payout preferences.", true);
     } finally {
       if (submit) submit.disabled = false;
@@ -221,7 +221,7 @@
     try {
       await load();
     } catch (error) {
-      console.error("[GamBasket wallet] wallet could not load", error);
+      console.error("[JulaDirect wallet] wallet could not load", error);
       message("Wallet setup is not available in this preview yet. Apply the financial foundation migrations before using wallet actions.", true);
     }
   }

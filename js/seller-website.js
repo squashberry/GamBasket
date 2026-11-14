@@ -31,13 +31,13 @@
     }
 
     function publicUrl(slug) {
-        return `https://${slug}.gambasket.com`;
+        return `${window.location.origin}/business.html?site=${encodeURIComponent(slug)}`;
     }
 
     async function api(method, table, query, body, prefer = "return=representation") {
         const current = await session();
         const details = config();
-        if (!details.url || !details.key || !current?.access_token) throw new Error("GamBasket account connection is unavailable.");
+        if (!details.url || !details.key || !current?.access_token) throw new Error("JulaDirect account connection is unavailable.");
         const url = new URL(`${details.url}/rest/v1/${table}`);
         Object.entries(query || {}).forEach(([key, value]) => url.searchParams.set(key, value));
         const response = await fetch(url, { method, headers: { apikey: details.key, Authorization: `Bearer ${current.access_token}`, "Content-Type": "application/json", Prefer: prefer }, body: body ? JSON.stringify(body) : undefined });
@@ -72,7 +72,7 @@
         updatePreview();
     }));
 
-    function initials(name) { return String(name).split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0].toUpperCase()).join("") || "GB"; }
+    function initials(name) { return String(name).split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0].toUpperCase()).join("") || "JD"; }
     function updatePreview() {
         const name = fields.name.value.trim() || "Your Business";
         $("#previewBusinessName").textContent = name;
@@ -136,7 +136,7 @@
         $("#websitePreview").dataset.template = fields.template.value; $("#createWebsiteButton span").textContent = "Save Website Changes"; updatePreview(); window.scrollTo({ top: 0, behavior: "smooth" });
     }
     async function remove(id) { if (!confirm("Delete this business website? This cannot be undone.")) return; try { await api("DELETE", "business_websites", { id: `eq.${id}` }, null, "return=minimal"); await load(); } catch (error) { alert(error.message); } }
-    async function share(url) { try { if (navigator.share) await navigator.share({ title: "GamBasket Business Website", url }); else { await navigator.clipboard.writeText(url); alert("Website link copied."); } } catch (_) {} }
+    async function share(url) { try { if (navigator.share) await navigator.share({ title: "JulaDirect Business Website", url }); else { await navigator.clipboard.writeText(url); alert("Website link copied."); } } catch (_) {} }
 
     const stages = ["Assembling your information...", "Designing your brand system...", "Combining your content...", "Compiling your website...", "Optimising animations...", "Publishing your website..."];
     const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));

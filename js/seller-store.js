@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — SELLER STOREFRONT MODULE
+   JULADIRECT — SELLER STOREFRONT MODULE
 ============================================================ */
 
 (() => {
@@ -26,7 +26,7 @@
                         return {
                             id: store.id,
                             seller_id: store.seller_id,
-                            name: store.name || "GamBasket Store",
+                            name: store.name || "JulaDirect Store",
                             description: store.description || "Verified seller offering authentic Gambian goods and services.",
                             category: store.category || "",
                             location: store.location || "Greater Banjul",
@@ -39,7 +39,7 @@
                         };
                     }
                 } catch (e) {
-                    console.warn("[GamBasket Store Fetch]", e.message);
+                    console.warn("[JulaDirect Store Fetch]", e.message);
                 }
             }
 
@@ -51,7 +51,7 @@
 
             return {
                 id: sellerId || "seller_1",
-                name: "My GamBasket Store",
+                name: "My JulaDirect Store",
                 description: "Welcome to our store. We provide high-quality verified electronics, fashion, and home essentials with fast nationwide delivery.",
                 location: "Kairaba Avenue, Serrekunda",
                 phone: "+220 700 0000",

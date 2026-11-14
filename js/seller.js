@@ -225,7 +225,7 @@
         getPromotionLabel(promotion = this.promotion) {
             if (!promotion) return null;
 
-            return promotion.name || promotion.title || "Current GamBasket Promotion";
+            return promotion.name || promotion.title || "Current JulaDirect Promotion";
         },
 
         getPromotionEndDate(promotion = this.promotion) {

@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — SELLER SETTINGS MODULE
+   JULADIRECT — SELLER SETTINGS MODULE
 ============================================================ */
 
 (() => {
@@ -33,7 +33,7 @@
                     pickupEnabled: true
                 },
                 store: {
-                    displayName: "GamBasket Merchant",
+                    displayName: "JulaDirect Merchant",
                     supportPhone: "+220 700 0000",
                     location: "Greater Banjul"
                 }

@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — GLOBAL UI STATE SYSTEM
+   JULADIRECT — GLOBAL UI STATE SYSTEM
    Shared loading / error / offline / auth / permission states
 ============================================================ */
 
@@ -259,7 +259,7 @@
                 realtimeError: "Connection Issue"
             };
 
-            return map[type] || "GamBasket";
+            return map[type] || "JulaDirect";
         },
 
         clear(target = document.body) {

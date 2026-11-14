@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — SELLER PRODUCTS MODULE
+   JULADIRECT — SELLER PRODUCTS MODULE
    Phase 5 — Stock Controls, Badges & Quick Stock Editor
 ============================================================ */
 

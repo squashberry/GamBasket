@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — SELLER ORDERS MODULE
+   JULADIRECT — SELLER ORDERS MODULE
    Phase 5 — Fulfillment & Structured Cancellation
 ============================================================ */
 

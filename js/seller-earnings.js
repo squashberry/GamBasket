@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — SELLER EARNINGS & MARKETPLACE FEES
+   JULADIRECT — SELLER EARNINGS & MARKETPLACE FEES
    ========================================================= */
 
 (() => {
@@ -42,7 +42,7 @@
                 detail: { amount }
             })
         );
-        alert("Marketplace fee settlement of " + formatD(amount) + " initialized. Connect this to your GamBasket payment gateway.");
+        alert("Marketplace fee settlement of " + formatD(amount) + " initialized. Connect this to your JulaDirect payment gateway.");
     }
 
     window.GamBasketSellerEarnings = {

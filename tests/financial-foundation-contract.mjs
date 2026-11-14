@@ -5,7 +5,9 @@ const migrationsDir = "supabase/migrations";
 const names = [
   "20261114090000_gambasket_finance_ledger.sql",
   "20261114091000_gambasket_seller_wallet_payouts.sql",
-  "20261114092000_gambasket_refunds_delivery_proof.sql"
+  "20261114092000_gambasket_refunds_delivery_proof.sql",
+  "20261114093000_admin_payout_method_review.sql",
+  "20261114094000_persist_order_discounts.sql"
 ];
 const migrations = names.map(name => readFileSync(`${migrationsDir}/${name}`, "utf8"));
 const [ledger, payouts, refunds] = migrations;
@@ -31,7 +33,7 @@ assert.match(payouts, /CREATE FUNCTION public\.seller_request_payout/);
 assert.match(payouts, /pg_advisory_xact_lock/);
 assert.match(payouts, /payout-reservation:/);
 assert.match(payouts, /INSUFFICIENT_AVAILABLE_BALANCE/);
-assert.match(allSql, /FUNCTION public\\.admin_review_seller_payout_method/);
+assert.match(allSql, /FUNCTION public\.admin_review_seller_payout_method/);
 assert.match(allSql, /ADD COLUMN IF NOT EXISTS discount_amount/);
 assert.match(allSql, /set_gambasket_order_discount_amount/);
 

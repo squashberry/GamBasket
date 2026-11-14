@@ -1,6 +1,6 @@
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://squashberry.github.io",
+  "Access-Control-Allow-Origin": "https://juladirect.pages.dev",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-modem-signature, x-gambasket-cron-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Vary": "Origin"
@@ -72,6 +72,7 @@ Deno.serve((req: Request) => {
   const ready = Boolean(env("MODEMPAY_API_KEY") && env("MODEMPAY_WEBHOOK_SECRET") && env("GAMBASKET_OTP_PEPPER"));
   const checkout = ready && env("MODEMPAY_CHECKOUT_ENABLED") === "true";
   const payouts = ready && env("MODEMPAY_PAYOUTS_ENABLED") === "true";
-  return json({ checkout_enabled: checkout, payouts_enabled: payouts, refunds_enabled: checkout,
+  const refunds = ready && env("MODEMPAY_REFUNDS_ENABLED") === "true";
+  return json({ checkout_enabled: checkout, payouts_enabled: payouts, refunds_enabled: refunds,
     payment_methods: checkout ? ["wave", "qmoney", "afrimoney"] : [], currency: "GMD", provider: "ModemPay" });
 });

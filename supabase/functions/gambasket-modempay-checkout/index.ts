@@ -1,6 +1,6 @@
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://squashberry.github.io",
+  "Access-Control-Allow-Origin": "https://juladirect.pages.dev",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-modem-signature, x-gambasket-cron-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Vary": "Origin"
@@ -73,7 +73,7 @@ Deno.serve(async (req: Request) => {
     const auth = await authenticatedUser(req);
     const user = auth.user;
     if (env("MODEMPAY_CHECKOUT_ENABLED") !== "true" || !env("MODEMPAY_API_KEY") || !env("MODEMPAY_WEBHOOK_SECRET")) {
-      return json({ error: "Online checkout is not enabled for this GamBasket account yet." }, 503);
+      return json({ error: "Online checkout is not enabled for this JulaDirect account yet." }, 503);
     }
     const input = await req.json();
     const orderId = String(input.order_id || "");
@@ -115,7 +115,7 @@ Deno.serve(async (req: Request) => {
       paymentId = inserted && inserted[0]?.id;
     }
     if (!paymentId) throw new Error("Payment record could not be created.");
-    const returnUrl = "https://squashberry.github.io/GamBasket/orders.html?payment_return=1&order="
+    const returnUrl = "https://juladirect.pages.dev/GamBasket/orders.html?payment_return=1&order="
       + encodeURIComponent(order.order_number);
     const base = (env("MODEMPAY_BASE_URL") || "https://api.modempay.com").replace(/\/$/, "");
     const providerResponse = await fetch(base + "/v1/payments", {
@@ -123,8 +123,8 @@ Deno.serve(async (req: Request) => {
       headers: { Authorization: "Bearer " + env("MODEMPAY_API_KEY"), "Content-Type": "application/json",
         "Idempotency-Key": "gambasket-payment-" + paymentId },
       body: JSON.stringify({ data: {
-        amount: Number(order.total), currency: "GMD", title: "GamBasket order " + order.order_number,
-        description: "Secure payment for your GamBasket order", payment_methods: [method],
+        amount: Number(order.total), currency: "GMD", title: "JulaDirect order " + order.order_number,
+        description: "Secure payment for your JulaDirect order", payment_methods: [method],
         metadata: { gambasket_payment_id: paymentId, gambasket_order_id: order.id },
         return_url: returnUrl, cancel_url: returnUrl, from_sdk: false
       } })

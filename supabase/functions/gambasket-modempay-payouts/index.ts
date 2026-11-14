@@ -1,6 +1,6 @@
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://squashberry.github.io",
+  "Access-Control-Allow-Origin": "https://juladirect.pages.dev",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-modem-signature, x-gambasket-cron-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Vary": "Origin"
@@ -91,7 +91,7 @@ async function processPayout(payoutId: string) {
       "Idempotency-Key": "gambasket-payout-" + payout.id },
     body: JSON.stringify({ amount: Number(payout.amount), currency: "GMD", network: method.network,
       account_number: method.account_number, beneficiary_name: method.beneficiary_name,
-      narration: "GamBasket seller withdrawal",
+      narration: "JulaDirect seller withdrawal",
       metadata: { gambasket_payout_id: payout.id, gambasket_seller_id: payout.seller_id } })
   });
   const providerBody = await readJson(response);

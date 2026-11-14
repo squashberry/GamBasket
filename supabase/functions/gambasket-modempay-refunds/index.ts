@@ -1,6 +1,6 @@
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://squashberry.github.io",
+  "Access-Control-Allow-Origin": "https://juladirect.pages.dev",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-modem-signature, x-gambasket-cron-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Vary": "Origin"
@@ -80,7 +80,7 @@ Deno.serve(async (req: Request) => {
       return json({ success: true, refund_case_id: result });
     }
     if (body.action !== "review") return json({ error: "Unsupported refund action" }, 400);
-    if (env("MODEMPAY_API_KEY") === "" || env("MODEMPAY_CHECKOUT_ENABLED") !== "true") {
+    if (env("MODEMPAY_API_KEY") === "" || env("MODEMPAY_REFUNDS_ENABLED") !== "true") {
       return json({ error: "ModemPay refund processing is not enabled." }, 503);
     }
     const reviewed = await rpcAsUser("admin_review_gambasket_refund_case", {

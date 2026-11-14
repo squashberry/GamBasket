@@ -29,39 +29,11 @@
         const feeBox = document.getElementById("unpaidFeeBox");
         if (!feeBox) return;
 
-        if (unpaidFee > 0) {
-            feeBox.innerHTML = `
-                <div class="fee-warning" style="display:flex;justify-content:space-between;align-items:center;background:#fef2f2;border:1px solid #fecaca;padding:16px 20px;border-radius:16px;margin-top:16px;">
-                    <div>
-                        <strong style="color:#991b1b;display:block;font-size:14px;margin-bottom:2px;">
-                            GamBasket marketplace fee pending
-                        </strong>
-                        <span style="color:#b91c1c;font-size:13px;">
-                            You have ${formatD(unpaidFee)} in marketplace fees to settle.
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="primary-btn"
-                        id="payMarketplaceFeeBtn"
-                        style="background:#dc2626;color:#fff;border:0;padding:10px 18px;border-radius:10px;font-weight:700;cursor:pointer;"
-                    >
-                        Pay Now
-                    </button>
-                </div>
-            `;
-
-            document.getElementById("payMarketplaceFeeBtn")?.addEventListener("click", () => {
-                openGamBasketFeePayment(unpaidFee);
-            });
-        } else {
-            feeBox.innerHTML = `
-                <div class="fee-success" style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:14px 18px;border-radius:14px;font-size:13px;font-weight:600;margin-top:16px;">
-                    ✓ No outstanding GamBasket marketplace fees
-                </div>
-            `;
-        }
+        feeBox.innerHTML = `
+            <div class="fee-success" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:14px 18px;border-radius:14px;font-size:13px;margin-top:16px;">
+                The 5% marketplace commission is deducted from eligible merchandise sales before seller earnings are released. Delivery charges are accounted for separately.
+            </div>
+        `;
     }
 
     function openGamBasketFeePayment(amount) {
@@ -86,37 +58,40 @@
                 orders = res?.items || [];
             }
 
-            const seller = window.GamBasketSeller?.currentSeller;
-            const plan = window.GamBasketSeller?.getCurrentPlan(seller) || { commissionRate: 5 };
-            const promo = await window.GamBasketSeller?.getActivePromotion();
-            const promoCovers = promo && window.GamBasketSeller?.promotionCoversSubscription(promo);
-
+            const commissionRate = 5;
             let grossSales = 0;
+            let marketplaceFees = 0;
             const transactions = [];
 
             orders.forEach(order => {
-                const total = Number(order.total_amount || order.total || 0);
-                const status = (order.status || "").toLowerCase();
+                const total = Number(order.total_amount ?? order.total ?? 0);
+                const deliveryFee = Number(order.delivery_fee || 0);
+                const merchandiseSubtotal = Number(
+                    order.subtotal ?? Math.max(0, total - deliveryFee)
+                );
+                const discount = Number(order.discount_amount ?? order.discount ?? 0);
+                const merchandiseSales = Math.max(0, merchandiseSubtotal - discount);
+                const status = String(order.order_status || order.status || "").toLowerCase();
+                const cancelled = status === "cancelled";
+                const fee = cancelled ? 0 : calculateMarketplaceFee(merchandiseSales, commissionRate);
 
-                if (status !== "cancelled") {
-                    grossSales += total;
+                if (!cancelled) {
+                    grossSales += merchandiseSales;
+                    marketplaceFees += fee;
                 }
-
-                const fee = promoCovers ? 0 : calculateMarketplaceFee(total, plan.commissionRate);
 
                 transactions.push({
                     id: order.id,
-                    reference: "TXN-" + ((order.id || "").substring(0, 8).toUpperCase() || "ORD"),
+                    reference: "ORD-" + ((order.order_number || order.id || "").substring(0, 8).toUpperCase() || "ORDER"),
                     date: order.created_at || new Date().toISOString(),
-                    type: promoCovers ? "Promotion Sale" : "Standard Sale",
+                    type: "Marketplace sale",
                     orderNumber: order.order_number || ("#" + (order.id || "").substring(0, 6)),
-                    gross: total,
-                    fee: fee,
-                    status: status === "completed" || status === "delivered" ? "Cleared" : "Pending"
+                    gross: cancelled ? 0 : merchandiseSales,
+                    fee,
+                    status: cancelled ? "Cancelled" :
+                        ["completed", "delivered"].includes(status) ? "Awaiting release" : "Pending delivery"
                 });
             });
-
-            const marketplaceFees = promoCovers ? 0 : calculateMarketplaceFee(grossSales, plan.commissionRate);
 
             return {
                 grossSales,

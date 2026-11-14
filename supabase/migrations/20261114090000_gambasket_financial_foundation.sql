@@ -446,8 +446,7 @@ $fn$;
 CREATE OR REPLACE FUNCTION public.seller_add_payout_method(
   p_network text,
   p_account_number text,
-  p_beneficiary_name text,
-  p_is_primary boolean DEFAULT false
+  p_beneficiary_name text
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -474,16 +473,10 @@ BEGIN
     RAISE EXCEPTION 'Enter the beneficiary name';
   END IF;
 
-  IF p_is_primary THEN
-    UPDATE public.seller_payout_methods
-    SET is_primary = false, updated_at = now()
-    WHERE seller_id = v_user;
-  END IF;
-
   INSERT INTO public.seller_payout_methods (
     seller_id, network, account_number, beneficiary_name, is_primary, verification_status
   ) VALUES (
-    v_user, v_network, v_account, v_name, p_is_primary, 'pending_verification'
+    v_user, v_network, v_account, v_name, false, 'pending_verification'
   )
   RETURNING id INTO v_method_id;
 
@@ -646,7 +639,7 @@ $fn$;
 REVOKE ALL ON FUNCTION public.assert_gambasket_ledger_batch_balanced() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.reject_gambasket_ledger_mutation() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.seller_get_wallet_summary() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.seller_add_payout_method(text,text,text,boolean) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.seller_add_payout_method(text,text,text) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.seller_update_wallet_preferences(boolean,numeric,uuid) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.seller_request_payout(numeric,uuid,text) FROM PUBLIC, anon, authenticated;
 

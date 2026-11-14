@@ -46,6 +46,8 @@ jobs:
           node --check tests/deployed-site-smoke.mjs
           node --check tests/financial-foundation-contract.mjs
           node tests/financial-foundation-contract.mjs
+          node --check tests/modempay-integration-contract.mjs
+          node tests/modempay-integration-contract.mjs
           echo "Successfully syntax-checked $count application JavaScript files plus browser test scripts."
 
       - name: Check inline scripts on changed workflow pages

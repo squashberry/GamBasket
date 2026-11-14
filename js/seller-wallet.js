@@ -159,9 +159,28 @@
       });
       if (error) throw error;
       form.reset();
-      message(data?.idempotent_replay
+      const payoutId = data?.payout_id || data?.id;
+      let payoutMessage = data?.idempotent_replay
         ? "This withdrawal request was already recorded."
-        : "Withdrawal request recorded and funds reserved. The transfer is not complete until ModemPay confirms it.");
+        : "Withdrawal request recorded and funds reserved.";
+      if (payoutId) {
+        try {
+          const { data: transfer, error: transferError } = await window.supabaseClient.functions.invoke("gambasket-modempay-payouts", {
+            body: { action: "process", payout_id: payoutId }
+          });
+          if (transferError) {
+            payoutMessage += " Provider processing needs attention; the request remains in your withdrawal history.";
+          } else if (transfer?.status === "succeeded") {
+            payoutMessage += " ModemPay confirmed the transfer.";
+          } else {
+            payoutMessage += " " + (transfer?.message || "The transfer is queued or awaiting ModemPay confirmation.");
+          }
+        } catch (transferError) {
+          console.error("[GamBasket wallet] provider payout processing failed", transferError);
+          payoutMessage += " The request is saved; provider processing is pending.";
+        }
+      }
+      message(payoutMessage);
       await load();
     } catch (error) {
       console.error("[GamBasket wallet] payout request failed", error);
@@ -185,7 +204,7 @@
         p_payout_method_id: methodId
       });
       if (error) throw error;
-      message("Automatic payout preferences saved. Scheduled transfers will activate after the payout worker is deployed.");
+      message("Automatic payout preferences saved. Eligible balances will be sent on scheduled runs once ModemPay payouts are enabled.");
       await load();
     } catch (error) {
       console.error("[GamBasket wallet] preference update failed", error);

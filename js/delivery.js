@@ -80,13 +80,37 @@
 
   async function updateStatus(nextStatus) {
     if (!state.active) return;
-    const button = $("#advanceDeliveryBtn"); if (button) { button.disabled = true; button.textContent = "Updating…"; }
-    const { data, error } = await state.client.rpc("update_delivery_job_status", { p_request_id: state.active.id, p_status: nextStatus });
-    if (error || !data?.success) { if (button) { button.disabled = false; button.textContent = nextStatus === "delivered" ? "Confirm delivery" : nextStatus === "picked_up" ? "Confirm pickup" : "Start delivery"; } return clientError(error || new Error(data?.error), "Delivery status could not be updated."); }
-    notify("Delivery updated", `${orderNumber(state.active)} is now ${statusName(nextStatus).toLowerCase()}.`);
-    toast(nextStatus === "delivered" ? `Delivery complete. ${money(jobReward(state.active))} has been added to your ledger.` : "Delivery status updated.");
+    const button = $("#advanceDeliveryBtn");
+    if (button) { button.disabled = true; button.textContent = "Updating…"; }
+    if (nextStatus === "delivered") {
+      const otp = $("#deliveryOtpInput")?.value?.trim() || "";
+      if (!/^\d{6}$/.test(otp)) {
+        if (button) { button.disabled = false; button.textContent = "Confirm delivery"; }
+        return toast("Enter the buyer's six-digit handoff code first.");
+      }
+      const { data, error } = await state.client.functions.invoke("gambasket-delivery-proof", {
+        body: { action: "confirm", order_id: state.active.order_id, otp }
+      });
+      if (error || !data?.success) {
+        if (button) { button.disabled = false; button.textContent = "Confirm delivery"; }
+        return clientError(error || new Error(data?.error || "Delivery code was not accepted."), "Delivery confirmation failed.");
+      }
+      notify("Delivery confirmed", orderNumber(state.active) + " was confirmed with the buyer's handoff code.");
+      toast("Delivery confirmed. Seller funds will unlock after the 24-hour dispute window.");
+      await loadData();
+      setTab("earnings");
+      return;
+    }
+    const { data, error } = await state.client.rpc("update_delivery_job_status", {
+      p_request_id: state.active.id, p_status: nextStatus
+    });
+    if (error || !data?.success) {
+      if (button) { button.disabled = false; button.textContent = nextStatus === "picked_up" ? "Confirm pickup" : "Start delivery"; }
+      return clientError(error || new Error(data?.error), "Delivery status could not be updated.");
+    }
+    notify("Delivery updated", orderNumber(state.active) + " is now " + statusName(nextStatus).toLowerCase() + ".");
+    toast("Delivery status updated.");
     await loadData();
-    if (nextStatus === "delivered") setTab("earnings");
   }
 
   function jobRoute(job) { return `<div class="request-route"><i></i><div><span>Pickup</span><strong>${escapeHtml(pickupAddress(job))}</strong></div></div><div class="request-route"><i></i><div><span>Drop-off</span><strong>${escapeHtml(deliveryAddress(job))}</strong></div></div>`; }
@@ -99,7 +123,7 @@
     const next = ({ assigned: "picked_up", picked_up: "out_for_delivery", out_for_delivery: "delivered" })[job.status];
     const nextLabel = ({ picked_up: "Confirm pickup", out_for_delivery: "Start delivery", delivered: "Confirm delivery" })[next];
     const phone = customerPhone(job);
-    return `<div class="active-layout"><section class="job-card"><span class="status-chip">${escapeHtml(statusName(job.status))}</span><h3>${escapeHtml(orderNumber(job))}</h3>${jobRoute(job)}<div class="timeline"><div class="timeline-row done"><i></i><div><strong>Delivery claimed</strong><span>${date(job.assigned_at, true)}</span></div></div><div class="timeline-row ${stage >= 1 ? "done" : ""}"><i></i><div><strong>Pickup confirmed</strong><span>${stage >= 1 ? date(job.picked_up_at, true) : "Confirm once items are collected"}</span></div></div><div class="timeline-row ${stage >= 2 ? "done" : ""}"><i></i><div><strong>Out for delivery</strong><span>${stage >= 2 ? date(job.out_for_delivery_at, true) : "Start when you leave the pickup"}</span></div></div><div class="timeline-row ${stage >= 3 ? "done" : ""}"><i></i><div><strong>Delivered</strong><span>${stage >= 3 ? date(job.delivered_at, true) : "Confirm after handoff"}</span></div></div></div><div class="job-actions"><button class="primary-button" id="advanceDeliveryBtn" ${next ? "" : "disabled"}>${nextLabel || "Delivery complete"}</button><button class="outline-button" data-tab-jump="map">Open route</button></div></section><aside class="contact-card"><small>CUSTOMER DETAILS</small><h3>${escapeHtml(job.order?.delivery_area || job.delivery_area || "Delivery customer")}</h3><p>${escapeHtml(deliveryAddress(job))}</p>${phone ? `<a href="tel:${escapeHtml(phone)}">Call ${escapeHtml(phone)}</a>` : "<p>Phone number not shared with this request.</p>"}<a href="../messages.html">Open customer messages</a></aside></div>`;
+    return `<div class="active-layout"><section class="job-card"><span class="status-chip">${escapeHtml(statusName(job.status))}</span><h3>${escapeHtml(orderNumber(job))}</h3>${jobRoute(job)}<div class="timeline"><div class="timeline-row done"><i></i><div><strong>Delivery claimed</strong><span>${date(job.assigned_at, true)}</span></div></div><div class="timeline-row ${stage >= 1 ? "done" : ""}"><i></i><div><strong>Pickup confirmed</strong><span>${stage >= 1 ? date(job.picked_up_at, true) : "Confirm once items are collected"}</span></div></div><div class="timeline-row ${stage >= 2 ? "done" : ""}"><i></i><div><strong>Out for delivery</strong><span>${stage >= 2 ? date(job.out_for_delivery_at, true) : "Start when you leave the pickup"}</span></div></div><div class="timeline-row ${stage >= 3 ? "done" : ""}"><i></i><div><strong>Delivered</strong><span>${stage >= 3 ? date(job.delivered_at, true) : "Confirm after handoff"}</span></div></div></div><div class="job-actions">${next === "delivered" ? '<label class="delivery-otp-field" for="deliveryOtpInput">Buyer handoff code<input id="deliveryOtpInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit code"></label>' : ""}<button class="primary-button" id="advanceDeliveryBtn" ${next ? "" : "disabled"}>${nextLabel || "Delivery complete"}</button><button class="outline-button" data-tab-jump="map">Open route</button></div></section><aside class="contact-card"><small>CUSTOMER DETAILS</small><h3>${escapeHtml(job.order?.delivery_area || job.delivery_area || "Delivery customer")}</h3><p>${escapeHtml(deliveryAddress(job))}</p>${phone ? `<a href="tel:${escapeHtml(phone)}">Call ${escapeHtml(phone)}</a>` : "<p>Phone number not shared with this request.</p>"}<a href="../messages.html">Open customer messages</a></aside></div>`;
   }
 
   function renderMetrics() {

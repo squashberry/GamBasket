@@ -25,6 +25,31 @@
         else localStorage.removeItem("gambasket_cart");
     }
 
+    async function loadModemPayConfig() {
+        const client = window.GamBasketAuth?.getClient?.() || window.supabaseClient;
+        if (!client?.functions) return;
+        try {
+            const { data, error } = await client.functions.invoke("gambasket-modempay-config", { method: "GET" });
+            if (error || !data?.checkout_enabled) return;
+            ["wave", "qmoney", "afrimoney"].forEach(method => {
+                const input = document.getElementById(method);
+                if (input) input.disabled = false;
+                const label = document.querySelector('label[for="' + method + '"]');
+                const badge = label?.querySelector(".payment-coming-soon-badge");
+                if (badge) {
+                    badge.className = "payment-availability-badge";
+                    badge.textContent = "Pay online";
+                }
+                const hint = document.getElementById(method + "ComingSoon");
+                if (hint) hint.textContent = "Continue to secure ModemPay checkout.";
+            });
+            const note = document.getElementById("paymentAvailabilityNote");
+            if (note) note.textContent = "Online payments are enabled. You will be redirected to ModemPay to complete payment securely.";
+        } catch (error) {
+            console.warn("[GamBasket ModemPay] configuration could not be loaded:", error);
+        }
+    }
+
     async function init() {
         await window.GamBasketAuth.ready();
         const session = await window.GamBasketAuth.getSession();
@@ -44,6 +69,7 @@
             }
             const result = await window.GamBasketAuth.getCart();
             state.cart = result.items || [];
+            await loadModemPayConfig();
             if (!state.cart.length) { window.location.replace("cart.html"); return; }
             bindEvents();
             render();
@@ -94,11 +120,10 @@
         if (state.submitting) return;
         if (!$("checkoutForm").reportValidity()) return;
 
-        // The UI disables future payment methods, and this guard prevents a
-        // tampered DOM from sending an unsupported method to the order RPC.
         const selectedPayment = document.querySelector('input[name="payment"]:checked');
-        if (!selectedPayment || selectedPayment.disabled || selectedPayment.value !== "cash_on_delivery") {
-            showError("Only Cash on Delivery is available right now. Wave, QMoney and Afrimoney are coming soon.");
+        const permittedMethods = ["cash_on_delivery", "wave", "qmoney", "afrimoney"];
+        if (!selectedPayment || selectedPayment.disabled || !permittedMethods.includes(selectedPayment.value)) {
+            showError("Choose an available payment method.");
             return;
         }
 
@@ -108,10 +133,12 @@
         button.textContent = "Securing your order...";
         try {
             const fulfillment = document.querySelector('input[name="fulfillment"]:checked').value;
-            const payment = document.querySelector('input[name="payment"]:checked').value;
+            const payment = selectedPayment.value;
+            // The existing order transaction creates the order as Cash on Delivery.
+            // ModemPay attaches a pending provider intent before switching payment_method.
             const result = await window.GamBasketAuth.createOrder({
                 fulfillment_type: fulfillment,
-                payment_method: payment,
+                payment_method: "cash_on_delivery",
                 delivery_address: fulfillment === "delivery" ? `${$("address").value.trim()}${$("landmark").value.trim() ? `, ${$("landmark").value.trim()}` : ""}` : null,
                 delivery_region: fulfillment === "delivery" ? $("region").value : null,
                 delivery_area: fulfillment === "delivery" ? $("area").value.trim() : null,
@@ -131,6 +158,26 @@
                 } catch (affiliateError) {
                     console.warn("[GamBasket Affiliate] Conversion attribution failed:", affiliateError);
                 }
+            }
+
+            if (payment !== "cash_on_delivery") {
+                const client = window.GamBasketAuth?.getClient?.() || window.supabaseClient;
+                if (!client?.functions || !window.crypto?.randomUUID) {
+                    throw new Error("Secure online checkout is not available in this browser.");
+                }
+                const { data: paymentIntent, error: paymentError } = await client.functions.invoke("gambasket-modempay-checkout", {
+                    body: {
+                        order_id: order.id,
+                        payment_method: payment,
+                        idempotency_key: window.crypto.randomUUID()
+                    }
+                });
+                if (paymentError || !paymentIntent?.payment_url) {
+                    throw new Error(paymentIntent?.error || paymentError?.message || "ModemPay could not open checkout.");
+                }
+                window.GamBasketAffiliate?.clearReferral();
+                window.location.assign(paymentIntent.payment_url);
+                return;
             }
 
             $("successOrderNumber").textContent = order.order_number || order.id || "";

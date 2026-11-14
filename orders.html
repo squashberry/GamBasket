@@ -346,10 +346,12 @@
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 6px;">
                                         <svg class="ui-icon" style="width: 14px; height: 14px; color: #2563eb;"><use href="#icon-cart"></use></svg>
-                                        <span><strong>Payment:</strong> ${order.payment_method === "cod" || order.payment_method === "cash_on_delivery" ? "Cash on Delivery" : "Mobile Money"}</span>
+                                        <span><strong>Payment:</strong> ${order.payment_method === "cod" || order.payment_method === "cash_on_delivery" ? "Cash on Delivery" : "ModemPay · " + String(order.payment_method || "online").toUpperCase()} · ${String(order.payment_status || "pending").replaceAll("_", " ")}</span>
                                     </div>
                                 </div>
 
+                                ${order.status === "out_for_delivery" ? '<button type="button" data-delivery-code="' + order.order_id + '" style="width:100%;margin:6px 0 12px;padding:11px;border:1px solid #2563eb;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-weight:700;cursor:pointer;">Generate buyer handoff code</button>' : ""}
+                                ${order.payment_status === "paid" && order.status !== "cancelled" ? '<button type="button" data-refund-order="' + order.order_id + '" data-refund-total="' + Number(order.total_amount || 0) + '" style="width:100%;margin:0 0 12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--text);font-weight:700;cursor:pointer;">Request a refund</button>' : ""}
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border);">
                                     <span style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">Total</span>
                                     <strong style="font-size: 18px; font-weight: 800; color: #2563eb;">D ${formatPrice(order.total_amount || 0)}</strong>
@@ -366,6 +368,43 @@
 
                     html += `</div>`;
                     container.innerHTML = html;
+                    container.querySelectorAll("[data-delivery-code]").forEach(button => button.addEventListener("click", async () => {
+                        button.disabled = true;
+                        button.textContent = "Creating code…";
+                        try {
+                            const client = window.GamBasketAuth.getClient();
+                            const { data, error } = await client.functions.invoke("gambasket-delivery-proof", {
+                                body: { action: "issue", order_id: button.dataset.deliveryCode }
+                            });
+                            if (error || !data?.code) throw new Error(data?.error || error?.message || "Could not create the delivery code.");
+                            window.alert("Your buyer handoff code is " + data.code + ". Share it with the assigned courier only when they arrive. It expires at " + new Date(data.expires_at).toLocaleTimeString("en-GM", { hour: "2-digit", minute: "2-digit" }) + ".");
+                            button.textContent = "Code generated";
+                        } catch (error) {
+                            button.disabled = false;
+                            button.textContent = "Generate buyer handoff code";
+                            window.alert(error.message || "Unable to generate a delivery code.");
+                        }
+                    }));
+                    container.querySelectorAll("[data-refund-order]").forEach(button => button.addEventListener("click", async () => {
+                        const total = Number(button.dataset.refundTotal || 0);
+                        const amount = Number(window.prompt("Refund amount in GMD (maximum D " + total.toLocaleString() + "):", String(total)));
+                        if (!Number.isFinite(amount) || amount <= 0 || amount > total) return;
+                        const reason = (window.prompt("Reason for refund (3–80 characters):", "Item not as described") || "").trim();
+                        if (reason.length < 3 || reason.length > 80) return;
+                        button.disabled = true;
+                        try {
+                            const client = window.GamBasketAuth.getClient();
+                            const { data, error } = await client.functions.invoke("gambasket-modempay-refunds", {
+                                body: { action: "request", order_id: button.dataset.refundOrder, amount, reason }
+                            });
+                            if (error || !data?.refund_case_id) throw new Error(data?.error || error?.message || "Refund request failed.");
+                            button.textContent = "Refund requested";
+                            window.alert("Your refund case has been submitted for review.");
+                        } catch (error) {
+                            button.disabled = false;
+                            window.alert(error.message || "Unable to submit refund request.");
+                        }
+                    }));
                     container.querySelectorAll("[data-review-order]").forEach(button => button.addEventListener("click", async () => {
                         const rating = Number(prompt("Rate this product from 1 to 5 stars:"));
                         if (!Number.isInteger(rating) || rating < 1 || rating > 5) return;

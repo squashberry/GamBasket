@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — HOMEPAGE CART DRAWER
+   JULADIRECT — HOMEPAGE CART DRAWER
    iOS-STYLE EXPAND / COLLAPSE ANIMATION & UNIFIED DATA SYNC
 ============================================================ */
 
@@ -115,7 +115,7 @@
                 }
             }
         } catch (e) {
-            console.warn("[GamBasket Cart Drawer Sync]", e.message);
+            console.warn("[JulaDirect Cart Drawer Sync]", e.message);
         }
 
         // Fallback to local guest cart
@@ -346,7 +346,7 @@
                 updateCount(true);
                 return;
             } catch (e) {
-                console.warn("[GamBasket DB Cart update fallback]", e.message);
+                console.warn("[JulaDirect DB Cart update fallback]", e.message);
             }
         }
 

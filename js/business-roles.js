@@ -1,4 +1,4 @@
-/* Shared role and listing helpers for GamBasket business workspaces. */
+/* Shared role and listing helpers for JulaDirect business workspaces. */
 (() => {
     "use strict";
 

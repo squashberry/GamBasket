@@ -1,4 +1,4 @@
-/* GamBasket courier workspace — live delivery_requests UI */
+/* JulaDirect courier workspace — live delivery_requests UI */
 (() => {
   "use strict";
 
@@ -178,7 +178,7 @@
     $("#availabilityToggle").addEventListener("click", updateAvailability); $("#heroAvailability").addEventListener("click", updateAvailability); $("#requestLocationBtn").addEventListener("click", requestLocation); $("#refreshJobsBtn").addEventListener("click", () => loadData().then(() => toast("Delivery requests refreshed.")).catch(error => clientError(error, "Could not refresh requests.")));
     $("#deliveryMobileMenu").addEventListener("click", () => { $("#deliverySidebar").classList.add("open"); $("#deliveryScrim").classList.add("open"); }); $("#deliveryScrim").addEventListener("click", () => { $("#deliverySidebar").classList.remove("open"); $("#deliveryScrim").classList.remove("open"); });
     $("#deliveryThemeToggle").addEventListener("click", () => { document.documentElement.classList.toggle("dark"); localStorage.setItem("gambasket-theme", document.documentElement.classList.contains("dark") ? "dark" : "light"); });
-    $("#mobileNotifications").addEventListener("click", () => window.location.href = "../messages.html"); $("#requestPayoutBtn").addEventListener("click", () => toast("Payout requests are reviewed by the GamBasket admin team. Please contact support to request a transfer."));
+    $("#mobileNotifications").addEventListener("click", () => window.location.href = "../messages.html"); $("#requestPayoutBtn").addEventListener("click", () => toast("Payout requests are reviewed by the JulaDirect admin team. Please contact support to request a transfer."));
   }
   async function init() {
     const allowed = await window.GamBasketGuard?.gatePage?.("delivery_worker"); if (!allowed) return;

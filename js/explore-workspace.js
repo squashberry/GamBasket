@@ -1,4 +1,4 @@
-/* GamBasket Explore workspace controls. */
+/* JulaDirect Explore workspace controls. */
 (function () {
     "use strict";
 

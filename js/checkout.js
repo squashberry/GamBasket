@@ -46,7 +46,7 @@
             const note = document.getElementById("paymentAvailabilityNote");
             if (note) note.textContent = "Online payments are enabled. You will be redirected to ModemPay to complete payment securely.";
         } catch (error) {
-            console.warn("[GamBasket ModemPay] configuration could not be loaded:", error);
+            console.warn("[JulaDirect ModemPay] configuration could not be loaded:", error);
         }
     }
 
@@ -103,7 +103,7 @@
             codInput.disabled = true;
             codInput.checked = false;
             note.textContent = "COD is unavailable because the seller reserve could not be verified.";
-            console.warn("[GamBasket COD] eligibility could not be verified:", error);
+            console.warn("[JulaDirect COD] eligibility could not be verified:", error);
         }
         syncPlaceOrderAvailability();
     }
@@ -133,7 +133,7 @@
             render();
             await loadCodEligibility();
         } catch (error) {
-            console.error("[GamBasket Checkout]", error);
+            console.error("[JulaDirect Checkout]", error);
             showError("We couldn't load checkout. Please try again.");
         }
     }
@@ -169,7 +169,7 @@
             render();
             await loadCodEligibility();
         } catch (error) {
-            console.error("[GamBasket Coupon]", error);
+            console.error("[JulaDirect Coupon]", error);
             state.coupon = null;
             $("couponMessage").textContent = "Unable to validate this coupon.";
             render();
@@ -218,7 +218,7 @@
                     await window.GamBasketAffiliate?.attachAttribution();
                     await window.GamBasketAffiliate?.recordConversion(order.id);
                 } catch (affiliateError) {
-                    console.warn("[GamBasket Affiliate] Conversion attribution failed:", affiliateError);
+                    console.warn("[JulaDirect Affiliate] Conversion attribution failed:", affiliateError);
                 }
             }
 
@@ -247,7 +247,7 @@
             $("orderSuccess").classList.add("show");
             window.GamBasketAffiliate?.clearReferral();
         } catch (error) {
-            console.error("[GamBasket Create Order]", error);
+            console.error("[JulaDirect Create Order]", error);
             showError(window.getAuthErrorMessage ? window.getAuthErrorMessage(error) : "We couldn't place the order. Please try again.");
         } finally {
             state.submitting = false;

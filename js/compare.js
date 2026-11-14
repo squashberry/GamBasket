@@ -1,4 +1,4 @@
-/* GamBasket product comparison: a local, four-item shortlist backed by live approved listings. */
+/* JulaDirect product comparison: a local, four-item shortlist backed by live approved listings. */
 (() => {
   "use strict";
   const STORAGE_KEY = "gambasket_compare_products";
@@ -156,7 +156,7 @@
       table.append(tbody); wrap.append(table);
       tableMount.replaceChildren(wrap);
     } catch (error) {
-      console.error("[GamBasket compare]",error);
+      console.error("[JulaDirect compare]",error);
       if (status) status.textContent = error?.message || "Could not load product comparisons.";
     }
   }

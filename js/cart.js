@@ -62,7 +62,7 @@
             state.items = result.items || [];
             render();
         } catch (error) {
-            console.error("[GamBasket Cart]", error);
+            console.error("[JulaDirect Cart]", error);
             $("cartError").hidden = false;
         } finally {
             state.loading = false;
@@ -148,7 +148,7 @@
             if (button.dataset.action === "remove") await removeItem(item);
             if (button.dataset.action === "increase") await updateItem(item, quantity + 1);
             if (button.dataset.action === "decrease") await updateItem(item, quantity - 1);
-        } catch (error) { console.error("[GamBasket Cart Update]", error); $("cartError").hidden = false; }
+        } catch (error) { console.error("[JulaDirect Cart Update]", error); $("cartError").hidden = false; }
     });
 
     $("clearCartBtn")?.addEventListener("click", async () => {
@@ -157,7 +157,7 @@
             if (state.authenticated) await window.GamBasketAuth.clearCart();
             else localStorage.removeItem("gambasket_cart");
             await loadCart();
-        } catch (error) { console.error("[GamBasket Cart Clear]", error); }
+        } catch (error) { console.error("[JulaDirect Cart Clear]", error); }
     });
 
     $("checkoutBtn")?.addEventListener("click", async () => {

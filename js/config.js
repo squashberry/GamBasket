@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — PRODUCTION APPLICATION CONFIGURATION
+   JULADIRECT — PRODUCTION APPLICATION CONFIGURATION
    (Safe Public Frontend Configuration for The Gambia)
 ========================================================= */
 
@@ -28,7 +28,7 @@
         },
 
         // App Metadata
-        APP_NAME: "GamBasket",
+        APP_NAME: "JulaDirect",
         TAGLINE: "The Digital Marketplace of The Gambia",
         COUNTRY: "The Gambia",
         CURRENCY_CODE: "GMD",

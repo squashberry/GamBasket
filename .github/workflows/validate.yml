@@ -92,6 +92,59 @@ jobs:
           print(f"Successfully syntax-checked {checked} inline scripts across {len(pages)} HTML pages.")
           PY
 
+      - name: Check buyer and legacy admin routes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          buyer_routes = {
+              "account.html": "../me.html",
+              "messages.html": "../messages.html",
+              "notifications.html": "../me.html#notifications",
+              "orders.html": "../orders.html",
+              "quotes.html": "../messages.html",
+              "suppliers.html": "../explore.html",
+              "wishlist.html": "../wishlist.html",
+          }
+          for name, target in buyer_routes.items():
+              path = Path("buyer") / name
+              content = path.read_text(encoding="utf-8")
+              assert content.strip(), f"Buyer route is empty: {path}"
+              assert f'content="0;url={target}"' in content, f"Unexpected buyer redirect: {path}"
+              assert target in content, f"Missing buyer route fallback: {path}"
+
+          admin_routes = {
+              "categories.html": "categories",
+              "featured.html": "featured",
+              "messages.html": "messages",
+              "orders.html": "orders",
+              "products.html": "products",
+              "quotes.html": "messages",
+              "reports.html": "moderation",
+              "reviews.html": "reviews",
+              "settings.html": "settings",
+              "suppliers.html": "sellers",
+              "users.html": "users",
+          }
+          for name, page in admin_routes.items():
+              path = Path("admin") / name
+              content = path.read_text(encoding="utf-8")
+              assert content.strip(), f"Legacy admin route is empty: {path}"
+              assert f'content="0;url=./index.html?page={page}"' in content, f"Unexpected admin redirect: {path}"
+
+          admin_js = Path("js/admin.js").read_text(encoding="utf-8")
+          assert "function getInitialAdminPage()" in admin_js
+          assert "openPage(getInitialAdminPage())" in admin_js
+          assert 'reports: "moderation"' in admin_js
+          assert 'suppliers: "sellers"' in admin_js
+
+          notification_js = Path("js/notifications.js").read_text(encoding="utf-8")
+          assert 'window.location.hash.toLowerCase() === "#notifications"' in notification_js
+          assert "openNotifications();" in notification_js
+
+          print(f"Validated {len(buyer_routes)} buyer routes, {len(admin_routes)} legacy admin routes, admin deep links, and notification shortcuts.")
+          PY
+
       - name: Guard public frontend against server secrets
         shell: bash
         run: |

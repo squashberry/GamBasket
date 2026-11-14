@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — SELLER CENTER
+   JULADIRECT — SELLER CENTER
 ============================================================ */
 
 :root {
@@ -734,7 +734,7 @@ html.dark .seller-page,
 }
 
 .seller-brand::before {
-    content: "GAMBASKET";
+    content: "JULADIRECT";
     display: block;
     margin-bottom: 5px;
     color: var(--seller-blue);

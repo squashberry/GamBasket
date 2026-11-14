@@ -115,7 +115,7 @@ Deno.serve(async (req: Request) => {
       paymentId = inserted && inserted[0]?.id;
     }
     if (!paymentId) throw new Error("Payment record could not be created.");
-    const returnUrl = "https://juladirect.pages.dev/GamBasket/orders.html?payment_return=1&order="
+    const returnUrl = "https://juladirect.pages.dev/orders.html?payment_return=1&order="
       + encodeURIComponent(order.order_number);
     const base = (env("MODEMPAY_BASE_URL") || "https://api.modempay.com").replace(/\/$/, "");
     const providerResponse = await fetch(base + "/v1/payments", {

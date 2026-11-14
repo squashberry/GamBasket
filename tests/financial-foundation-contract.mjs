@@ -31,6 +31,7 @@ assert.match(payouts, /CREATE FUNCTION public\.seller_request_payout/);
 assert.match(payouts, /pg_advisory_xact_lock/);
 assert.match(payouts, /payout-reservation:/);
 assert.match(payouts, /INSUFFICIENT_AVAILABLE_BALANCE/);
+assert.match(allSql, /FUNCTION public\\.admin_review_seller_payout_method/);
 
 assert.match(refunds, /CREATE TABLE public\.order_refund_cases/);
 assert.match(refunds, /CREATE TABLE public\.order_refund_events/);

@@ -31,6 +31,7 @@ The repository now contains the first financial foundation migrations:
 - 20261114091000_gambasket_seller_wallet_payouts.sql — seller payout destinations, wallet preferences, withdrawal requests, idempotent fund reservation and wallet summary RPC.
 - 20261114092000_gambasket_refunds_delivery_proof.sql — refund case/event records and private delivery OTP proof storage.
 - 20261114093000_admin_payout_method_review.sql — admin-only approval/rejection of seller payout destinations.
+- 20261114094000_persist_order_discounts.sql — persist checkout discounts for accurate post-discount merchandise commission calculations.
 
 These migrations are **repository code only** at this stage. They have not been applied to the live Supabase project. ModemPay checkout, signed webhook processing, automatic payout workers, refund execution, OTP issue/verification and the 24-hour release job are not yet live. Online checkout remains deliberately locked to Cash on Delivery until those flows have been completed and tested.
 

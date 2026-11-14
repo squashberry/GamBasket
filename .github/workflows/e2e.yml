@@ -1,4 +1,4 @@
-name: GamBasket browser smoke tests
+name: JulaDirect browser smoke tests
 
 on:
   push:

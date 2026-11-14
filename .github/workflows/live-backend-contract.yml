@@ -1,4 +1,4 @@
-name: GamBasket live backend contract checks
+name: JulaDirect live backend contract checks
 
 on:
   workflow_dispatch:

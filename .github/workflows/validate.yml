@@ -1,4 +1,4 @@
-name: GamBasket validation
+name: JulaDirect validation
 
 on:
   push:

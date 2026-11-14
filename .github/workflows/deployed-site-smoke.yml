@@ -1,39 +1,32 @@
-name: GamBasket deployed site smoke checks
+name: JulaDirect deployed Pages smoke checks
 
 on:
-  workflow_run:
-    workflows: ["Deploy GamBasket test preview"]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
     inputs:
       site_url:
-        description: HTTPS base URL of the deployed GamBasket site
+        description: HTTPS base URL of the deployed JulaDirect site
         required: false
         type: string
-        default: "https://squashberry.github.io/GamBasket/"
+        default: "https://juladirect.pages.dev/"
   schedule:
-    # Verify the latest deployed static site daily as well as immediately after deployments.
     - cron: "41 9 * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: gambasket-deployed-smoke-${{ github.ref }}
+  group: juladirect-deployed-smoke-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   deployed-site:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    name: Verify actual GitHub Pages deployment
+    name: Verify actual Cloudflare Pages deployment
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - name: Checkout deployed revision
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -41,5 +34,5 @@ jobs:
           node-version: "22"
       - name: Smoke-test deployed routes and assets
         env:
-          GAMBASKET_SITE_URL: ${{ inputs.site_url || 'https://squashberry.github.io/GamBasket/' }}
+          JULADIRECT_SITE_URL: ${{ inputs.site_url || 'https://juladirect.pages.dev/' }}
         run: node tests/deployed-site-smoke.mjs

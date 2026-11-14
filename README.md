@@ -1,27 +1,30 @@
-# GamBasket test preview
+# JulaDirect — Trade. Shop. Connect.
 
-GamBasket is a browser-based marketplace prototype for The Gambia. This repository is published as a **test preview** at https://squashberry.github.io/GamBasket/; it is not a production launch declaration.
+JulaDirect is a digital marketplace for The Gambia where people can trade, shop, and connect with local sellers and buyers.
 
-## Key preview routes
+**Live marketplace:** https://juladirect.pages.dev/  
+**Source repository:** https://github.com/squashberry/JulaDirect
 
-- [Explore marketplace](https://squashberry.github.io/GamBasket/explore.html)
-- [Compare products](https://squashberry.github.io/GamBasket/compare.html)
-- [Saved searches and price alerts](https://squashberry.github.io/GamBasket/saved-searches.html)
-- [Seller earnings](https://squashberry.github.io/GamBasket/supplier/earnings.html)
+## Key marketplace routes
+
+- [Explore marketplace](https://juladirect.pages.dev/explore.html)
+- [Compare products](https://juladirect.pages.dev/compare.html)
+- [Saved searches and price alerts](https://juladirect.pages.dev/saved-searches.html)
+- [Seller earnings](https://juladirect.pages.dev/supplier/earnings.html)
 
 ## Marketplace payment and seller wallet policy
 
 The agreed marketplace rules are:
 
 - **Seller commission: 5%** of the discounted merchandise amount. The delivery charge is accounted for separately and is not part of the commission calculation.
-- **Payment collection:** ModemPay is the intended online payment provider. GamBasket must verify the signed server callback, payment reference, amount and currency before marking an order as paid. A browser redirect is never proof of payment.
+- **Payment collection:** ModemPay is the intended online payment provider. JulaDirect verifies the signed server callback, payment reference, amount and currency before marking an order as paid. A browser redirect is never proof of payment.
 - **Seller funds:** seller proceeds remain pending while the order is fulfilled. After both courier delivery confirmation and buyer OTP confirmation, a 24-hour dispute window begins. A refund case or active dispute blocks release.
 - **Seller withdrawals:** both manual withdrawal requests and automatic payouts are supported by policy. Automatic payout is opt-in and requires an approved payout method and a seller-selected threshold. Sellers can also leave available funds in their wallet to accumulate.
-- **Payout destinations:** the first planned mobile-money rails are Wave and Afrimoney, subject to confirmation that they are enabled for the GamBasket merchant account.
+- **Payout destinations:** the first planned mobile-money rails are Wave and Afrimoney, subject to confirmation that they are enabled for the JulaDirect merchant account.
 - **Refunds:** full and partial refunds require an audited case and provider confirmation. ModemPay's published refund instructions currently specify a 48-hour request window after transaction completion, so refunds outside that window need a separately approved provider process before launch.
 - **Accounting:** all money movement must use an immutable, balanced, idempotent journal. The browser must never write balances, commissions, payment status, refund status or payout outcomes directly.
 
-The design intentionally keeps collection in the GamBasket merchant flow and releases seller proceeds later. Do not describe this as regulated escrow or use immediate split settlement unless ModemPay has approved that arrangement in writing.
+The design intentionally keeps collection in the JulaDirect merchant flow and releases seller proceeds later. Do not describe this as regulated escrow or use immediate split settlement unless ModemPay has approved that arrangement in writing.
 
 ## Financial implementation status
 
@@ -33,23 +36,23 @@ The repository now contains the first financial foundation migrations:
 - 20261114093000_admin_payout_method_review.sql — admin-only approval/rejection of seller payout destinations.
 - 20261114094000_persist_order_discounts.sql — persist checkout discounts for accurate post-discount merchandise commission calculations.
 
-All five migrations have now been **successfully applied** to the active GamBasket Supabase project `iwxcepbwmnnkxocskopx`. Supabase migration history confirms all five entries. Post-migration verification confirmed the 5.00% commission setting, all 12 financial tables, 11 financial RLS policies, and the expected 8 database functions. Row-level security is enabled on every new financial table; the delivery OTP table intentionally has no client-facing policy.
+The original financial foundation migrations were **successfully applied** to the active JulaDirect Supabase project `iwxcepbwmnnkxocskopx`. Supabase migration history confirms all five entries. Post-migration verification confirmed the 5.00% commission setting, all 12 financial tables, 11 financial RLS policies, and the expected 8 database functions. Row-level security is enabled on every new financial table; the delivery OTP table intentionally has no client-facing policy.
 
-This is the database and seller-wallet foundation, not a live payment launch. ModemPay checkout creation, signed payment webhooks, automatic payout workers, provider payout execution/callbacks, refund execution, OTP issue/verification and the 24-hour release job are not yet live. The seller interface can read wallet balances, save withdrawal preferences and record manual payout requests, but no actual transfer is sent. Online checkout remains deliberately locked to Cash on Delivery until the remaining flows have been completed and tested.
+The financial workflows and COD reserve foundation are deployed, but live ModemPay collection and payouts remain disabled until the correctly named provider secrets are configured and a real merchant test has passed. The seller interface can read wallet balances, save withdrawal preferences and record manual payout requests, but no actual transfer is sent. Online checkout remains disabled until provider configuration and live payment verification are complete.
 
 ## Development checks
 
 - npm install --no-audit --no-fund
 - npm run test:e2e — Playwright browser tests with mocked backend responses
 - node tests/live-supabase-contract.mjs — read-only contracts against the configured Supabase Data API
-- GAMBASKET_SITE_URL=https://squashberry.github.io/GamBasket/ node tests/deployed-site-smoke.mjs — verifies deployed pages and assets
+- JULADIRECT_SITE_URL=https://juladirect.pages.dev/ node tests/deployed-site-smoke.mjs — verifies deployed pages and assets
 
 See [docs/TESTING_AND_RELEASE.md](docs/TESTING_AND_RELEASE.md) for the Stage C/D workflows, limitations, and pre-launch checklist.
 
 
 ## ModemPay integration
 
-The ModemPay integration is implemented with Supabase Edge Functions. The browser never receives the ModemPay API key or webhook signing secret.
+The ModemPay integration is implemented with Supabase Edge Functions. Configure `MODEMPAY_API_KEY` and `MODEMPAY_WEBHOOK_SECRET` in Supabase Edge Function secrets; the browser never receives either secret.et.
 
 - Hosted collection is created by `gambasket-modempay-checkout`; the order is initially created through the existing trusted order RPC, then the backend adds a pending provider intent and attaches the selected payment rail.
 - `gambasket-modempay-webhook` validates the raw-body `x-modem-signature` HMAC-SHA512 header before processing charge and transfer events. A browser return URL never marks an order paid.

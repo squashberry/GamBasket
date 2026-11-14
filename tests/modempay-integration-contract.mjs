@@ -36,7 +36,7 @@ assert.match(codMigration, /cod_commission_capture/);
 assert.match(codMigration, /ONLINE_PAYMENT_REQUIRED/);
 assert.match(codMigration, /pending_online/);
 assert.match(codMigration, /SELLER_COD_NOT_ELIGIBLE/);
-assert.match(codMigration, /NEW\\.order_status='confirmed'/);
+assert.match(codMigration, /NEW\.order_status='confirmed'/);
 
 assert.match(checkoutFn, /MODEMPAY_API_KEY/);
 assert.ok(checkoutFn.includes("/v1/payments"));

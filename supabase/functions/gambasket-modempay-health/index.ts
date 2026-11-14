@@ -11,8 +11,14 @@ Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   const authorization = req.headers.get("Authorization") || "";
   const supplied = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  const serviceRole = env("SUPABASE_SERVICE_ROLE_KEY");
-  if (!serviceRole || !constantTimeEqual(supplied, serviceRole)) return json({ error: "Unauthorized" }, 401);
+  const tokenParts = supplied.split(".");
+  if (tokenParts.length !== 3) return json({ error: "Unauthorized" }, 401);
+  const payloadPart = tokenParts[1].replace(/-/g, "+").replace(/_/g, "/");
+  const paddedPayload = payloadPart.padEnd(Math.ceil(payloadPart.length / 4) * 4, "=");
+  let claims: any;
+  try { claims = JSON.parse(atob(paddedPayload)); } catch { return json({ error: "Unauthorized" }, 401); }
+  // Supabase verifies the JWT signature before this function runs (verify_jwt=true).
+  if (claims?.role !== "service_role") return json({ error: "Unauthorized" }, 401);
 
   const apiKey = env("MODEMPAY_API_KEY");
   if (!apiKey) return json({ ok: false, error: "ModemPay API key is not configured" }, 503);

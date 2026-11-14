@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — SUPABASE CLIENT ADAPTER & PRODUCTION AUTH SYSTEM
+   JULADIRECT — SUPABASE CLIENT ADAPTER & PRODUCTION AUTH SYSTEM
    
    CRITICAL ARCHITECTURAL RULES:
    1. Exactly ONE browser Supabase client across the entire app.
@@ -79,7 +79,7 @@
                 };
 
                 script.onerror = () => {
-                    console.warn("[GamBasket] Failed to load Supabase JS library from CDN.");
+                    console.warn("[JulaDirect] Failed to load Supabase JS library from CDN.");
                     reject(new Error("Failed to load Supabase JS library from CDN"));
                 };
 
@@ -106,14 +106,14 @@
     async function initializeAuthSystem() {
         const config = window.GAMBASKET_CONFIG;
         if (!config || !config.isConfigured()) {
-            console.warn("[GamBasket] Supabase config not configured or missing.");
+            console.warn("[JulaDirect] Supabase config not configured or missing.");
             isInitialized = true;
             return { session: null, user: null, profile: null, roles: [] };
         }
 
         const clientKey = (config.SUPABASE_PUBLISHABLE_KEY || config.SUPABASE_ANON_KEY || "").trim();
         if (!config.SUPABASE_URL || !clientKey) {
-            console.warn("[GamBasket] Supabase URL or client key missing.");
+            console.warn("[JulaDirect] Supabase URL or client key missing.");
             isInitialized = true;
             return { session: null, user: null, profile: null, roles: [] };
         }
@@ -121,7 +121,7 @@
         try {
             await ensureSupabaseLibrary();
         } catch (err) {
-            console.warn("[GamBasket] Could not load Supabase library:", err.message);
+            console.warn("[JulaDirect] Could not load Supabase library:", err.message);
             isInitialized = true;
             return { session: null, user: null, profile: null, roles: [] };
         }
@@ -140,7 +140,7 @@
                     }
                 );
             } catch (err) {
-                console.warn("[GamBasket] Supabase Client Initialization Error:", err.message);
+                console.warn("[JulaDirect] Supabase Client Initialization Error:", err.message);
             }
         }
 
@@ -151,7 +151,7 @@
 
         // Temporary safe diagnostics logging (prefix only, never secret)
         const keyPrefix = clientKey.substring(0, Math.min(15, clientKey.length)) + "...";
-        console.log("[GamBasket Supabase Active]", {
+        console.log("[JulaDirect Supabase Active]", {
             url: config.SUPABASE_URL,
             keyPrefix: keyPrefix,
             keyLength: clientKey.length
@@ -159,7 +159,7 @@
 
         // Set up the authoritative auth state change listener
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
-            console.log(`[GamBasket Auth Event] ${event}`, session?.user?.email || "(no session)");
+            console.log(`[JulaDirect Auth Event] ${event}`, session?.user?.email || "(no session)");
             currentSession = session;
             currentUser = session ? session.user : null;
 
@@ -178,7 +178,7 @@
                     await GamBasketAuth.getUserRoles();
                     await GamBasketAuth.refreshWishlistCache();
                 } catch (e) {
-                    console.warn("[GamBasket] Profile refresh notice:", e.message);
+                    console.warn("[JulaDirect] Profile refresh notice:", e.message);
                 }
             }
 
@@ -187,7 +187,7 @@
                 try {
                     listener(event, session);
                 } catch (listenerErr) {
-                    console.error("[GamBasket Auth Listener Error]", listenerErr);
+                    console.error("[JulaDirect Auth Listener Error]", listenerErr);
                 }
             });
 
@@ -215,7 +215,7 @@
                     await GamBasketAuth.getUserRoles();
                     await GamBasketAuth.refreshWishlistCache();
                 } catch (pe) {
-                    console.warn("[GamBasket] Profile init notice:", pe.message);
+                    console.warn("[JulaDirect] Profile init notice:", pe.message);
                 }
             } else {
                 currentSession = null;
@@ -224,7 +224,7 @@
                 currentUserRoles = [];
             }
         } catch (err) {
-            console.warn("[GamBasket] Error fetching initial session:", err.message);
+            console.warn("[JulaDirect] Error fetching initial session:", err.message);
             currentSession = null;
             currentUser = null;
         }
@@ -238,7 +238,7 @@
     }
 
     // =========================================================
-    // GamBasket Auth & Storage API
+    // JulaDirect Auth & Storage API
     // =========================================================
     const GamBasketAuth = {
         /**
@@ -399,7 +399,7 @@
                 if (error) throw error;
                 return await this.fetchUserProfile(true);
             } catch (err) {
-                console.warn("[GamBasket] ensureProfileAndRoles notice:", err.message);
+                console.warn("[JulaDirect] ensureProfileAndRoles notice:", err.message);
                 return null;
             }
         },
@@ -483,7 +483,7 @@
                     return currentUserRoles;
                 }
             } catch (err) {
-                console.warn("[GamBasket Roles Fetch Notice]", err.message);
+                console.warn("[JulaDirect Roles Fetch Notice]", err.message);
             }
 
             currentUserRoles = [];
@@ -513,7 +513,7 @@
                 try {
                     callback(currentSession ? "INITIAL_SESSION" : "SIGNED_OUT", currentSession);
                 } catch (e) {
-                    console.error("[GamBasket onAuthStateChange Error]", e);
+                    console.error("[JulaDirect onAuthStateChange Error]", e);
                 }
             }
 
@@ -534,7 +534,7 @@
             if (!client) {
                 return {
                     data: null,
-                    error: { message: "GamBasket is temporarily unable to connect. Please try again shortly." }
+                    error: { message: "JulaDirect is temporarily unable to connect. Please try again shortly." }
                 };
             }
 
@@ -570,7 +570,7 @@
             if (!client) {
                 return {
                     data: null,
-                    error: { message: "GamBasket is temporarily unable to connect. Please try again shortly." }
+                    error: { message: "JulaDirect is temporarily unable to connect. Please try again shortly." }
                 };
             }
 
@@ -600,7 +600,7 @@
             if (!client) {
                 return {
                     data: null,
-                    error: { message: "GamBasket is temporarily unable to connect. Please try again shortly." }
+                    error: { message: "JulaDirect is temporarily unable to connect. Please try again shortly." }
                 };
             }
 
@@ -637,7 +637,7 @@
                 try {
                     await client.auth.signOut();
                 } catch (e) {
-                    console.warn("[GamBasket] Sign out notice:", e);
+                    console.warn("[JulaDirect] Sign out notice:", e);
                 }
             }
 
@@ -663,7 +663,7 @@
             await this.ready();
             const client = this.getClient();
             if (!client) {
-                return { data: null, error: { message: "GamBasket is temporarily unable to connect." } };
+                return { data: null, error: { message: "JulaDirect is temporarily unable to connect." } };
             }
 
             try {
@@ -684,7 +684,7 @@
             await this.ready();
             const client = this.getClient();
             if (!client) {
-                return { data: null, error: { message: "GamBasket is temporarily unable to connect." } };
+                return { data: null, error: { message: "JulaDirect is temporarily unable to connect." } };
             }
 
             try {
@@ -714,7 +714,7 @@
                 hasSession: Boolean(currentSession),
                 userEmail: currentUser ? currentUser.email : null
             };
-            console.log("[GamBasket Auth Diagnostics]", diagnostics);
+            console.log("[JulaDirect Auth Diagnostics]", diagnostics);
             return diagnostics;
         },
 
@@ -755,7 +755,7 @@
                 sales_count: Number(row.sales_count || 0),
                 created_at: row.created_at || null,
                 seller_id: row.seller_id || null,
-                seller: row.seller || row.store_name || "GamBasket member",
+                seller: row.seller || row.store_name || "JulaDirect member",
                 seller_type: row.seller_type === "business" ? "business" : "individual",
                 seller_verified: Boolean(row.seller_verified),
                 delivery_available: row.delivery_available === true,
@@ -796,7 +796,7 @@
                             .in("id", sellerIds);
                         if (!badgeError) (badgeRows || []).forEach(row => publicBadges.set(row.id, row));
                     } catch (badgeError) {
-                        console.warn("[GamBasket seller badges]", badgeError?.message);
+                        console.warn("[JulaDirect seller badges]", badgeError?.message);
                     }
                 }
 
@@ -804,14 +804,14 @@
                     const badge = publicBadges.get(row.seller_id) || null;
                     return this.cacheProductRow({
                         ...row,
-                        seller: badge?.business_name || "GamBasket member",
+                        seller: badge?.business_name || "JulaDirect member",
                         seller_type: badge?.seller_type === "business" ? "business" : "individual",
                         seller_verified: Boolean(badge?.is_seller_verified),
                         store_name: badge?.business_name || null
                     });
                 }).filter(Boolean);
             } catch (err) {
-                console.warn("[GamBasket] Product query warning:", err.message);
+                console.warn("[JulaDirect] Product query warning:", err.message);
                 return [];
             }
         },
@@ -858,7 +858,7 @@
                     }
                 }
             } catch (err) {
-                console.warn("[GamBasket] Wishlist query warning:", err.message);
+                console.warn("[JulaDirect] Wishlist query warning:", err.message);
             }
 
             // Scoped fallback
@@ -894,7 +894,7 @@
                 const localSaved = JSON.parse(localStorage.getItem(localKey) || "[]");
                 currentWishlistSet = new Set(localSaved.map(id => String(id)).filter(isUuid));
             } catch (e) {
-                console.warn("[GamBasket] Wishlist cache refresh notice:", e.message);
+                console.warn("[JulaDirect] Wishlist cache refresh notice:", e.message);
             }
         },
 
@@ -936,11 +936,11 @@
                         }, { onConflict: "user_id,product_id" });
 
                     if (error && error.code !== "23505") {
-                        console.warn("[GamBasket] Add to wishlist DB notice:", error.message);
+                        console.warn("[JulaDirect] Add to wishlist DB notice:", error.message);
                     }
                 }
             } catch (err) {
-                console.warn("[GamBasket] Add to wishlist exception:", err.message);
+                console.warn("[JulaDirect] Add to wishlist exception:", err.message);
             }
 
             return { success: true, isSaved: true };
@@ -978,7 +978,7 @@
                         .eq("product_id", cleanId);
                 }
             } catch (err) {
-                console.warn("[GamBasket] Remove from wishlist DB notice:", err.message);
+                console.warn("[JulaDirect] Remove from wishlist DB notice:", err.message);
             }
 
             return { success: true, isSaved: false };
@@ -1068,7 +1068,7 @@
                     id: conversation.id,
                     product_id: conversation.product_id,
                     product: conversation.product,
-                    other_user_name: `${otherProfile?.first_name || "GamBasket"} ${otherProfile?.last_name || "Member"}`.trim(),
+                    other_user_name: `${otherProfile?.first_name || "JulaDirect"} ${otherProfile?.last_name || "Member"}`.trim(),
                     last_message: lastMessage?.message_text || "Start the conversation",
                     last_message_at: lastMessage?.created_at || conversation.updated_at || conversation.created_at,
                     unread_count: count || 0
@@ -1111,7 +1111,7 @@
                 if (profileError) throw profileError;
                 otherProfile = safeProfile;
             }
-            return { conversation: { ...conversation, other_user_name: `${otherProfile?.first_name || "GamBasket"} ${otherProfile?.last_name || "Member"}`.trim() }, messages, product: conversation.product };
+            return { conversation: { ...conversation, other_user_name: `${otherProfile?.first_name || "JulaDirect"} ${otherProfile?.last_name || "Member"}`.trim() }, messages, product: conversation.product };
         },
 
         getConversationMessages: async function (conversationId) {
@@ -1341,7 +1341,7 @@
                     }
                 }
             } catch (err) {
-                console.warn("[GamBasket] Orders query notice:", err.message);
+                console.warn("[JulaDirect] Orders query notice:", err.message);
                 return { data: [], count: 0, error: err, isGuest: false };
             }
 
@@ -1368,7 +1368,7 @@
                 }));
                 return { success: true, order: data };
             } catch (err) {
-                console.warn("[GamBasket] Order cancellation failed:", err.message);
+                console.warn("[JulaDirect] Order cancellation failed:", err.message);
                 return { success: false, error: err };
             }
         },
@@ -1469,7 +1469,7 @@
                     : (user.user_metadata?.full_name || user.email?.split("@")[0] || "My Account");
             }
         } catch (e) {
-            console.warn("[GamBasket] Header auth sync notice:", e.message);
+            console.warn("[JulaDirect] Header auth sync notice:", e.message);
         }
 
         actionContainers.forEach(container => {

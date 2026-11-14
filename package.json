@@ -1,8 +1,8 @@
 {
-  "name": "gambasket-marketplace",
+  "name": "juladirect-marketplace",
   "private": true,
   "version": "0.1.0",
-  "description": "GamBasket test-stage browser and workflow checks",
+  "description": "JulaDirect browser and workflow checks",
   "scripts": {
     "test:e2e": "playwright test"
   },

@@ -5,7 +5,7 @@
 
     async function rpc(name, params = {}) {
         const activeClient = client();
-        if (!activeClient) throw new Error("GamBasket is not connected.");
+        if (!activeClient) throw new Error("JulaDirect is not connected.");
         const { data, error } = await activeClient.rpc(name, params);
         if (error) throw error;
         return data;

@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET UNIVERSAL MARKETPLACE SEARCH
+   JULADIRECT UNIVERSAL MARKETPLACE SEARCH
 ========================================================= */
 (function () {
     "use strict";

@@ -45,3 +45,32 @@ This is the database and seller-wallet foundation, not a live payment launch. Mo
 - GAMBASKET_SITE_URL=https://squashberry.github.io/GamBasket/ node tests/deployed-site-smoke.mjs — verifies deployed pages and assets
 
 See [docs/TESTING_AND_RELEASE.md](docs/TESTING_AND_RELEASE.md) for the Stage C/D workflows, limitations, and pre-launch checklist.
+
+
+## ModemPay integration
+
+The ModemPay integration is implemented with Supabase Edge Functions. The browser never receives the ModemPay API key or webhook signing secret.
+
+- Hosted collection is created by `gambasket-modempay-checkout`; the order is initially created through the existing trusted order RPC, then the backend adds a pending provider intent and attaches the selected payment rail.
+- `gambasket-modempay-webhook` validates the raw-body `x-modem-signature` HMAC-SHA512 header before processing charge and transfer events. A browser return URL never marks an order paid.
+- Collection methods are Wave, QMoney and Afrimoney. Seller payouts are Wave and Afrimoney only, using ModemPay's required idempotency header.
+- Buyer delivery codes are generated and hashed server-side. An assigned courier must submit the six-digit code to mark delivery complete. Paid seller proceeds remain pending for 24 hours after the handoff; open refund cases block release. COD delivery uses the same handoff proof but does not create an online-payment wallet liability.
+- Buyers can request full or partial refunds; an administrator reviews the case in `/admin/refunds.html`. Provider refunds are restricted to the ModemPay 48-hour refund window. A provider timeout is left pending for reconciliation rather than being blindly retried.
+- The payout worker releases eligible seller funds and processes approved automatic payout requests on a five-minute schedule. Wave/Afrimoney destinations must be approved before payout.
+
+### Required Supabase Edge Function secrets
+
+Set these under **Supabase Dashboard → Edge Functions → Secrets** for project `iwxcepbwmnnkxocskopx`:
+
+- `MODEMPAY_API_KEY` — ModemPay test key first, then the live key after KYC.
+- `MODEMPAY_WEBHOOK_SECRET` — the global signing secret from ModemPay Dashboard → Developers → Webhooks.
+- `MODEMPAY_CHECKOUT_ENABLED` — keep `false` until the global webhook is configured and test events pass; then set `true`.
+- `MODEMPAY_PAYOUTS_ENABLED` — keep `false` until payout permissions and Wave/Afrimoney merchant eligibility are confirmed.
+- `MODEMPAY_BASE_URL` — optional; defaults to `https://api.modempay.com`.
+- `GAMBASKET_OTP_PEPPER` and `GAMBASKET_CRON_SECRET` are generated and stored by the backend deployment process; do not share them.
+
+Configure the global ModemPay webhook endpoint as:
+
+`https://iwxcepbwmnnkxocskopx.supabase.co/functions/v1/gambasket-modempay-webhook`
+
+Subscribe to `charge.succeeded`, `charge.failed`, `charge.cancelled`, `transfer.succeeded`, `transfer.failed`, `transfer.reversed` and `transfer.flagged`. Do not set a per-payment callback URL: the integration relies on the global signed webhook. Keep checkout and payouts disabled until test-mode verification has passed.

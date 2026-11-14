@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GamBasket · Refund review</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#687386;--line:#e5eaf1;--blue:#2563eb;--surface:#fff;--bg:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;gap:16px;align-items:center;justify-content:space-between}
+header a{color:var(--blue);font-weight:700;text-decoration:none}.wrap{max-width:1050px;margin:32px auto;padding:0 18px}
+h1{margin:0;font-size:28px;letter-spacing:-.5px}p{color:var(--muted);margin:6px 0 0}.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+#status{margin:16px 0;color:var(--muted)}.case{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 5px 18px #17203308}
+.case-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.amount{font-size:21px;font-weight:800}.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:15px 0;color:var(--muted);font-size:13px}
+.reason{padding:12px;background:#f7f9fc;border-radius:10px;margin:12px 0}.actions{display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.approve{background:#2563eb;color:#fff}.reject{background:#fff1f2;color:#be123c;border:1px solid #fecdd3}.review{background:#eef2ff;color:#3730a3}
+.empty{border:1px dashed #cbd5e1;background:#fff;border-radius:14px;text-align:center;padding:38px;color:var(--muted)}
+@media(max-width:600px){.wrap{margin:22px auto}.top{align-items:flex-start;flex-direction:column}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><strong>GamBasket · Admin</strong><a href="index.html">Back to control center</a></header>
+<main class="wrap">
+ <div class="top"><div><h1>Refund review</h1><p>Review buyer refund requests before sending a provider refund.</p></div><button id="refresh" class="review">Refresh cases</button></div>
+ <div id="status" role="status">Checking administrator access…</div>
+ <section id="cases" aria-live="polite"></section>
+</main>
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth-errors.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script>
+(async function(){
+ "use strict";
+ const statusEl=document.getElementById("status"), list=document.getElementById("cases");
+ const statusText=(value)=>String(value||"").replaceAll("_"," ");
+ function node(tag,text,className){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;}
+ async function boot(){
+   await window.GamBasketAuth.ready();
+   const session=await window.GamBasketAuth.getSession();
+   if(!session?.user){statusEl.textContent="Please sign in with an administrator account.";return;}
+   const client=window.GamBasketAuth.getClient();
+   const {data:isAdmin,error:adminError}=await client.rpc("is_gambasket_admin");
+   if(adminError||!isAdmin){statusEl.textContent="Administrator access is required.";return;}
+   await load();
+ }
+ async function load(){
+   statusEl.textContent="Loading refund cases…";list.replaceChildren();
+   const client=window.GamBasketAuth.getClient();
+   const {data,error}=await client.from("order_refund_cases")
+     .select("id,order_id,buyer_id,seller_id,requested_amount,currency,reason,description,status,created_at,provider_reference")
+     .order("created_at",{ascending:false}).limit(100);
+   if(error){statusEl.textContent=error.message||"Could not load refund cases.";return;}
+   if(!data?.length){statusEl.textContent="No refund cases have been submitted.";list.append(node("div","There are currently no refund cases.","empty"));return;}
+   statusEl.textContent=data.length+" refund case(s).";
+   data.forEach(item=>{
+     const card=node("article",undefined,"case");
+     const head=node("div",undefined,"case-head");
+     head.append(node("strong","Case "+item.id));
+     head.append(node("span",statusText(item.status).toUpperCase()));
+     card.append(head);
+     const meta=node("div",undefined,"meta");
+     meta.append(node("span","Order: "+item.order_id));
+     meta.append(node("span","Buyer: "+item.buyer_id));
+     meta.append(node("span","Submitted: "+new Date(item.created_at).toLocaleString()));
+     meta.append(node("span","Reference: "+(item.provider_reference||"—")));
+     card.append(meta);
+     card.append(node("div",(item.currency==="GMD"?"D ":"")+Number(item.requested_amount).toLocaleString()+" requested","amount"));
+     card.append(node("div","Reason: "+item.reason,"reason"));
+     if(item.description)card.append(node("p",item.description));
+     const actions=node("div",undefined,"actions");
+     if(["requested","under_review","failed"].includes(item.status)){
+       const approve=node("button","Approve & process","approve");
+       approve.addEventListener("click",()=>review(item.id,"approved",approve));
+       actions.append(approve);
+       const reject=node("button","Reject","reject");
+       reject.addEventListener("click",()=>review(item.id,"rejected",reject));
+       actions.append(reject);
+       const mark=node("button","Under review","review");
+       mark.addEventListener("click",()=>review(item.id,"under_review",mark));
+       actions.append(mark);
+     }
+     card.append(actions);list.append(card);
+   });
+ }
+ async function review(id,next,button){
+   button.disabled=true;const prior=button.textContent;button.textContent="Saving…";
+   try{
+     const client=window.GamBasketAuth.getClient();
+     const {data,error}=await client.functions.invoke("gambasket-modempay-refunds",{
+       body:{action:"review",refund_case_id:id,status:next}
+     });
+     if(error)throw new Error(data?.error||error.message||"Refund review failed.");
+     if(data?.pending_reconciliation)window.alert(data.message||"Provider result needs reconciliation.");
+     else if(next==="approved"&&!data?.refund?.success)window.alert(data?.message||"Refund processing has not been confirmed. Check the case status before retrying.");
+     await load();
+   }catch(error){window.alert(error.message||"Unable to update refund case.");button.disabled=false;button.textContent=prior;}
+ }
+ document.getElementById("refresh").addEventListener("click",load);
+ try{await boot();}catch(error){statusEl.textContent=error.message||"Could not initialize refund review.";}
+})();
+</script>
+</body>
+</html>

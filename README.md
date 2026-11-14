@@ -33,7 +33,9 @@ The repository now contains the first financial foundation migrations:
 - 20261114093000_admin_payout_method_review.sql — admin-only approval/rejection of seller payout destinations.
 - 20261114094000_persist_order_discounts.sql — persist checkout discounts for accurate post-discount merchandise commission calculations.
 
-These migrations are **repository code only** at this stage. They have not been applied to the live Supabase project. ModemPay checkout, signed webhook processing, automatic payout workers, refund execution, OTP issue/verification and the 24-hour release job are not yet live. Online checkout remains deliberately locked to Cash on Delivery until those flows have been completed and tested.
+All five migrations have now been **successfully applied** to the active GamBasket Supabase project `iwxcepbwmnnkxocskopx`. Supabase migration history confirms all five entries. Post-migration verification confirmed the 5.00% commission setting, all 12 financial tables, 11 financial RLS policies, and the expected 8 database functions. Row-level security is enabled on every new financial table; the delivery OTP table intentionally has no client-facing policy.
+
+This is the database and seller-wallet foundation, not a live payment launch. ModemPay checkout creation, signed payment webhooks, automatic payout workers, provider payout execution/callbacks, refund execution, OTP issue/verification and the 24-hour release job are not yet live. The seller interface can read wallet balances, save withdrawal preferences and record manual payout requests, but no actual transfer is sent. Online checkout remains deliberately locked to Cash on Delivery until the remaining flows have been completed and tested.
 
 ## Development checks
 

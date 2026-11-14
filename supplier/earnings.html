@@ -112,7 +112,57 @@
                         <div class="seller-stat-card"><div class="seller-stat-label">Withdrawn</div><div class="seller-stat-value" id="walletWithdrawn">D 0.00</div><div class="seller-stat-meta">Provider-confirmed payouts</div></div>
                     </div>
                     <div id="walletMessage" hidden role="status" aria-live="polite" style="margin-top:16px;padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:13px;"></div>
+                </section> 
+                <section class="seller-panel cod-reserve-panel" style="margin-top:18px;">
+                    <div class="seller-panel-header">
+                        <h2 class="seller-panel-title">Cash on Delivery reserve</h2>
+                        <span class="seller-status warning" id="codReserveStatus">COD disabled</span>
+                    </div>
+                    <p class="seller-page-subtitle">Maintain a prepaid reserve for the 5% marketplace commission. The fee is calculated on discounted merchandise only; delivery charges are excluded. The 5% fee is held when you accept a COD order, captured after verified delivery and the 24-hour dispute window, or released if the order is cancelled. Buyers cannot choose COD unless your reserve covers their fee.</p>
+                    <div class="seller-stat-grid" style="margin-top:16px;">
+                        <div class="seller-stat-card"><div class="seller-stat-label">Available COD reserve</div><div class="seller-stat-value" id="codReserveAvailable">D 0.00</div><div class="seller-stat-meta">Ready to cover new COD orders</div></div>
+                        <div class="seller-stat-card"><div class="seller-stat-label">Committed reserve</div><div class="seller-stat-value" id="codReserveCommitted">D 0.00</div><div class="seller-stat-meta">Held against accepted COD orders</div></div>
+                        <div class="seller-stat-card"><div class="seller-stat-label">COD commission rate</div><div class="seller-stat-value" id="codReserveRate">5%</div><div class="seller-stat-meta">Applied to discounted merchandise</div></div>
+                    </div>
+                    <label style="display:flex;align-items:center;gap:10px;margin-top:16px;font-weight:700;">
+                        <input type="checkbox" id="codCheckoutEnabled">
+                        Allow customers to choose Cash on Delivery
+                    </label>
+                    <p class="seller-page-subtitle" style="margin-top:6px;">Switch COD off whenever you need to. Existing accepted-order holds remain secured until settlement or cancellation.</p>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:16px;margin-top:18px;">
+                        <form id="codReserveFundForm" style="display:grid;gap:10px;">
+                            <strong>Move money from your available wallet</strong>
+                            <label for="codReserveFundAmount">Amount (GMD)</label>
+                            <input id="codReserveFundAmount" type="number" min="0.01" step="0.01" required placeholder="e.g. 250">
+                            <button type="submit">Move into COD reserve</button>
+                            <small class="seller-page-subtitle">This transfers money from your existing available GamBasket balance. It does not charge you twice.</small>
+                        </form>
+                        <form id="codReserveDepositForm" style="display:grid;gap:10px;">
+                            <strong>Report an external reserve deposit</strong>
+                            <label for="codReserveNetwork">Mobile-money network</label>
+                            <select id="codReserveNetwork" required><option value="wave">Wave</option><option value="qmoney">QMoney</option><option value="afrimoney">Afrimoney</option></select>
+                            <label for="codReserveDepositAmount">Amount sent (GMD)</label>
+                            <input id="codReserveDepositAmount" type="number" min="1" step="0.01" required placeholder="e.g. 500">
+                            <label for="codReservePayerPhone">Sender's mobile number</label>
+                            <input id="codReservePayerPhone" type="tel" required maxlength="30" placeholder="+220...">
+                            <label for="codReserveReference">Transaction reference</label>
+                            <input id="codReserveReference" type="text" required maxlength="120" placeholder="Reference shown by your provider">
+                            <button type="submit">Submit deposit for verification</button>
+                            <small class="seller-page-subtitle">Your reserve updates only after GamBasket verifies and approves the transfer.</small>
+                        </form>
+                    </div>
+                    <div id="codReserveMessage" hidden role="status" aria-live="polite" style="margin-top:16px;padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:13px;"></div>
+                    <div style="margin-top:18px;">
+                        <strong>External deposit requests</strong>
+                        <div class="seller-table-wrap" style="margin-top:10px;">
+                            <table class="seller-table">
+                                <thead><tr><th>Date</th><th>Network</th><th>Amount</th><th>Reference</th><th>Status</th></tr></thead>
+                                <tbody id="codReserveDepositHistory"><tr><td colspan="5" style="text-align:center;padding:18px;">Loading deposit requests…</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </section>
+
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px;margin-top:18px;">
                     <section class="seller-panel">
@@ -204,6 +254,7 @@
     </defs></svg>
 
     <script src="../js/config.js"></script><script src="../js/supabase.js"></script><script src="../js/auth-errors.js"></script><script src="../js/auth-guard.js"></script><script src="../js/states.js"></script><script src="../js/seller.js"></script><script src="../js/seller-orders.js"></script><script src="../js/seller-earnings.js"></script><script src="../js/seller-wallet.js"></script>
+<script src="../js/seller-cod-reserve.js"></script>
     <script>
     (async () => {
         "use strict";

@@ -17,11 +17,11 @@
         <section class="checkout-section"><h2>Coupon</h2><div class="coupon-row"><input id="couponInput" placeholder="Enter coupon code"><button id="applyCouponBtn" type="button">Apply</button></div><p id="couponMessage" class="checkout-note" aria-live="polite"></p></section>
         <section class="checkout-section">
             <h2>Payment method</h2>
-            <p id="paymentAvailabilityNote" class="checkout-note">Cash on Delivery is available now. Wave, QMoney and Afrimoney are coming soon and cannot be selected yet.</p>
+            <p id="paymentAvailabilityNote" class="checkout-note">Cash on Delivery depends on the seller reserve. Online methods are enabled only when ModemPay is configured.</p>
             <div class="choice-grid payment-grid">
                 <div class="choice">
                     <input type="radio" name="payment" id="cod" value="cash_on_delivery" checked>
-                    <label for="cod"><strong>Cash on Delivery <span class="payment-availability-badge">Available now</span></strong><span>Pay when your order arrives.</span></label>
+                    <label for="cod"><strong>Cash on Delivery <span class="payment-availability-badge">Checking</span></strong><span>Pay when your order arrives.</span><small id="codAvailabilityNote" class="checkout-note">Checking seller eligibility…</small></label>
                 </div>
                 <div class="choice">
                     <input type="radio" name="payment" id="wave" value="wave" disabled aria-describedby="waveComingSoon">

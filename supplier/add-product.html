@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-    <title>Product Editor — GamBasket Seller</title>
+    <title>Product Editor — JulaDirect Seller</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/seller.css">
@@ -13,7 +13,7 @@
 <body class="seller-page">
     <header class="desktop-app-header">
         <a href="../index.html" class="desktop-app-brand">
-            <span>GamB</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>sket</span>
+            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </a>
         <div style="flex:1;"></div>
         <div class="desktop-app-actions">
@@ -26,7 +26,7 @@
         <div class="seller-shell">
             <aside class="seller-sidebar">
     <div class="seller-brand">
-        <strong>GamBasket Seller</strong>
+        <strong>JulaDirect Seller</strong>
         <span>Business Workspace</span>
     </div>
     <nav class="seller-nav">
@@ -89,7 +89,7 @@
                 <div class="seller-topbar">
                     <div>
                         <h1 class="seller-page-title" id="pageHeading">Add New Product</h1>
-                        <p class="seller-page-subtitle">Publish a verified product to the GamBasket nationwide catalog.</p>
+                        <p class="seller-page-subtitle">Publish a verified product to the JulaDirect nationwide catalog.</p>
                     </div>
                 </div>
 
@@ -251,7 +251,7 @@
             listingType.value = "wholesale";
             [...listingType.options].forEach(option => option.disabled = option.value === "retail");
             document.getElementById("pageHeading").textContent = "Add Wholesale Product";
-            document.querySelector(".seller-page-subtitle").textContent = "Publish a wholesale listing for verified GamBasket business buyers.";
+            document.querySelector(".seller-page-subtitle").textContent = "Publish a wholesale listing for verified JulaDirect business buyers.";
         }
         const updateWholesaleFields = () => {
             const enabled = listingType.value === "wholesale" || listingType.value === "both";
@@ -320,7 +320,7 @@
                     if (client && data.id) {
                         const { data: imageRows, error: imageError } = await client.from("product_images")
                             .select("image_url,sort_order").eq("product_id", data.id).order("sort_order", { ascending: true });
-                        if (imageError) console.warn("[GamBasket photos] Existing gallery load failed:", imageError.message);
+                        if (imageError) console.warn("[JulaDirect photos] Existing gallery load failed:", imageError.message);
                         selectedImageUrls = [...new Set([data.main_image || data.image, ...(imageRows || []).map(row => row.image_url)].filter(url => /^https?:\/\//i.test(String(url || ""))))].slice(0, 8);
                     } else {
                         selectedImageUrls = [data.main_image || data.image].filter(Boolean);
@@ -367,7 +367,7 @@
                 document.getElementById("prevImg").src = selectedImageUrls[0] || "";
                 status.textContent = `${selectedImageUrls.length} photo(s) uploaded. The first photo is the main listing image.`;
             } catch (err) {
-                console.error("[GamBasket image upload]", err);
+                console.error("[JulaDirect image upload]", err);
                 status.textContent = err.message || "Photo upload failed. Try again or paste a hosted image URL.";
                 picker.value = "";
             } finally {

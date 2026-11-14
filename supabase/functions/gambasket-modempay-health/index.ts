@@ -9,14 +9,16 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-  const supplied = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const authorization = req.headers.get("Authorization") || "";
+  const supplied = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
   const serviceRole = env("SUPABASE_SERVICE_ROLE_KEY");
   if (!serviceRole || !constantTimeEqual(supplied, serviceRole)) return json({ error: "Unauthorized" }, 401);
 
   const apiKey = env("MODEMPAY_API_KEY");
   if (!apiKey) return json({ ok: false, error: "ModemPay API key is not configured" }, 503);
   const mode = apiKey.startsWith("sk_live_") ? "live" : apiKey.startsWith("sk_test_") ? "test" : "unrecognized";
-  const base = (env("MODEMPAY_BASE_URL") || "https://api.modempay.com").replace(/\/$/, "");
+  const rawBase = env("MODEMPAY_BASE_URL") || "https://api.modempay.com";
+  const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
   try {
     const response = await fetch(base + "/v1/balances", {
       method: "GET",

@@ -171,6 +171,15 @@ async function mockBackend(page, options = {}) {
       } else await json(rows);
       return;
     }
+    if (path === "/rest/v1/rpc/gambasket_cod_checkout_eligibility" && method === "POST") {
+      await json({
+        eligible: true,
+        reason: "eligible",
+        required_reserve: 725,
+        commission_rate: 5
+      });
+      return;
+    }
     if (path === "/rest/v1/rpc/create_order" && method === "POST") {
       let body = null;
       try { body = request.postDataJSON(); } catch {}
@@ -387,7 +396,7 @@ test("Checkout enables only Cash on Delivery and labels future methods Coming so
   await page.goto("/checkout.html");
   await expect(page.locator("#cod")).toBeChecked();
   await expect(page.locator("#cod")).toBeEnabled();
-  await expect(page.locator("#paymentAvailabilityNote")).toContainText("Cash on Delivery is available now");
+  await expect(page.locator("#paymentAvailabilityNote")).toContainText("depends on the seller reserve");
   for (const id of ["wave", "qmoney", "afrimoney"]) {
     await expect(page.locator(`#${id}`)).toBeDisabled();
     await expect(page.locator(`label[for="${id}"]`)).toContainText("Coming soon");

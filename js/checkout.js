@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const state = { cart: [], coupon: null, deliveryFee: 0, submitting: false };
+    const state = { cart: [], coupon: null, deliveryFee: 0, submitting: false, codEligibility: null };
     const $ = id => document.getElementById(id);
     const money = value => `D ${Number(value || 0).toLocaleString("en-GM")}`;
     const productFor = item => item.product || item.products || item;
@@ -50,6 +50,64 @@
         }
     }
 
+    function syncPlaceOrderAvailability() {
+        const button = $("placeOrderBtn");
+        const selected = document.querySelector('input[name="payment"]:checked');
+        if (button && !state.submitting) button.disabled = !selected || selected.disabled;
+    }
+
+    async function loadCodEligibility() {
+        const codInput = $("cod");
+        if (!codInput) return;
+        let note = $("codAvailabilityNote");
+        if (!note) {
+            note = document.createElement("small");
+            note.id = "codAvailabilityNote";
+            note.className = "checkout-note";
+            document.querySelector('label[for="cod"]')?.appendChild(note);
+        }
+        codInput.disabled = true;
+        syncPlaceOrderAvailability();
+        note.textContent = "Checking this seller's Cash on Delivery eligibility…";
+        try {
+            const sellerIds = [...new Set(state.cart.map(item => productFor(item).seller_id).filter(Boolean))];
+            if (sellerIds.length !== 1) throw new Error("Cash on Delivery is only available for a single seller's basket.");
+            const client = window.GamBasketAuth?.getClient?.() || window.supabaseClient;
+            if (!client) throw new Error("Checkout service is unavailable.");
+            const { data, error } = await client.rpc("gambasket_cod_checkout_eligibility", {
+                p_seller_id: sellerIds[0],
+                p_merchandise_amount: Math.max(0, subtotal() - discount())
+            });
+            if (error) throw error;
+            const eligibility = Array.isArray(data) ? data[0] : data;
+            state.codEligibility = eligibility || null;
+            const eligible = Boolean(eligibility?.eligible);
+            codInput.disabled = !eligible;
+            const badge = document.querySelector('label[for="cod"] .payment-availability-badge');
+            if (badge) {
+                badge.textContent = eligible ? "Available now" : "Unavailable";
+                badge.className = eligible ? "payment-availability-badge" : "payment-coming-soon-badge";
+            }
+            note.textContent = eligible
+                ? "This seller has enough prepaid reserve to cover the 5% commission on this basket."
+                : "COD is unavailable: the seller must enable it and maintain enough prepaid reserve for this order.";
+            if (!eligible && codInput.checked) {
+                codInput.checked = false;
+                const next = [...document.querySelectorAll('input[name="payment"]')].find(input => input !== codInput && !input.disabled);
+                if (next) next.checked = true;
+            } else if (eligible && !document.querySelector('input[name="payment"]:checked')) {
+                codInput.checked = true;
+            }
+        } catch (error) {
+            state.codEligibility = null;
+            codInput.disabled = true;
+            codInput.checked = false;
+            note.textContent = "COD is unavailable because the seller reserve could not be verified.";
+            console.warn("[GamBasket COD] eligibility could not be verified:", error);
+        }
+        syncPlaceOrderAvailability();
+    }
+
     async function init() {
         await window.GamBasketAuth.ready();
         const session = await window.GamBasketAuth.getSession();
@@ -73,6 +131,7 @@
             if (!state.cart.length) { window.location.replace("cart.html"); return; }
             bindEvents();
             render();
+            await loadCodEligibility();
         } catch (error) {
             console.error("[GamBasket Checkout]", error);
             showError("We couldn't load checkout. Please try again.");
@@ -108,10 +167,13 @@
             state.coupon = coupon;
             $("couponMessage").textContent = coupon ? `Coupon ${coupon.code} applied.` : "This coupon is invalid or unavailable.";
             render();
+            await loadCodEligibility();
         } catch (error) {
             console.error("[GamBasket Coupon]", error);
             state.coupon = null;
             $("couponMessage").textContent = "Unable to validate this coupon.";
+            render();
+            await loadCodEligibility();
         }
     }
 
@@ -134,11 +196,11 @@
         try {
             const fulfillment = document.querySelector('input[name="fulfillment"]:checked').value;
             const payment = selectedPayment.value;
-            // The existing order transaction creates the order as Cash on Delivery.
-            // ModemPay attaches a pending provider intent before switching payment_method.
+            // Persist the buyer's actual choice. The trusted database wrapper checks
+            // COD reserve eligibility or starts online orders as pending_online.
             const result = await window.GamBasketAuth.createOrder({
                 fulfillment_type: fulfillment,
-                payment_method: "cash_on_delivery",
+                payment_method: payment,
                 delivery_address: fulfillment === "delivery" ? `${$("address").value.trim()}${$("landmark").value.trim() ? `, ${$("landmark").value.trim()}` : ""}` : null,
                 delivery_region: fulfillment === "delivery" ? $("region").value : null,
                 delivery_area: fulfillment === "delivery" ? $("area").value.trim() : null,
@@ -189,7 +251,7 @@
             showError(window.getAuthErrorMessage ? window.getAuthErrorMessage(error) : "We couldn't place the order. Please try again.");
         } finally {
             state.submitting = false;
-            button.disabled = false;
+            syncPlaceOrderAvailability();
             button.textContent = "Place Order";
         }
     }
@@ -206,6 +268,7 @@
             else window.location.href = "cart.html";
         });
         document.querySelectorAll('input[name="fulfillment"]').forEach(input => input.addEventListener("change", calculateDelivery));
+        document.querySelectorAll('input[name="payment"]').forEach(input => input.addEventListener("change", syncPlaceOrderAvailability));
         $("area")?.addEventListener("input", calculateDelivery);
         $("applyCouponBtn")?.addEventListener("click", applyCoupon);
         $("checkoutForm")?.addEventListener("submit", submitOrder);

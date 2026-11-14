@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GamBasket · COD reserve deposits</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#687386;--line:#e5eaf1;--blue:#2563eb;--surface:#fff;--bg:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);padding:18px max(20px,calc((100vw - 1050px)/2));display:flex;gap:16px;align-items:center;justify-content:space-between}
+header a{color:var(--blue);font-weight:700;text-decoration:none}.wrap{max-width:1050px;margin:32px auto;padding:0 18px}
+h1{margin:0;font-size:28px;letter-spacing:-.5px}p{color:var(--muted);margin:6px 0 0}.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+#status{margin:16px 0;color:var(--muted)}.case{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 5px 18px #17203308}
+.case-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.amount{font-size:21px;font-weight:800}.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:15px 0;color:var(--muted);font-size:13px}
+.note{padding:12px;background:#f7f9fc;border-radius:10px;margin:12px 0}.actions{display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.approve{background:#2563eb;color:#fff}.reject{background:#fff1f2;color:#be123c;border:1px solid #fecdd3}.review{background:#eef2ff;color:#3730a3}
+.empty{border:1px dashed #cbd5e1;background:#fff;border-radius:14px;text-align:center;padding:38px;color:var(--muted)}
+@media(max-width:600px){.wrap{margin:22px auto}.top{align-items:flex-start;flex-direction:column}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><strong>GamBasket · Admin</strong><a href="index.html">Back to control center</a></header>
+<main class="wrap">
+ <div class="top"><div><h1>COD reserve deposits</h1><p>Verify the seller's actual mobile-money transfer before crediting their COD commission reserve.</p></div><button id="refresh" class="review">Refresh requests</button></div>
+ <div id="status" role="status">Checking administrator access…</div>
+ <section id="deposits" aria-live="polite"></section>
+</main>
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth-errors.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script>
+(async function(){
+ "use strict";
+ const statusEl=document.getElementById("status"), list=document.getElementById("deposits");
+ const statusText=value=>String(value||"").replaceAll("_"," ");
+ function node(tag,text,className){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;}
+ async function boot(){
+   await window.GamBasketAuth.ready();
+   const session=await window.GamBasketAuth.getSession();
+   if(!session?.user){statusEl.textContent="Please sign in with an administrator account.";return;}
+   const client=window.GamBasketAuth.getClient();
+   const {data:isAdmin,error}=await client.rpc("is_gambasket_admin");
+   if(error||!isAdmin){statusEl.textContent="Administrator access is required.";return;}
+   await load();
+ }
+ async function load(){
+   statusEl.textContent="Loading COD reserve deposit requests…";list.replaceChildren();
+   const client=window.GamBasketAuth.getClient();
+   const {data,error}=await client.from("seller_cod_reserve_deposit_requests")
+     .select("id,seller_id,amount,network,payer_phone,provider_reference,status,review_note,created_at,reviewed_at")
+     .order("created_at",{ascending:false}).limit(100);
+   if(error){statusEl.textContent=error.message||"Could not load COD reserve deposits.";return;}
+   if(!data?.length){statusEl.textContent="No COD reserve deposit requests have been submitted.";list.append(node("div","There are currently no deposit requests.","empty"));return;}
+   const pending=data.filter(item=>item.status==="requested").length;
+   statusEl.textContent=data.length+" request(s) · "+pending+" awaiting verification.";
+   data.forEach(item=>{
+     const card=node("article",undefined,"case");
+     const head=node("div",undefined,"case-head");
+     head.append(node("strong","Deposit "+item.id));
+     head.append(node("span",statusText(item.status).toUpperCase()));
+     card.append(head);
+     card.append(node("div",(item.currency==="GMD"?"D ":"D ")+Number(item.amount).toLocaleString("en-GM",{minimumFractionDigits:2,maximumFractionDigits:2}),"amount"));
+     const meta=node("div",undefined,"meta");
+     meta.append(node("span","Seller ID: "+item.seller_id));
+     meta.append(node("span","Network: "+item.network.toUpperCase()));
+     meta.append(node("span","Sender number: "+item.payer_phone));
+     meta.append(node("span","Provider reference: "+item.provider_reference));
+     meta.append(node("span","Submitted: "+new Date(item.created_at).toLocaleString()));
+     if(item.reviewed_at)meta.append(node("span","Reviewed: "+new Date(item.reviewed_at).toLocaleString()));
+     card.append(meta);
+     if(item.review_note)card.append(node("div","Review note: "+item.review_note,"note"));
+     const actions=node("div",undefined,"actions");
+     if(item.status==="requested"){
+       const approve=node("button","Verify & credit reserve","approve");
+       approve.addEventListener("click",()=>review(item.id,"approved",approve));
+       actions.append(approve);
+       const reject=node("button","Reject deposit","reject");
+       reject.addEventListener("click",()=>review(item.id,"rejected",reject));
+       actions.append(reject);
+     }
+     card.append(actions);list.append(card);
+   });
+ }
+ async function review(id,decision,button){
+   let note="";
+   if(decision==="rejected"){
+     note=window.prompt("Why is this deposit being rejected? (optional)","");
+     if(note===null)return;
+   }else{
+     if(!window.confirm("Confirm you checked the provider statement and this exact transfer was received? The seller's COD reserve will be credited."))return;
+     note=window.prompt("Verification note (optional)","Verified against provider statement")||"";
+   }
+   const prior=button.textContent;button.disabled=true;button.textContent="Saving…";
+   try{
+     const client=window.GamBasketAuth.getClient();
+     const {data,error}=await client.rpc("admin_review_seller_cod_reserve_deposit",{
+       p_deposit_id:id,p_decision:decision,p_note:note
+     });
+     if(error)throw error;
+     if(!data?.success)throw new Error("The deposit review was not confirmed.");
+     await load();
+   }catch(error){
+     window.alert(error.message||"Unable to review this deposit.");
+     button.disabled=false;button.textContent=prior;
+   }
+ }
+ document.getElementById("refresh").addEventListener("click",load);
+ try{await boot();}catch(error){statusEl.textContent=error.message||"Could not initialize COD reserve review.";}
+})();
+</script>
+</body>
+</html>

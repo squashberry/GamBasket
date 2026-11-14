@@ -1,4 +1,4 @@
-/* GamBasket category-aware product attributes. */
+/* JulaDirect category-aware product attributes. */
 (() => {
   "use strict";
 
@@ -73,7 +73,7 @@
         });
       }
     } catch (error) {
-      console.warn("[GamBasket attributes] Using local field definitions:", error?.message);
+      console.warn("[JulaDirect attributes] Using local field definitions:", error?.message);
     }
     return local;
   }

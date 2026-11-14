@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         clearError();
         const email = String(emailInput?.value || "").trim().toLowerCase();
         if (!email) {
-            showError("Enter the email address associated with your GamBasket account.");
+            showError("Enter the email address associated with your JulaDirect account.");
             emailInput?.focus();
             return;
         }
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
             await sendResetEmail(email);
             showSuccess(email);
         } catch (error) {
-            console.error("[GamBasket Recovery]", error);
+            console.error("[JulaDirect Recovery]", error);
             showError(window.getAuthErrorMessage ? window.getAuthErrorMessage(error) : "We couldn't send the reset email right now. Please try again.");
         } finally {
             setLoading(false);
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (label) label.textContent = "Resend email";
             startResendCooldown();
         } catch (error) {
-            console.error("[GamBasket Recovery Resend]", error);
+            console.error("[JulaDirect Recovery Resend]", error);
             if (label) label.textContent = "Resend email";
             resendButton.disabled = false;
             if (requestState) requestState.hidden = false;

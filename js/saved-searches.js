@@ -1,4 +1,4 @@
-/* GamBasket saved searches and price-drop alerts. */
+/* JulaDirect saved searches and price-drop alerts. */
 (() => {
   "use strict";
   const STORAGE_CRITERIA_KEYS = ["query","category","location","condition","minPrice","maxPrice","inStock","delivery","brandModel","sort"];
@@ -84,7 +84,7 @@
     modal.id = "saveSearchModal";
     modal.className = "gambasket-save-search-modal";
     modal.hidden = true;
-    modal.innerHTML = '<section class="gambasket-save-search-card" role="dialog" aria-modal="true" aria-labelledby="saveSearchTitle"><h2 id="saveSearchTitle">Save this search</h2><p>Get a GamBasket notification when a newly approved listing matches these filters.</p><label>Search name<input id="saveSearchName" type="text" maxlength="80" required placeholder="e.g. iPhone 13 under D 15,000"></label><label style="display:flex;align-items:center;gap:9px;grid-template-columns:auto 1fr;font-weight:600"><input id="saveSearchNotify" type="checkbox" checked> Notify me about new matching listings</label><p id="saveSearchStatus" role="status" aria-live="polite"></p><div class="gambasket-save-search-actions"><button type="button" data-save-cancel>Cancel</button><button type="button" data-save-confirm>Save search</button></div></section>';
+    modal.innerHTML = '<section class="gambasket-save-search-card" role="dialog" aria-modal="true" aria-labelledby="saveSearchTitle"><h2 id="saveSearchTitle">Save this search</h2><p>Get a JulaDirect notification when a newly approved listing matches these filters.</p><label>Search name<input id="saveSearchName" type="text" maxlength="80" required placeholder="e.g. iPhone 13 under D 15,000"></label><label style="display:flex;align-items:center;gap:9px;grid-template-columns:auto 1fr;font-weight:600"><input id="saveSearchNotify" type="checkbox" checked> Notify me about new matching listings</label><p id="saveSearchStatus" role="status" aria-live="polite"></p><div class="gambasket-save-search-actions"><button type="button" data-save-cancel>Cancel</button><button type="button" data-save-confirm>Save search</button></div></section>';
     document.body.append(modal);
     modal.addEventListener("click",event=>{ if(event.target===modal || event.target.closest("[data-save-cancel]")) closeSaveModal(); });
     modal.querySelector("[data-save-confirm]")?.addEventListener("click",saveCurrentSearch);
@@ -95,7 +95,7 @@
     const modal=$("saveSearchModal");
     const name=$("saveSearchName");
     const criteria=cleanCriteria();
-    if(name && !name.value.trim()) name.value=criteria.query || (criteria.category!=="All"?criteria.category:"") || "My GamBasket search";
+    if(name && !name.value.trim()) name.value=criteria.query || (criteria.category!=="All"?criteria.category:"") || "My JulaDirect search";
     if($("saveSearchStatus")) $("saveSearchStatus").textContent="";
     modal.hidden=false;
     name?.focus();
@@ -125,9 +125,9 @@
       if(error)throw error;
       closeSaveModal();
       status("Search saved. You can manage it from Saved searches.");
-      window.GamBasketNotifications?.add({type:"system",title:"Search saved",message:"GamBasket will alert you about matching listings when notifications are enabled.",showToast:true});
+      window.GamBasketNotifications?.add({type:"system",title:"Search saved",message:"JulaDirect will alert you about matching listings when notifications are enabled.",showToast:true});
     } catch(error) {
-      console.error("[GamBasket saved search]",error);
+      console.error("[JulaDirect saved search]",error);
       status(error?.message||"Could not save this search.",true);
     } finally { if(button)button.disabled=false; }
   }
@@ -181,7 +181,7 @@
       else (searches||[]).forEach(row=>list.append(listItem(row)));
       status(`${(searches||[]).length} saved search(es).`);
       renderPriceAlerts(alerts||[]);
-    }catch(error){console.error("[GamBasket saved searches]",error);status(error?.message||"Could not load saved searches.",true);}
+    }catch(error){console.error("[JulaDirect saved searches]",error);status(error?.message||"Could not load saved searches.",true);}
   }
   async function renderPriceAlerts(alerts) {
     const mount=$("priceDropAlerts");if(!mount)return;mount.replaceChildren();
@@ -207,7 +207,7 @@
     });
     if(!mount.childElementCount)mount.textContent="No current price-drop alerts.";
     try{const unread=alerts.filter(row=>!row.is_read).map(row=>row.id);if(unread.length)await clientRef.from("wishlist_alerts").update({is_read:true}).in("id",unread);}
-    catch(error){console.warn("[GamBasket alerts] Read-state update failed:",error?.message);}
+    catch(error){console.warn("[JulaDirect alerts] Read-state update failed:",error?.message);}
   }
 
   async function updateSearch(id,patch){

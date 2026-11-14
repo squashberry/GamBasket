@@ -1,4 +1,4 @@
-/* GamBasket seller COD commission reserve controls. All money movement is server-side. */
+/* JulaDirect seller COD commission reserve controls. All money movement is server-side. */
 (() => {
   "use strict";
   const $ = id => document.getElementById(id);

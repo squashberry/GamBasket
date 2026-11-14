@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — NOTIFICATION SYSTEM
+   JULADIRECT — NOTIFICATION SYSTEM
    (Dropdown on desktop, Bottom-sheet on mobile, Toast alerts,
    Per-browser persistence for client-generated UI notices)
 ========================================================= */
@@ -63,7 +63,7 @@
             }
             return actualNotices;
         } catch (error) {
-            console.warn("GamBasket notification storage is unavailable:", error?.message || error);
+            console.warn("JulaDirect notification storage is unavailable:", error?.message || error);
             return [];
         }
     }

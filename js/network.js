@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — CENTRALIZED NETWORK & OFFLINE MANAGER
+   JULADIRECT — CENTRALIZED NETWORK & OFFLINE MANAGER
    ========================================================= */
 
 (() => {
@@ -11,7 +11,7 @@
                       window.location.hostname === "127.0.0.1" || 
                       window.location.protocol === "file:";
         if (isDev) {
-            console.log(`[GamBasket Network] ${msg}`, data);
+            console.log(`[JulaDirect Network] ${msg}`, data);
         }
     };
 
@@ -536,7 +536,7 @@
                     <div class="gb-network-fullscreen-icon" style="animation: gb-float 3s ease-in-out infinite;">🔌</div>
                     <h1 class="gb-network-fullscreen-title">You're offline</h1>
                     <p class="gb-network-fullscreen-desc">
-                        GamBasket couldn't connect to the internet. Check your connection and try again.
+                        JulaDirect couldn't connect to the internet. Check your connection and try again.
                     </p>
                     <button type="button" class="gb-network-btn-primary" id="gb-fullscreen-retry">
                         Try Again

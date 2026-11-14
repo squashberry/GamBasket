@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — EXPLORE MARKETPLACE LOGIC
+   JULADIRECT — EXPLORE MARKETPLACE LOGIC
 ========================================================= */
 
 (function () {

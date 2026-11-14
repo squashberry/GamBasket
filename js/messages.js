@@ -27,7 +27,7 @@
             const result = await window.GamBasketAuth.getConversations();
             state.conversations = result.items || [];
             renderConversations();
-        } catch (error) { console.error("[GamBasket Conversations]", error); $("conversationList").innerHTML = `<div class="conversation-empty"><div><h3>Messages couldn't load</h3><p>Check your connection and try again.</p><button id="retryConversations" class="context-btn primary" type="button">Try Again</button></div></div>`; $("retryConversations")?.addEventListener("click", loadConversations); }
+        } catch (error) { console.error("[JulaDirect Conversations]", error); $("conversationList").innerHTML = `<div class="conversation-empty"><div><h3>Messages couldn't load</h3><p>Check your connection and try again.</p><button id="retryConversations" class="context-btn primary" type="button">Try Again</button></div></div>`; $("retryConversations")?.addEventListener("click", loadConversations); }
     }
 
     function renderConversations() {
@@ -38,7 +38,7 @@
     }
 
     async function startConversation(productId) {
-        try { const result = await window.GamBasketAuth.startConversation(productId); const id = result?.conversation?.id || result?.id; if (id) { history.replaceState({}, "", `messages.html?conversation=${encodeURIComponent(id)}&product=${encodeURIComponent(productId)}`); await loadConversations(); await openConversation(id); } } catch (error) { console.error("[GamBasket Start Conversation]", error); showToast("Unable to start conversation", "Please try again."); }
+        try { const result = await window.GamBasketAuth.startConversation(productId); const id = result?.conversation?.id || result?.id; if (id) { history.replaceState({}, "", `messages.html?conversation=${encodeURIComponent(id)}&product=${encodeURIComponent(productId)}`); await loadConversations(); await openConversation(id); } } catch (error) { console.error("[JulaDirect Start Conversation]", error); showToast("Unable to start conversation", "Please try again."); }
     }
 
     async function openConversation(id) {
@@ -53,12 +53,12 @@
             renderConversations();
             $("messagesShell").classList.add("chat-open"); $("chatEmpty").hidden = true; $("chatActive").hidden = false; $("mobileChatBackBtn").hidden = false;
             subscribe(id); scrollBottom();
-        } catch (error) { console.error("[GamBasket Open Conversation]", error); showToast("Couldn't open conversation", "Please try again."); }
+        } catch (error) { console.error("[JulaDirect Open Conversation]", error); showToast("Couldn't open conversation", "Please try again."); }
     }
 
     function renderActive() {
         const item = state.active || {};
-        $("chatName").textContent = item.other_user_name || "GamBasket Member";
+        $("chatName").textContent = item.other_user_name || "JulaDirect Member";
         $("chatAvatar").textContent = (item.other_user_name || "G").charAt(0).toUpperCase();
         const product = item.product;
         const context = $("chatProductContext");
@@ -72,7 +72,7 @@
                     const result = await window.GamBasketAuth.addToCart(product.id, 1);
                     if (result.success) location.href = "cart.html?continue=checkout";
                     else showToast("Unable to order", "This product is no longer available.");
-                } catch (error) { console.error("[GamBasket Chat Order]", error); showToast("Unable to order", "Please try again."); }
+                } catch (error) { console.error("[JulaDirect Chat Order]", error); showToast("Unable to order", "Please try again."); }
             });
         } else { context.hidden = true; context.innerHTML = ""; }
         renderMessages();
@@ -89,7 +89,7 @@
         const input = $("messageInput"); const content = input.value.trim(); if (!content || !state.active) return;
         const button = $("sendMessageBtn"); button.disabled = true;
         try { await window.GamBasketAuth.sendMessage(state.active.id, content); input.value = ""; input.style.height = "auto"; await reloadMessages(); scrollBottom(); }
-        catch (error) { console.error("[GamBasket Send Message]", error); showToast("Message not sent", "Please try again."); }
+        catch (error) { console.error("[JulaDirect Send Message]", error); showToast("Message not sent", "Please try again."); }
         finally { button.disabled = false; input.focus(); }
     }
 

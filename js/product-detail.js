@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — PRODUCT DETAIL LOGIC & SHARING SYSTEM
+   JULADIRECT — PRODUCT DETAIL LOGIC & SHARING SYSTEM
 ========================================================= */
 
 (function () {
@@ -50,7 +50,7 @@
                                 .select("image_url,sort_order").eq("product_id", data.id).order("sort_order", { ascending: true });
                             if (!gallery.error) imageRows = gallery.data || [];
                         } catch (galleryError) {
-                            console.warn("[GamBasket product gallery]", galleryError?.message);
+                            console.warn("[JulaDirect product gallery]", galleryError?.message);
                         }
                         const galleryUrls = [...new Set([data.main_image, ...imageRows.map(row => row.image_url)]
                             .filter(url => typeof url === "string" && /^https?:\/\//i.test(url)))].slice(0, 8);
@@ -65,7 +65,7 @@
                             images: galleryUrls,
                             attributes: data.attributes && typeof data.attributes === "object" ? data.attributes : {},
                             stock: Number(data.stock || 0),
-                            seller: seller?.business_name || `${seller?.first_name || ""} ${seller?.last_name || ""}`.trim() || "GamBasket member",
+                            seller: seller?.business_name || `${seller?.first_name || ""} ${seller?.last_name || ""}`.trim() || "JulaDirect member",
                             sellerId: data.seller_id,
                             seller_verified: seller?.is_seller_verified === true,
                             seller_type: seller?.seller_type === "business" ? "business" : "individual",
@@ -99,7 +99,7 @@
     }
 
     function showProductUnavailable() {
-        document.title = "Listing unavailable — GamBasket";
+        document.title = "Listing unavailable — JulaDirect";
         const set = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
         set("detailName", "This listing is not available");
         set("detailCategory", "UNAVAILABLE");
@@ -108,7 +108,7 @@
         set("mobileStickyPrice", "—");
         set("locationText", "The Gambia");
         set("detailDescription", "This item may have been removed, is still under review, or is no longer available. Browse current approved listings to find alternatives.");
-        set("sellerName", "GamBasket");
+        set("sellerName", "JulaDirect");
         const image = document.getElementById("detailImage");
         if (image) { image.removeAttribute("src"); image.alt = "Listing unavailable"; }
         document.getElementById("detailImageThumbs")?.replaceChildren();
@@ -191,8 +191,8 @@
         }
         const sellerSubtitle = document.getElementById("sellerSubtitle");
         if (sellerSubtitle) sellerSubtitle.textContent = p.seller_verified
-            ? "Verified seller on GamBasket"
-            : (p.seller_type === "business" ? "Business store on GamBasket" : "Individual seller on GamBasket");
+            ? "Verified seller on JulaDirect"
+            : (p.seller_type === "business" ? "Business store on JulaDirect" : "Individual seller on JulaDirect");
         const listingBadge = document.getElementById("productListingBadge");
         if (listingBadge) {
             listingBadge.hidden = !p.seller_verified;
@@ -233,7 +233,7 @@
             if (result?.ok === false) window.alert(result.message || "This product cannot be compared yet.");
         });
         // Set document title
-        document.title = `${p.name} — GamBasket The Gambia`;
+        document.title = `${p.name} — JulaDirect The Gambia`;
     }
 
     function renderBusinessMode(product) {
@@ -275,7 +275,7 @@
         if (!reason?.trim()) return;
         try {
             await window.GamBasketTrust.submitReport({ targetProductId: currentProduct.id, reportType: "product", reason });
-            window.GamBasketNotifications?.add({ type: "system", title: "Report submitted", message: "Thank you. GamBasket will review this product.", showToast: true });
+            window.GamBasketNotifications?.add({ type: "system", title: "Report submitted", message: "Thank you. JulaDirect will review this product.", showToast: true });
         } catch (error) {
             window.GamBasketNotifications?.add({ type: "system", title: "Unable to submit report", message: error.message || "Please try again.", showToast: true });
         }
@@ -296,7 +296,7 @@
             summary.replaceChildren();
             const copy = document.createElement("div");
             copy.className = "review-summary-copy";
-            copy.innerHTML = reviews.length ? `<strong>${average.toFixed(1)} / 5 from verified buyers</strong><p>Only customers with a completed GamBasket order can leave a review.</p>` : "<strong>No verified reviews yet</strong><p>Be the first customer to share feedback after your completed purchase.</p>";
+            copy.innerHTML = reviews.length ? `<strong>${average.toFixed(1)} / 5 from verified buyers</strong><p>Only customers with a completed JulaDirect order can leave a review.</p>` : "<strong>No verified reviews yet</strong><p>Be the first customer to share feedback after your completed purchase.</p>";
             summary.append(copy);
             list.replaceChildren();
             if (!reviews.length) {
@@ -329,8 +329,8 @@
         if (!currentProduct) return;
 
         const shareData = {
-            title: `${currentProduct.name} — GamBasket`,
-            text: `Check out ${currentProduct.name} for D ${formatPrice(currentProduct.price)} on GamBasket The Gambia:`,
+            title: `${currentProduct.name} — JulaDirect`,
+            text: `Check out ${currentProduct.name} for D ${formatPrice(currentProduct.price)} on JulaDirect The Gambia:`,
             url: window.location.href
         };
 
@@ -422,7 +422,7 @@
                             });
                         }
                     } catch (error) {
-                        console.error("[GamBasket Cart Add]", error);
+                        console.error("[JulaDirect Cart Add]", error);
                         window.GamBasketNotifications?.add({
                             type: "system",
                             title: "Cart unavailable",
@@ -475,7 +475,7 @@
                         const result = await window.GamBasketAuth.addToCart(currentProduct.id, 1);
                         added = Boolean(result.success);
                     } catch (error) {
-                        console.error("[GamBasket Order Now Add]", error);
+                        console.error("[JulaDirect Order Now Add]", error);
                         window.GamBasketNotifications?.add({
                             type: "system",
                             title: "Cart unavailable",
@@ -524,7 +524,7 @@
                             return;
                         }
                     } catch (error) {
-                        console.error("[GamBasket Start Conversation]", error);
+                        console.error("[JulaDirect Start Conversation]", error);
                     }
                 }
                 window.location.href = `messages.html?product=${encodeURIComponent(currentProduct.id)}`;

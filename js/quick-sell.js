@@ -1,4 +1,4 @@
-/* GamBasket Quick Sell: submit a real moderated listing with a hosted photo gallery. */
+/* JulaDirect Quick Sell: submit a real moderated listing with a hosted photo gallery. */
 (() => {
   "use strict";
 
@@ -23,9 +23,9 @@
     if (helper) await helper.render(attributesContainer, $("quickSellCategory").value, values);
   }
   $("quickSellCategory")?.addEventListener("change", () => renderAttributes().catch(error => {
-    console.warn("[GamBasket attributes]", error?.message);
+    console.warn("[JulaDirect attributes]", error?.message);
   }));
-  renderAttributes().catch(error => console.warn("[GamBasket attributes]", error?.message));
+  renderAttributes().catch(error => console.warn("[JulaDirect attributes]", error?.message));
 
   imageUrlInput?.addEventListener("input", () => {
     const url = imageUrlInput.value.trim();
@@ -57,7 +57,7 @@
       imageUrlInput.value = selectedImageUrls[0] || "";
       status.textContent = `${selectedImageUrls.length} photo(s) uploaded. The first photo is the main image.`;
     } catch (error) {
-      console.error("[GamBasket photo upload]", error);
+      console.error("[JulaDirect photo upload]", error);
       photoPicker.value = "";
       status.textContent = error?.message || "Photo upload failed.";
     } finally {
@@ -120,7 +120,7 @@
 
     const client = auth?.getClient?.() || window.supabaseClient;
     if (!client) {
-      alert("GamBasket could not connect to the listing service. Your item was not submitted.");
+      alert("JulaDirect could not connect to the listing service. Your item was not submitted.");
       return;
     }
 
@@ -163,9 +163,9 @@
       alert("Your Quick Sell listing has been submitted for marketplace review and will stay private until approved.");
       window.location.href = "index.html";
     } catch (error) {
-      console.error("[GamBasket Quick Sell]", error);
+      console.error("[JulaDirect Quick Sell]", error);
       const message = /seller or supplier|seller.*role|row-level security/i.test(error?.message || "")
-        ? "Your account is not enabled to sell yet. Complete seller verification or contact GamBasket support before submitting a listing."
+        ? "Your account is not enabled to sell yet. Complete seller verification or contact JulaDirect support before submitting a listing."
         : (error?.message || "The item could not be submitted. Please check the details and try again.");
       status.textContent = message;
       alert(message);

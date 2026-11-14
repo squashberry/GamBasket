@@ -32,6 +32,8 @@ assert.match(payouts, /pg_advisory_xact_lock/);
 assert.match(payouts, /payout-reservation:/);
 assert.match(payouts, /INSUFFICIENT_AVAILABLE_BALANCE/);
 assert.match(allSql, /FUNCTION public\\.admin_review_seller_payout_method/);
+assert.match(allSql, /ADD COLUMN IF NOT EXISTS discount_amount/);
+assert.match(allSql, /set_gambasket_order_discount_amount/);
 
 assert.match(refunds, /CREATE TABLE public\.order_refund_cases/);
 assert.match(refunds, /CREATE TABLE public\.order_refund_events/);

@@ -87,28 +87,33 @@ Deno.serve(async (req: Request) => {
       + "&id=eq." + encodeURIComponent(orderId) + "&buyer_id=eq." + encodeURIComponent(user.id) + "&limit=1");
     const order = orderRows && orderRows[0];
     if (!order) return json({ error: "Order not found for this customer." }, 404);
-    if (order.currency !== "GMD" || Number(order.total) <= 0 || order.payment_status !== "pending"
-        || order.order_status === "cancelled") {
+    if (order.currency !== "GMD" || Number(order.total) <= 0
+        || !["pending", "failed"].includes(order.payment_status) || order.order_status === "cancelled") {
       return json({ error: "This order is not eligible for online payment." }, 409);
     }
     const prior = await rest("gambasket_payments?select=id,status,metadata,provider_payload,provider_intent_id"
       + "&order_id=eq." + orderId + "&status=in.(created,pending)&limit=1");
+    let paymentId: string | null = null;
     if (prior && prior.length) {
       const p = prior[0];
       if (p.metadata?.payment_method !== method) return json({ error: "A different online payment is already open for this order." }, 409);
       const existingLink = p.provider_payload?.payment_link;
       if (existingLink && p.status === "pending") return json({ success: true, payment_url: existingLink, payment_id: p.id, reused: true });
-      return json({ error: "A payment attempt is already being prepared. Refresh your orders shortly." }, 409);
+      if (p.status !== "created") return json({ error: "ModemPay has not confirmed the result of the previous attempt. Contact support before retrying." }, 409);
+      // Reuse the same local ID so the provider Idempotency-Key is stable if the
+      // first request timed out after ModemPay may already have created the intent.
+      paymentId = p.id;
+    } else {
+      const inserted = await rest("gambasket_payments?select=id", {
+        method: "POST", headers: { Prefer: "return=representation" },
+        body: JSON.stringify({
+          order_id: order.id, buyer_id: user.id, provider: "modempay", idempotency_key: idempotency,
+          amount: Number(order.total), currency: "GMD", status: "created",
+          metadata: { payment_method: method, source: "gambasket_checkout" }
+        })
+      });
+      paymentId = inserted && inserted[0]?.id;
     }
-    const inserted = await rest("gambasket_payments?select=id", {
-      method: "POST", headers: { Prefer: "return=representation" },
-      body: JSON.stringify({
-        order_id: order.id, buyer_id: user.id, provider: "modempay", idempotency_key: idempotency,
-        amount: Number(order.total), currency: "GMD", status: "created",
-        metadata: { payment_method: method, source: "gambasket_checkout" }
-      })
-    });
-    const paymentId = inserted && inserted[0]?.id;
     if (!paymentId) throw new Error("Payment record could not be created.");
     const returnUrl = "https://squashberry.github.io/GamBasket/orders.html?payment_return=1&order="
       + encodeURIComponent(order.order_number);
@@ -151,7 +156,7 @@ Deno.serve(async (req: Request) => {
         updated_at: new Date().toISOString() })
     });
     await rest("orders?id=eq." + orderId + "&buyer_id=eq." + encodeURIComponent(user.id), {
-      method: "PATCH", body: JSON.stringify({ payment_method: method, updated_at: new Date().toISOString() })
+      method: "PATCH", body: JSON.stringify({ payment_method: method, payment_status: "pending", updated_at: new Date().toISOString() })
     });
     return json({ success: true, payment_url: paymentUrl, payment_id: paymentId, order_number: order.order_number });
   } catch (error) {

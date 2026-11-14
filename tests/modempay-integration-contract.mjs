@@ -45,6 +45,9 @@ assert.match(refundFn, /gambasket_mark_refund_provider_pending/);
 assert.match(refundFn, /gambasket_finalize_modempay_refund/);
 assert.match(configFn, /MODEMPAY_CHECKOUT_ENABLED/);
 assert.match(configFn, /MODEMPAY_PAYOUTS_ENABLED/);
+for (const source of [checkoutFn, webhookFn, payoutFn, deliveryFn, refundFn, configFn]) {
+  assert.match(source, /x-client-info/);
+}
 
 assert.match(checkoutUi, /payment_method: "cash_on_delivery"/);
 assert.match(checkoutUi, /gambasket-modempay-checkout/);

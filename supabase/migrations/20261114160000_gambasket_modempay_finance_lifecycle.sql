@@ -86,7 +86,6 @@ BEGIN
   SELECT * INTO v_order FROM public.orders
   WHERE id=p_order_id AND buyer_id=auth.uid() FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'Order not found'; END IF;
-  IF v_order.payment_status<>'paid' THEN RAISE EXCEPTION 'Delivery code is available after payment is verified'; END IF;
 
   IF v_order.fulfillment_type='delivery' THEN
     SELECT * INTO v_delivery FROM public.delivery_requests

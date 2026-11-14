@@ -1,5 +1,5 @@
 /* ============================================================
-   GAMBASKET — AFFILIATE CENTER PAGE CONTROLLER
+   JULADIRECT — AFFILIATE CENTER PAGE CONTROLLER
 ============================================================ */
 
 (async function () {
@@ -88,7 +88,7 @@
     async function authenticate() {
 
         loaderStage(
-            "Verifying your GamBasket session",
+            "Verifying your JulaDirect session",
             25
         );
 
@@ -345,7 +345,7 @@
                             <div class="affiliate-product-meta">
 
                                 <span>
-                                    GamBasket marketplace
+                                    JulaDirect marketplace
                                 </span>
 
                                 <span>
@@ -1209,9 +1209,9 @@
 
                         await navigator.share({
                             title:
-                                "GamBasket product",
+                                "JulaDirect product",
                             text:
-                                "Check this out on GamBasket.",
+                                "Check this out on JulaDirect.",
                             url
                         });
 
@@ -1631,7 +1631,7 @@
         } catch (error) {
 
             console.error(
-                "[GamBasket Affiliate Boot]",
+                "[JulaDirect Affiliate Boot]",
                 error
             );
 

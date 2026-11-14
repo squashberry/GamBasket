@@ -1,5 +1,5 @@
 /* =========================================================
-   GAMBASKET — CENTRALIZED AUTH ERROR TRANSLATOR
+   JULADIRECT — CENTRALIZED AUTH ERROR TRANSLATOR
    Never expose raw Supabase/network errors to users.
    Technical details are logged to console for debugging.
 ========================================================= */
@@ -16,7 +16,7 @@
      */
     function getAuthErrorMessage(error) {
         // Always log technical details for debugging
-        console.error("[GamBasket Auth Error]", error);
+        console.error("[JulaDirect Auth Error]", error);
 
         // Extract the message string
         let msg = "";
@@ -79,7 +79,7 @@
             lower.includes("net::") || lower.includes("econnrefused") ||
             lower.includes("enotfound") || lower.includes("timeout") ||
             lower.includes("abort")) {
-            return "We couldn\u2019t connect to GamBasket. Please check your internet connection and try again.";
+            return "We couldn\u2019t connect to JulaDirect. Please check your internet connection and try again.";
         }
 
         // Invalid API key / 401 / misconfigured client
@@ -87,7 +87,7 @@
             lower.includes("api key") || lower.includes("invalid key") ||
             lower.includes("401") || lower.includes("unauthorized") ||
             lower.includes("not authorized") || lower.includes("jwt")) {
-            return "GamBasket is temporarily unable to connect. Please try again shortly.";
+            return "JulaDirect is temporarily unable to connect. Please try again shortly.";
         }
 
         // Forbidden / RLS
@@ -101,7 +101,7 @@
         if (lower.includes("500") || lower.includes("internal server") ||
             lower.includes("server error") || lower.includes("502") ||
             lower.includes("503") || lower.includes("service unavailable")) {
-            return "GamBasket is experiencing a temporary issue. Please try again in a few minutes.";
+            return "JulaDirect is experiencing a temporary issue. Please try again in a few minutes.";
         }
 
         // Signup disabled

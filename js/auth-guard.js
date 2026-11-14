@@ -1,5 +1,5 @@
 /* =========================================================
-    GAMBASKET — AUTHENTICATION & AUTHORIZATION GUARD
+    JULADIRECT — AUTHENTICATION & AUTHORIZATION GUARD
     Workspace access is based on active public.user_roles rows.
     ========================================================= */
 
@@ -174,7 +174,7 @@
                             text-decoration:none;
                             font-weight:700;
                         ">
-                            Return to GamBasket
+                            Return to JulaDirect
                         </a>
                     </div>
                 </main>

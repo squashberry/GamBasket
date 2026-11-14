@@ -1,4 +1,4 @@
-/* GamBasket's single affiliate browser engine. Money is calculated only in SQL. */
+/* JulaDirect's single affiliate browser engine. Money is calculated only in SQL. */
 (() => {
     "use strict";
 
@@ -12,7 +12,7 @@
     };
 
     if (!client) {
-        console.error("[GamBasket Affiliate] Supabase client unavailable.");
+        console.error("[JulaDirect Affiliate] Supabase client unavailable.");
         return;
     }
 
@@ -62,9 +62,9 @@
         return { ...link, url: buildProductLink(productId, profile.affiliate_code, link.id) };
     }
 
-    async function shareLink(url, title = "Check this out on GamBasket") {
+    async function shareLink(url, title = "Check this out on JulaDirect") {
         if (navigator.share) {
-            await navigator.share({ title, text: "Check out this product on GamBasket.", url });
+            await navigator.share({ title, text: "Check out this product on JulaDirect.", url });
             return true;
         }
         await navigator.clipboard.writeText(url);
@@ -96,7 +96,7 @@
             sessionStorage.setItem(key, "1");
             return true;
         } catch (error) {
-            console.warn("[GamBasket Affiliate] Referral tracking failed:", error);
+            console.warn("[JulaDirect Affiliate] Referral tracking failed:", error);
             return false;
         }
     }
@@ -114,7 +114,7 @@
         try {
             return await call("get_current_affiliate_attribution", { p_visitor_token: getVisitorToken() });
         } catch (error) {
-            console.warn("[GamBasket Affiliate] Unable to load attribution:", error);
+            console.warn("[JulaDirect Affiliate] Unable to load attribution:", error);
             return null;
         }
     }
@@ -124,7 +124,7 @@
         try {
             return await call("record_affiliate_conversion", { p_order_id: orderId, p_visitor_token: getVisitorToken() });
         } catch (error) {
-            console.warn("[GamBasket Affiliate] Conversion was not created:", error);
+            console.warn("[JulaDirect Affiliate] Conversion was not created:", error);
             return null;
         }
     }

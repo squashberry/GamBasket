@@ -339,7 +339,7 @@
             );
 
             console.error(
-                "[GamBasket Admin]",
+                "[JulaDirect Admin]",
                 table,
                 error
             );
@@ -379,7 +379,7 @@
         if (error) {
 
             console.error(
-                "[GamBasket Admin RPC]",
+                "[JulaDirect Admin RPC]",
                 functionName,
                 error
             );
@@ -424,7 +424,7 @@
     ) {
 
         console.error(
-            `[GamBasket Admin] ${section} section failed`,
+            `[JulaDirect Admin] ${section} section failed`,
             error
         );
 
@@ -569,7 +569,7 @@
         } catch (error) {
 
             console.error(
-                "[GamBasket Admin Boot]",
+                "[JulaDirect Admin Boot]",
                 error
             );
 

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="refresh" content="0;url=../orders.html">
+  <title>Your orders — GamBasket</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/style.css">
+  <script>
+    (() => {
+      const destination = new URL("../orders.html", window.location.href);
+      if ("../orders.html".includes("#")) destination.hash = "";
+      else if (window.location.hash) destination.hash = window.location.hash;
+      if (window.location.search) destination.search = window.location.search;
+      window.location.replace(destination.href);
+    })();
+  </script>
+</head>
+<body>
+  <main style="max-width:640px;margin:12vh auto;padding:32px 22px;text-align:center">
+    <h1>Your orders</h1>
+    <p>Track purchases and review your order history.</p>
+    <p><a href="../orders.html">Continue to GamBasket</a></p>
+  </main>
+</body>
+</html>

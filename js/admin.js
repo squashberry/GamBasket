@@ -564,7 +564,7 @@
                 false;
 
 
-            openPage("overview");
+            openPage(getInitialAdminPage());
 
         } catch (error) {
 
@@ -609,6 +609,31 @@
         settings:"Settings",
         affiliate:"Affiliate Center"
     };
+
+
+    function getInitialAdminPage() {
+        const params = new URLSearchParams(window.location.search);
+        const requested = (
+            params.get("page") ||
+            params.get("tab") ||
+            window.location.hash.replace(/^#/, "") ||
+            "overview"
+        ).trim().toLowerCase();
+
+        // Keep legacy admin URLs useful while the central console remains
+        // the single source of truth for workspace data and permissions.
+        const aliases = {
+            reports: "moderation",
+            suppliers: "sellers",
+            quote: "messages",
+            quotes: "messages"
+        };
+        const page = aliases[requested] || requested;
+        const exists = Object.prototype.hasOwnProperty.call(pageTitles, page) &&
+            $(".admin-section").some(section => section.dataset.section === page);
+
+        return exists ? page : "overview";
+    }
 
 
     function openPage(

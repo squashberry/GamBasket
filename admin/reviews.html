@@ -1,24 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reviews & Ratings - GamBasket</title>
-    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/admin.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="refresh" content="0;url=./index.html?page=reviews">
+  <title>Reviews & Ratings — GamBasket Admin</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>
+    (() => {
+      const destination = new URL("./index.html", window.location.href);
+      destination.searchParams.set("page", "reviews");
+      window.location.replace(destination.href);
+    })();
+  </script>
 </head>
 <body>
-    <header id="header"></header>
-    <main class="admin-page">
-        <h1>Reviews & Ratings</h1>
-        <div class="reviews-table"></div>
-    </main>
-    <footer id="footer"></footer>
-    <script src="../js/states.js"></script>
-    
-    <script src="../js/app.js"></script>
-    <script src="../js/admin.js"></script>
+  <main style="max-width:640px;margin:12vh auto;padding:32px 22px;font-family:system-ui,sans-serif;text-align:center">
+    <h1>Reviews & Ratings</h1>
+    <p>This workspace now opens inside the central GamBasket Admin Console.</p>
+    <p><a href="./index.html?page=reviews">Continue to Admin Console</a></p>
+  </main>
 </body>
 </html>
-

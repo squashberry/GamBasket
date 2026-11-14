@@ -442,6 +442,12 @@
         });
 
         renderNotifications();
+
+        // Legacy buyer route: /buyer/notifications.html now opens the
+        // canonical account notification panel instead of a blank page.
+        if (window.location.hash.toLowerCase() === "#notifications") {
+            openNotifications();
+        }
     }
 
     if (document.readyState === "loading") {

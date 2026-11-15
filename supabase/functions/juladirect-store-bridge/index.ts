@@ -57,7 +57,7 @@ async function authenticatedJulaUser(token: string): Promise<{ user: any; token:
   });
   const data = await readJson(response);
   if (!response.ok || !data?.id) throw new Error("Your JulaDirect session is invalid or has expired.");
-  return { user: data, token };
+  return { user: data, token, apikey: publicKey };
 }
 async function authenticatedProUser(input: any): Promise<any> {
   const token = String(input?.pro_access_token || "");
@@ -72,7 +72,7 @@ async function authenticatedProUser(input: any): Promise<any> {
   if (!response.ok || !data?.id) {
     throw new Error("Your SquashberryPro session is invalid or has expired.");
   }
-  return { user: data, token };
+  return { user: data, token, apikey: publicKey };
 }
 async function sha256(value: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
@@ -106,6 +106,33 @@ function parseCart(value: unknown): Array<{ product_id: string; quantity: number
     seen.add(productId);
     return { product_id: productId, quantity };
   });
+}
+async function verifyProPublication(
+  pro: { user: any; token: string; apikey: string },
+  siteId: string,
+  expectedSlug?: string,
+  requirePublished = true
+): Promise<any> {
+  if (!uuid(siteId)) throw new Error("Invalid SquashberryPro website reference.");
+  const url = PRO_AUTH_URL + "/rest/v1/pro_site_publications?select=project_id,owner_user_id,slug,site_name,status&project_id=eq." +
+    encodeURIComponent(siteId) + "&owner_user_id=eq." + encodeURIComponent(pro.user.id) + "&limit=1";
+  const response = await fetch(url, {
+    headers: { apikey: pro.apikey, Authorization: "Bearer " + pro.token }
+  });
+  const rows = await readJson(response);
+  if (!response.ok || !Array.isArray(rows)) {
+    throw new Error("SquashberryPro could not verify this website's owner and publication status.");
+  }
+  if (!rows.length || rows[0].owner_user_id !== pro.user.id) {
+    throw new Error("This website does not belong to the connected SquashberryPro account.");
+  }
+  if (requirePublished && rows[0].status !== "published") {
+    throw new Error("Publish the SquashberryPro website before connecting its JulaDirect store.");
+  }
+  if (expectedSlug && rows[0].slug !== expectedSlug) {
+    throw new Error("The submitted website address does not match the published SquashberryPro site.");
+  }
+  return rows[0];
 }
 async function sellerProfile(sellerId: string): Promise<any> {
   const rows = await rest("seller_profiles?select=user_id,business_name,whatsapp,phone,is_active,verification_status,logo_url&user_id=eq." +
@@ -226,14 +253,18 @@ Deno.serve(async (req: Request) => {
       if (existingSeller?.length && existingSeller[0].pro_user_id && existingSeller[0].pro_user_id !== pro.user.id) {
         return json({ error: "This JulaDirect seller account is already linked to another SquashberryPro account." }, 409);
       }
-      await rest("juladirect_store_connections?seller_user_id=eq." + encodeURIComponent(link.seller_user_id) +
-        "&link_code_hash=eq." + hash, {
+      const consumed = await rest("juladirect_store_connections?seller_user_id=eq." + encodeURIComponent(link.seller_user_id) +
+        "&link_code_hash=eq." + hash + "&status=eq.pending&link_expires_at=gt." + encodeURIComponent(new Date().toISOString()), {
           method: "PATCH",
+          headers: { Prefer: "return=representation" },
           body: JSON.stringify({
             pro_user_id: pro.user.id, status: "active", link_code_hash: null,
             link_expires_at: null, updated_at: new Date().toISOString()
           })
         });
+      if (!consumed?.length) {
+        return json({ error: "This connection code has expired or was already used. Start again from JulaDirect." }, 410);
+      }
       const seller = await sellerProfile(link.seller_user_id);
       return json({ success: true, connected: true, seller: { business_name: seller.business_name || "JulaDirect seller", whatsapp: seller.whatsapp || seller.phone || "" } });
     }
@@ -244,9 +275,10 @@ Deno.serve(async (req: Request) => {
         encodeURIComponent(auth.user.id) + "&limit=1");
       const link = rows?.[0];
       if (!link || link.status !== "active" || !link.pro_user_id) return json({ connected: false, published_site: null });
+      const seller = await sellerProfile(auth.user.id);
       const sites = await rest("juladirect_store_sites?select=site_id,site_slug,site_name,public_url,is_published,updated_at&seller_user_id=eq." +
         encodeURIComponent(auth.user.id) + "&is_published=eq.true&order=updated_at.desc&limit=1");
-      return json({ connected: true, published_site: sites?.[0] || null });
+      return json({ connected: true, seller_name: seller.business_name || "JulaDirect seller", published_site: sites?.[0] || null });
     }
 
     if (action === "pro_status") {
@@ -289,6 +321,10 @@ Deno.serve(async (req: Request) => {
       if (!siteId || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || !/^https:\/\/squashberrypro\.pages\.dev\//.test(publicUrl)) {
         return json({ error: "The published website details are incomplete or invalid." }, 400);
       }
+      const verifiedSite = await verifyProPublication(pro, siteId, slug, true);
+      if (verifiedSite.site_name !== name) {
+        return json({ error: "The website name does not match the published SquashberryPro website." }, 409);
+      }
       if (productIds.length > 200) return json({ error: "This store has too many imported products." }, 400);
       if (productIds.length && !julaEnabled && !whatsappEnabled) {
         return json({ error: "Enable JulaDirect checkout or WhatsApp checkout before publishing this product store." }, 400);
@@ -320,6 +356,7 @@ Deno.serve(async (req: Request) => {
       const pro = await authenticatedProUser(input);
       const link = await connectionForPro(pro.user.id);
       const siteId = safeString(input?.site_id, 128);
+      await verifyProPublication(pro, siteId, undefined, false);
       await rest("juladirect_store_sites?site_id=eq." + encodeURIComponent(siteId) +
         "&pro_user_id=eq." + encodeURIComponent(pro.user.id) +
         "&seller_user_id=eq." + encodeURIComponent(link.seller_user_id), {
@@ -379,6 +416,7 @@ Deno.serve(async (req: Request) => {
       return json({
         site_name: details.site.site_name,
         seller_name: details.seller.business_name || details.site.site_name,
+        store_url: details.site.public_url,
         currency: "GMD",
         items: cart.map((line) => {
           const p: any = byId.get(line.product_id);

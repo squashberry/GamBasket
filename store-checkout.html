@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <title>Secure Store Checkout — JulaDirect</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body{background:#f5f7fb;color:#182235;font-family:Inter,system-ui,sans-serif}
+    .jdco-wrap{width:min(100% - 28px,980px);margin:32px auto 60px}
+    .jdco-brand{font-weight:850;font-size:20px;color:#132c55;text-decoration:none}
+    .jdco-title{margin:28px 0 6px;font-size:clamp(26px,5vw,36px)}
+    .jdco-sub{color:#64748b;line-height:1.6;margin:0 0 22px}
+    .jdco-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:18px;align-items:start}
+    .jdco-card{background:#fff;border:1px solid #e7ebf2;border-radius:18px;padding:22px;box-shadow:0 12px 38px #10243e0b}
+    .jdco-card h2{font-size:18px;margin:0 0 18px}
+    .jdco-field{display:grid;gap:7px;margin:13px 0}
+    .jdco-field label{font-size:13px;font-weight:700}
+    .jdco-field input,.jdco-field select,.jdco-field textarea{width:100%;min-height:44px;border:1px solid #d9e0eb;border-radius:10px;padding:10px 12px;font:inherit;background:#fff;color:#172235}
+    .jdco-field textarea{min-height:76px;resize:vertical}
+    .jdco-radio{display:flex;gap:10px;align-items:center;border:1px solid #e0e6ef;padding:12px;border-radius:11px;margin:8px 0;cursor:pointer}
+    .jdco-btn{border:0;border-radius:11px;background:#1f5dc5;color:#fff;font-weight:800;padding:14px 18px;width:100%;cursor:pointer}
+    .jdco-btn:disabled{opacity:.5;cursor:not-allowed}
+    .jdco-btn-secondary{background:#eef4ff;color:#1e4e9c}
+    .jdco-item{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid #edf0f5}
+    .jdco-item small{display:block;color:#64748b;margin-top:4px}
+    .jdco-total{display:flex;justify-content:space-between;font-weight:850;font-size:18px;padding-top:16px}
+    .jdco-alert{padding:12px 14px;border-radius:10px;background:#fff2ef;color:#a22b20;margin:12px 0;display:none;line-height:1.5}
+    .jdco-hint{color:#64748b;font-size:12px;line-height:1.55;margin:12px 0}
+    .jdco-paymethods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .jdco-paymethods label{border:1px solid #dce4f0;border-radius:10px;padding:10px;text-align:center;font-size:13px;font-weight:750}
+    @media(max-width:720px){.jdco-grid{grid-template-columns:1fr}.jdco-wrap{margin-top:18px}.jdco-card{padding:18px}}
+  </style>
+</head>
+<body>
+  <main class="jdco-wrap">
+    <a class="jdco-brand" href="index.html">JulaDirect</a>
+    <h1 class="jdco-title">Secure checkout</h1>
+    <p class="jdco-sub" id="checkoutSubtitle">Your order will be processed securely by JulaDirect.</p>
+    <div id="checkoutAlert" class="jdco-alert" role="alert"></div>
+    <div id="checkoutLoading" class="jdco-card">Loading your basket…</div>
+    <div id="checkoutContent" class="jdco-grid" hidden>
+      <section class="jdco-card">
+        <h2>Delivery and payment</h2>
+        <div id="buyerAuthNotice" hidden>
+          <p>Please sign in to JulaDirect to place your order.</p>
+          <a id="buyerSignIn" class="jdco-btn" style="display:block;text-align:center;text-decoration:none" href="login.html">Sign in to continue</a>
+        </div>
+        <form id="storeCheckoutForm" hidden>
+          <div class="jdco-field"><label for="fulfillmentType">How would you like to receive your order?</label><select id="fulfillmentType" required><option value="delivery">Delivery</option><option value="pickup">Pickup from the seller</option></select></div>
+          <div id="deliveryFields">
+            <div class="jdco-field"><label for="deliveryAddress">Delivery address</label><input id="deliveryAddress" autocomplete="street-address" placeholder="House, street or landmark" required></div>
+            <div class="jdco-field"><label for="deliveryRegion">Region</label><input id="deliveryRegion" placeholder="e.g. Kanifing" required></div>
+            <div class="jdco-field"><label for="deliveryArea">Area / neighbourhood</label><input id="deliveryArea" placeholder="e.g. Serekunda" required></div>
+            <div class="jdco-field"><label for="deliveryInstructions">Delivery instructions (optional)</label><textarea id="deliveryInstructions" placeholder="Directions or additional details"></textarea></div>
+          </div>
+          <div class="jdco-field"><label for="deliveryPhone">Contact phone</label><input id="deliveryPhone" type="tel" autocomplete="tel" required placeholder="+220..."></div>
+          <div class="jdco-field"><label>Pay using</label><div class="jdco-paymethods" id="paymentMethods"></div></div>
+          <p class="jdco-hint">JulaDirect verifies the current product prices and stock, creates your marketplace order, then opens the live ModemPay payment page. Your order remains unpaid until the payment provider confirms it.</p>
+          <button id="placeOrderButton" class="jdco-btn" type="submit">Continue to secure payment</button>
+        </form>
+      </section>
+      <aside class="jdco-card">
+        <h2 id="storeName">Your order</h2>
+        <div id="checkoutItems"></div>
+        <div class="jdco-total"><span>Items subtotal</span><span id="checkoutTotal">D 0.00</span></div>
+        <p class="jdco-hint">Shipping or delivery charges, where applicable, are calculated by JulaDirect when the order is created.</p>
+        <p><a href="#" id="returnToStore" class="jdco-btn jdco-btn-secondary" style="display:block;text-align:center;text-decoration:none">Return to store</a></p>
+      </aside>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/store-checkout.js"></script>
+</body>
+</html>

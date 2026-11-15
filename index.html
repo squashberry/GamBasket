@@ -24,6 +24,7 @@
     </script>
     
     <link rel="stylesheet" href="css/jd-system.css">
+    <link rel="stylesheet" href="css/home.css">
     <meta name="theme-color" content="#2563eb">
 </head>
 
@@ -463,7 +464,7 @@
     <section class="desktop-hero-section">
         <div class="desktop-hero-content">
             <div class="desktop-hero-badge">
-                The Gambia's #1 Unified Digital Marketplace
+                The Gambia's digital marketplace
             </div>
             <h1 class="desktop-hero-title">
                 Buy, Sell & Deliver Across <span>The Gambia</span>
@@ -490,16 +491,16 @@
 
             <div class="desktop-hero-trust">
                 <div class="desktop-trust-pill">
-                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-truck"></use></svg> Fast Banjul & Kombos Delivery
+                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-truck"></use></svg> Courier delivery in Greater Banjul
                 </div>
                 <div class="desktop-trust-pill">
-                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-shield"></use></svg> Verified Merchant Guarantee
+                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-shield"></use></svg> Verified sellers
                 </div>
                 <div class="desktop-trust-pill">
-                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-cart"></use></svg> Wave & QMoney Supported
+                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-cart"></use></svg> Cash on delivery
                 </div>
                 <div class="desktop-trust-pill">
-                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-store"></use></svg> 100% Genuine Products
+                    <svg class="ui-icon" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"><use href="#icon-store"></use></svg> Refunds &amp; dispute support
                 </div>
             </div>
         </div>
@@ -604,7 +605,7 @@
     <!-- MARKETPLACE CONTENT -->
     
     <!-- QUICK SELL MARKETPLACE CARD -->
-    <div style="max-width:1400px;margin:16px auto;padding:0 16px;">
+    <div class="home-wrap">
         <a href="quick-sell.html" class="quick-sell-home-card">
             <div class="quick-sell-icon">⚡</div>
             <div style="flex:1;">
@@ -616,6 +617,13 @@
     </div>
     
 <main class="mobile-app homepage-marketplace">
+        <section class="home-trust" aria-label="Why shop on JulaDirect">
+            <div class="home-trust-item"><span class="home-trust-icon"><svg class="ui-icon"><use href="#icon-truck"></use></svg></span><div><strong>Courier delivery</strong><span>Order online and a courier brings it to your door.</span></div></div>
+            <div class="home-trust-item"><span class="home-trust-icon"><svg class="ui-icon"><use href="#icon-shield-check"></use></svg></span><div><strong>Verified sellers</strong><span>Look for the verified badge on listings.</span></div></div>
+            <div class="home-trust-item"><span class="home-trust-icon"><svg class="ui-icon"><use href="#icon-shopping-bag"></use></svg></span><div><strong>Pay on delivery</strong><span>Cash on delivery is available at checkout.</span></div></div>
+            <div class="home-trust-item"><span class="home-trust-icon"><svg class="ui-icon"><use href="#icon-headset"></use></svg></span><div><strong>Real support</strong><span>Help centre and customer care, a message away.</span></div></div>
+        </section>
+
         <section class="home-promotions-section">
             <div class="home-section-heading"><div><span class="home-section-eyebrow">JULADIRECT · TRADE. SHOP. CONNECT.</span><h2>Discover something new</h2></div><div class="promo-dots" id="promoDots"></div></div>
             <div class="home-promo-carousel" id="homePromoCarousel">
@@ -728,6 +736,22 @@
         <section class="home-feature-banner"><div class="home-feature-overlay"></div><div class="home-feature-content"><span class="home-promo-label">PREMIUM COLLECTION</span><h2>Find something worth showing off.</h2><p>Premium fashion, accessories, technology and more from sellers across The Gambia.</p><a href="explore.html?collection=luxury">Explore premium picks <svg><use href="#icon-arrow-right"></use></svg></a></div></section>
         <section class="home-product-section"><div class="home-section-heading"><div><span class="home-section-eyebrow">JUST IN</span><h2>New arrivals</h2></div><a href="explore.html?sort=newest" class="home-see-all">See all</a></div><div class="product-grid home-product-row" id="newArrivalProductGrid"></div></section>
         <section class="home-coupon-section" id="homeCouponSection" hidden><div class="home-coupon-card"><div class="home-coupon-icon"><svg><use href="#icon-shopping-bag"></use></svg></div><div class="home-coupon-content"><span>LIMITED OFFER</span><h2 id="homeCouponTitle">Save on your next order</h2><p id="homeCouponDescription">Use the active JulaDirect offer at checkout.</p><div class="home-coupon-code"><span id="homeCouponCode">JULADIRECT</span><button id="copyCouponCode" type="button">Copy</button></div></div></div></section>
+                <section class="home-sell" aria-labelledby="homeSellTitle">
+            <div>
+                <span class="home-section-eyebrow">SELL ON JULADIRECT</span>
+                <h2 id="homeSellTitle">Turn what you sell into a store people can find.</h2>
+                <p>List one item in minutes or open a full store with orders, inventory and earnings in one place.</p>
+                <div class="home-sell-actions">
+                    <a class="jd-btn jd-btn--sun" href="signup.html">Open a store</a>
+                    <a class="jd-btn jd-btn--ghost" href="quick-sell.html">Quick sell one item</a>
+                </div>
+            </div>
+            <ul class="home-sell-points">
+                <li><b>1</b><span>Quick sell for one-off items, or a full store with analytics.</span></li>
+                <li><b>2</b><span>A flat 5% commission on the item value after discounts. Delivery is accounted for separately.</span></li>
+                <li><b>3</b><span>Follow orders and track your earnings in your seller wallet.</span></li>
+            </ul>
+        </section>
         <section class="home-product-section products-section"><div class="home-section-heading"><div><span class="home-section-eyebrow">EXPLORE</span><h2>More products</h2></div><button class="filter-button" id="filterButton" type="button" aria-label="Filter products"><svg><use href="#icon-sliders"></use></svg></button></div><div class="product-grid" id="productGrid"></div><div class="loading-indicator" id="loadingIndicator"><span class="loading-spinner"></span>Loading more products...</div></section>
 
     </main>

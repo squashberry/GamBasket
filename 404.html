@@ -23,7 +23,7 @@
             overflow: hidden;
             padding: 40px 20px calc(40px + env(safe-area-inset-bottom));
             background:
-                radial-gradient(circle at 50% 16%, rgba(24, 119, 242, .12), transparent 34%),
+                radial-gradient(circle at 50% 16%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 34%),
                 var(--background);
         }
 
@@ -39,7 +39,7 @@
             top: -70px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(24, 119, 242, .055);
+            color: color-mix(in srgb, var(--blue) 5.5%, transparent);
             font-size: clamp(100px, 19vw, 175px);
             font-weight: 900;
             letter-spacing: -.08em;
@@ -69,13 +69,13 @@
 
         .bag-body {
             fill: url(#bagGradient);
-            stroke: #0f5ec7;
+            stroke: var(--blue-dark);
             stroke-width: 2;
         }
 
         .bag-handle {
             fill: none;
-            stroke: #1877f2;
+            stroke: var(--blue);
             stroke-width: 8;
             stroke-linecap: round;
         }
@@ -97,7 +97,7 @@
 
         .tear {
             fill: url(#tearGradient);
-            filter: drop-shadow(0 6px 5px rgba(24, 119, 242, .2));
+            filter: drop-shadow(0 6px 5px color-mix(in srgb, var(--blue) 20%, transparent));
             transform-box: fill-box;
             transform-origin: top center;
             animation: tearDrop 1.8s ease-in infinite;
@@ -112,9 +112,9 @@
             align-items: center;
             gap: 7px;
             padding: 7px 12px;
-            border: 1px solid rgba(24, 119, 242, .12);
+            border: 1px solid color-mix(in srgb, var(--blue) 12%, transparent);
             border-radius: 999px;
-            background: rgba(24, 119, 242, .08);
+            background: color-mix(in srgb, var(--blue) 8%, transparent);
             color: var(--blue);
             font-size: 10px;
             font-weight: 850;
@@ -178,7 +178,7 @@
         .error-btn.primary {
             background: var(--blue);
             color: #fff;
-            box-shadow: 0 10px 25px rgba(24, 119, 242, .2);
+            box-shadow: 0 10px 25px color-mix(in srgb, var(--blue) 20%, transparent);
         }
 
         .error-btn.primary:hover {
@@ -253,6 +253,8 @@
             .lost-bag, .tear, .lost-star { animation: none; }
         }
     </style>
+    <link rel="stylesheet" href="css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body>
     <main class="error-page">
@@ -268,7 +270,7 @@
                     <defs>
                         <linearGradient id="bagGradient" x1="25" y1="34" x2="180" y2="205" gradientUnits="userSpaceOnUse">
                             <stop stop-color="#3b91ff" />
-                            <stop offset="1" stop-color="#0f5ec7" />
+                            <stop offset="1" stop-color="var(--blue-dark)" />
                         </linearGradient>
                         <linearGradient id="tearGradient" x1="0" y1="0" x2="0" y2="42" gradientUnits="userSpaceOnUse">
                             <stop stop-color="#bfdbfe" />
@@ -301,5 +303,6 @@
             <p class="error-footnote">Error 404 · JulaDirect Marketplace</p>
         </section>
     </main>
+    <script src="js/jd-ui.js" defer></script>
 </body>
 </html>

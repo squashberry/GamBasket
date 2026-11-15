@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="../css/seller.css">
     <link rel="stylesheet" href="../css/seller-wallet.css">
     <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+    <link rel="stylesheet" href="../css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body class="seller-page">
     <header class="desktop-app-header">
-        <a href="../index.html" class="desktop-app-brand"><span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></a>
+        <a href="../index.html" class="desktop-app-brand"><span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" style="stroke:var(--blue);"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></a>
         <div style="flex:1;"></div>
         <div class="desktop-app-actions">
             <button class="icon-button" id="desktopThemeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon"><use href="#icon-moon"></use></svg></button>
@@ -290,5 +292,6 @@
         });
     })();
     </script>
+    <script src="../js/jd-ui.js" defer></script>
 </body>
 </html>

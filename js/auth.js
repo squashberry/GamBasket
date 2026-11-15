@@ -277,7 +277,7 @@
         }
 
         if (score === 3) {
-            return "#1877f2";
+            return "#0a6b62";
         }
 
         return "#16a34a";

@@ -15,6 +15,8 @@
             }
         })();
     </script>
+    <link rel="stylesheet" href="css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body>
 
@@ -60,7 +62,7 @@
     <!-- DESKTOP HEADER -->
     <header class="desktop-nav-header">
         <a href="index.html" class="desktop-nav-brand">
-            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;margin:0 1px;display:inline-block;vertical-align:middle;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--blue);width:20px;height:20px;margin:0 1px;display:inline-block;vertical-align:middle;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </a>
         <nav>
             <ul class="desktop-nav-links">
@@ -98,7 +100,7 @@
     <main style="max-width: 680px; margin: 32px auto 80px; padding: 0 20px;">
         
         <div style="text-align: center; margin-bottom: 28px;">
-            <span style="font-size: 11px; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 4px 12px; border-radius: 20px; text-transform: uppercase;">JulaDirect Careers & Partnerships</span>
+            <span style="font-size: 11px; font-weight: 700; background: #eff6ff; color: var(--blue); padding: 4px 12px; border-radius: 20px; text-transform: uppercase;">JulaDirect Careers & Partnerships</span>
             <h1 style="font-size: 26px; font-weight: 800; margin: 8px 0 6px; color: var(--text);">Apply to Work with JulaDirect</h1>
             <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary);">Join our expanding network of Merchants, Couriers, and Operations specialists across The Gambia.</p>
         </div>
@@ -185,7 +187,7 @@
                     <p style="margin:0 0 8px;color:var(--text-secondary);font-size:11px;line-height:1.5;">Files are kept private. Only you and authorized JulaDirect reviewers can access them. JPG, PNG, WEBP or PDF, maximum 5MB.</p>
                     <div style="border: 2px dashed var(--border); border-radius: 12px; padding: 18px; text-align: center; background: var(--surface-secondary);">
                         <input type="file" id="appDocFile" accept="image/jpeg,image/png,image/webp,application/pdf" required style="display: none;">
-                        <button type="button" onclick="document.getElementById('appDocFile').click()" style="padding: 8px 16px; border-radius: 8px; border: 1px solid #2563eb; background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 700; cursor: pointer;">
+                        <button type="button" onclick="document.getElementById('appDocFile').click()" style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--blue); background: #eff6ff; color: var(--blue); font-size: 12px; font-weight: 700; cursor: pointer;">
                             Choose ID Document (Max 5MB)
                         </button>
                         <div id="docPreviewName" style="display: none; margin-top: 8px; font-size: 12px; color: #16a34a; font-weight: 600;"></div>
@@ -367,6 +369,7 @@
             });
         })();
     </script>
+    <script src="js/jd-ui.js" defer></script>
 </body>
 </html>
 

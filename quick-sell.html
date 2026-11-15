@@ -9,7 +9,7 @@
     <style>
         .quick-sell-page { max-width: 600px; margin: 40px auto 80px; padding: 0 20px; }
         .quick-sell-hero { text-align: center; margin-bottom: 30px; }
-        .quick-sell-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 16px; }
+        .quick-sell-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; background: #eff6ff; color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 16px; }
         .quick-sell-hero h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; line-height: 1.2; margin-bottom: 12px; color: var(--text); }
         .quick-sell-hero p { color: var(--text-secondary); font-size: 15px; line-height: 1.5; }
         .quick-sell-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
@@ -22,8 +22,8 @@
         #quickSellForm label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: var(--text); }
         #quickSellForm input, #quickSellForm textarea, #quickSellForm select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-secondary); color: var(--text); font-family: inherit; font-size: 14px; outline: none; box-sizing: border-box; }
         #quickSellForm textarea { min-height: 100px; resize: vertical; }
-        #quickSellForm .primary-btn { padding: 14px; border-radius: 14px; background: #2563eb; color: white; border: 0; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s ease; }
-        #quickSellForm .primary-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+        #quickSellForm .primary-btn { padding: 14px; border-radius: 14px; background: var(--blue); color: white; border: 0; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s ease; }
+        #quickSellForm .primary-btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
     </style>
     <script>
         (() => {
@@ -32,6 +32,8 @@
             }
         })();
     </script>
+    <link rel="stylesheet" href="css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body>
 
@@ -136,5 +138,6 @@
 <script src="js/product-attributes.js"></script>
 <script src="js/quick-sell.js"></script>
 
+    <script src="js/jd-ui.js" defer></script>
 </body>
 </html>

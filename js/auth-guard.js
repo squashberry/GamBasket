@@ -168,7 +168,7 @@
                         <a href="../index.html" class="primary-btn" style="
                             display:inline-block;
                             padding:12px 24px;
-                            background:#2563eb;
+                            background:var(--blue);
                             color:#fff;
                             border-radius:12px;
                             text-decoration:none;

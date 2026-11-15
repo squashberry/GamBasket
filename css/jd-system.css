@@ -1,0 +1,218 @@
+/* =========================================================
+   JulaDirect design system v1
+   Loaded after every legacy stylesheet. Legacy tokens
+   (--blue, --surface, --text ...) are remapped here so every
+   existing page inherits the new identity, then shared
+   components are refined and .jd-* building blocks added.
+========================================================= */
+
+:root {
+    color-scheme: light;
+    --jd-primary: #0a6b62;
+    --jd-primary-strong: #07514a;
+    --jd-primary-tint: #e4f2ef;
+    --jd-on-primary: #ffffff;
+    --jd-sun: #f2a20c;
+    --jd-sun-tint: #fff3d6;
+    --jd-laterite: #b73e17;
+    --jd-ok: #177245;
+    --jd-warn: #9a6700;
+    --jd-danger: #c62828;
+    --jd-info: #2563eb;
+    --jd-price: #07514a;
+    --jd-eyebrow: #b73e17;
+    --jd-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --jd-ease: cubic-bezier(.2, .8, .2, 1);
+    --jd-sh-1: 0 1px 2px rgba(16, 32, 30, .06), 0 3px 10px rgba(16, 32, 30, .05);
+    --jd-sh-2: 0 14px 34px -10px rgba(16, 32, 30, .22);
+
+    /* legacy token remap */
+    --blue: var(--jd-primary);
+    --blue-dark: var(--jd-primary-strong);
+    --blue-light: var(--jd-primary-tint);
+    --background: #faf7f1;
+    --surface: #ffffff;
+    --surface-secondary: #f4efe5;
+    --text: #10201e;
+    --text-secondary: #4d605c;
+    --text-muted: #667873;
+    --border: #e4dccb;
+    --danger: var(--jd-danger);
+    --shadow-small: var(--jd-sh-1);
+    --shadow-medium: var(--jd-sh-2);
+    --radius-small: 10px;
+    --radius-medium: 14px;
+    --radius-large: 22px;
+}
+
+html.dark {
+    color-scheme: dark;
+    --jd-primary: #15907f;
+    --jd-primary-strong: #0e7566;
+    --jd-primary-tint: #0f2b28;
+    --jd-price: #6fd8cb;
+    --jd-eyebrow: #f2b134;
+    --jd-sun-tint: #2b2108;
+    --background: #0a1413;
+    --surface: #101d1b;
+    --surface-secondary: #152624;
+    --text: #eef5f3;
+    --text-secondary: #a9bdb8;
+    --text-muted: #86a09a;
+    --border: #223836;
+    --jd-sh-1: 0 1px 2px rgba(0, 0, 0, .35), 0 3px 10px rgba(0, 0, 0, .25);
+    --jd-sh-2: 0 14px 34px -10px rgba(0, 0, 0, .6);
+}
+
+/* ---------- foundations ---------- */
+body { text-rendering: optimizeLegibility; -webkit-text-size-adjust: 100%; }
+::selection { background: color-mix(in srgb, var(--jd-sun) 45%, transparent); }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 60%, transparent); outline-offset: 2px; }
+.desktop-search-fake-input input:focus-visible,
+.desktop-hero-search input:focus-visible,
+.mobile-search input:focus-visible { outline: 0; }
+.desktop-search-fake-input:focus-within,
+.desktop-hero-search:focus-within,
+.mobile-search:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 35%, transparent); }
+button, a, input, select { touch-action: manipulation; }
+
+.desktop-hero-title,
+.home-section-heading h2,
+.home-promo-card h2,
+.home-feature-content h2,
+.explore-hero h1,
+.explore-result-heading h2 {
+    font-family: var(--jd-display);
+    font-weight: 700;
+    letter-spacing: -.015em;
+    text-wrap: balance;
+}
+
+.jd-skip {
+    position: fixed; left: 12px; top: -64px; z-index: 5000;
+    padding: 10px 16px; border-radius: 10px;
+    background: var(--jd-primary-strong); color: var(--jd-on-primary);
+    font-weight: 700; transition: top .2s var(--jd-ease);
+}
+.jd-skip:focus { top: 12px; }
+
+/* ---------- storefront shell ---------- */
+@media (min-width: 900px) {
+    .desktop-app-header {
+        background: color-mix(in srgb, var(--surface) 86%, transparent);
+        -webkit-backdrop-filter: saturate(1.4) blur(14px);
+        backdrop-filter: saturate(1.4) blur(14px);
+        box-shadow: none;
+        transition: box-shadow .25s ease;
+    }
+    html.jd-scrolled .desktop-app-header { box-shadow: var(--jd-sh-1); }
+    .desktop-app-brand { font-family: var(--jd-display); font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+    .desktop-app-nav-link { border-radius: 999px; transition: background .2s ease, color .2s ease; }
+    .desktop-app-nav-link:hover { background: var(--surface-secondary); }
+    .desktop-app-nav-link.active { background: var(--jd-primary-tint); color: var(--jd-price); }
+
+    .desktop-hero-section {
+        background:
+            radial-gradient(900px 420px at 88% -10%, rgba(242, 162, 12, .30), transparent 62%),
+            repeating-linear-gradient(135deg, rgba(255, 255, 255, .04) 0 2px, transparent 2px 16px),
+            linear-gradient(160deg, #052e2b 0%, #07514a 55%, #0a6b62 100%);
+    }
+    .desktop-hero-title { font-size: clamp(36px, 4.4vw, 58px); line-height: 1.06; letter-spacing: -.025em; }
+    .desktop-hero-title span { color: #ffc857; font-style: italic; }
+    .desktop-hero-search { border-radius: 16px; }
+    .desktop-hero-search button { background: var(--jd-sun); color: #2a1a00; font-weight: 800; transition: filter .2s ease, transform .2s var(--jd-ease); }
+    .desktop-hero-search button:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .desktop-trust-pill { background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .22); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+}
+.btn-signup,
+.modal-primary-button { color: var(--jd-on-primary); }
+.bottom-navigation .nav-item { -webkit-tap-highlight-color: transparent; }
+
+/* ---------- discovery ---------- */
+.home-section-eyebrow { color: var(--jd-eyebrow); font-weight: 800; letter-spacing: .14em; }
+.home-see-all { color: var(--jd-price); font-weight: 700; }
+.category-card .category-icon { background: var(--jd-primary-tint); color: var(--jd-price); transition: transform .25s var(--jd-ease); }
+.category-card:hover .category-icon { transform: translateY(-2px) rotate(-3deg); }
+.category-card.active-category .category-icon { background: var(--jd-primary); color: var(--jd-on-primary); }
+.home-search-tags a { border-radius: 999px; transition: background .2s ease, transform .2s var(--jd-ease); }
+.home-search-tags a:hover { background: var(--jd-primary-tint); transform: translateY(-1px); }
+
+.product-card {
+    opacity: 1;
+    transform: none;
+    border-radius: var(--radius-medium);
+    animation: jdRise 480ms var(--jd-ease) backwards;
+}
+@media (hover: hover) {
+    .product-card:hover { transform: translateY(-4px); box-shadow: var(--jd-sh-2); }
+}
+.product-card .product-price { color: var(--jd-price); font-weight: 800; font-variant-numeric: tabular-nums; }
+.product-card .product-location { color: var(--text-muted); }
+@keyframes jdRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.skeleton {
+    background: linear-gradient(90deg, var(--surface-secondary) 25%, color-mix(in srgb, var(--surface-secondary) 55%, var(--border)) 50%, var(--surface-secondary) 75%);
+    background-size: 200% 100%;
+    animation: jdShimmer 1.4s linear infinite;
+}
+@keyframes jdShimmer { to { background-position: -200% 0; } }
+
+/* ---------- reveal on scroll (enabled by js/jd-ui.js) ---------- */
+html.jd-js .jd-reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--jd-ease), transform .6s var(--jd-ease); }
+html.jd-js .jd-reveal.is-in { opacity: 1; transform: none; }
+
+/* ---------- building blocks ---------- */
+.jd-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-large); box-shadow: var(--jd-sh-1); padding: 20px; }
+.jd-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px; border: 1px solid transparent; border-radius: 12px;
+    background: var(--jd-primary); color: var(--jd-on-primary);
+    font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none;
+    transition: transform .2s var(--jd-ease), background .2s ease, box-shadow .2s ease;
+}
+.jd-btn:hover { background: var(--jd-primary-strong); transform: translateY(-1px); box-shadow: var(--jd-sh-1); }
+.jd-btn:active { transform: scale(.98); }
+.jd-btn[disabled], .jd-btn[aria-busy="true"] { opacity: .6; pointer-events: none; }
+.jd-btn--ghost { background: transparent; color: var(--text); border-color: var(--border); }
+.jd-btn--ghost:hover { background: var(--surface-secondary); }
+.jd-btn--sun { background: var(--jd-sun); color: #2a1a00; }
+.jd-btn--sun:hover { background: var(--jd-sun); filter: brightness(1.06); }
+.jd-btn--danger { background: var(--jd-danger); }
+
+.jd-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--surface-secondary); color: var(--text-secondary); }
+.jd-badge--ok { background: color-mix(in srgb, var(--jd-ok) 14%, transparent); color: var(--jd-ok); }
+.jd-badge--warn { background: color-mix(in srgb, var(--jd-warn) 16%, transparent); color: var(--jd-warn); }
+.jd-badge--danger { background: color-mix(in srgb, var(--jd-danger) 14%, transparent); color: var(--jd-danger); }
+.jd-badge--info { background: color-mix(in srgb, var(--jd-info) 14%, transparent); color: var(--jd-info); }
+html.dark .jd-badge--ok { color: #5fd391; }
+html.dark .jd-badge--warn { color: #f2b134; }
+html.dark .jd-badge--danger { color: #ff8a80; }
+html.dark .jd-badge--info { color: #8ab4ff; }
+
+.jd-stat { display: grid; gap: 4px; }
+.jd-stat__label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+.jd-stat__value { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.jd-stat__delta { font-size: 12px; font-weight: 700; color: var(--jd-ok); }
+.jd-stat__delta[data-trend="down"] { color: var(--jd-danger); }
+
+.jd-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-medium); background: var(--surface); }
+.jd-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.jd-table th { text-align: left; padding: 12px 16px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); background: var(--surface-secondary); position: sticky; top: 0; }
+.jd-table td { padding: 14px 16px; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.jd-table tbody tr:hover { background: color-mix(in srgb, var(--surface-secondary) 60%, transparent); }
+
+.jd-empty { display: grid; justify-items: center; gap: 8px; padding: 48px 20px; text-align: center; border: 1px dashed var(--border); border-radius: var(--radius-large); background: var(--surface); color: var(--text-secondary); }
+.jd-empty h3 { color: var(--text); font-family: var(--jd-display); font-size: 20px; }
+
+.jd-toasts { position: fixed; z-index: 6000; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); display: grid; gap: 10px; width: min(360px, calc(100vw - 32px)); }
+@media (max-width: 899px) { .jd-toasts { bottom: calc(88px + env(safe-area-inset-bottom)); } }
+.jd-toast { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); border-left: 4px solid var(--jd-primary); background: var(--surface); color: var(--text); box-shadow: var(--jd-sh-2); font-size: 14px; animation: jdRise 320ms var(--jd-ease); }
+.jd-toast--ok { border-left-color: var(--jd-ok); }
+.jd-toast--warn { border-left-color: var(--jd-sun); }
+.jd-toast--error { border-left-color: var(--jd-danger); }
+.jd-toast button { margin-left: auto; color: var(--text-muted); font-size: 18px; line-height: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    html.jd-js .jd-reveal { opacity: 1; transform: none; }
+}

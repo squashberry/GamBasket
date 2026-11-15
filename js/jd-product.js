@@ -8,7 +8,9 @@
   const id = JD.params().get("id");
   let qty = 1;
   let current = null;
+  document.body.classList.add("jd-pdp-page");
 
+  const ICON_SHARE = '<svg class="jd-i" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg>';
   const humanize = k => { const t = String(k).replace(/[_-]+/g, " ").trim(); return t.charAt(0).toUpperCase() + t.slice(1); };
   const specValue = v => {
     if (v === null || v === undefined || v === "") return "";
@@ -17,20 +19,23 @@
     if (typeof v === "object") return "";
     return String(v);
   };
+  /* Whole amount large, pence small, like the reference price styling. */
+  function priceHtml(p) {
+    const v = Number(p.price);
+    if (!Number.isFinite(v)) return "";
+    if (Number.isInteger(v)) return JD.esc(JD.money(v, p.currency));
+    const whole = Math.trunc(v);
+    const cents = (v - whole).toFixed(2).slice(1);
+    return JD.esc(JD.money(whole, p.currency)) + '<span class="jd-cents">' + cents + "</span>";
+  }
+  const topbar = '<div class="jd-pdpbar"><button type="button" class="jd-roundbtn" id="jd-back" aria-label="Go back"><span style="display:inline-flex;transform:scaleX(-1)">' + JD.icon("arrowRight", 22) + '</span></button><strong>Product details</strong><button type="button" class="jd-roundbtn" id="jd-share" aria-label="Share this product">' + ICON_SHARE + "</button></div>";
 
   function notFound(title, text) {
     document.title = "Product not found \u2014 JulaDirect";
-    root.innerHTML = '<div style="padding:48px 0">' + JD.empty({
-      icon: "search", title: title, text: text,
-      actions: '<a class="jd-btn jd-btn--primary" href="explore.html">Browse the marketplace</a><a class="jd-btn jd-btn--secondary" href="index.html">Go home</a>'
-    }) + "</div>";
+    root.innerHTML = topbar + '<div style="padding:48px 0">' + JD.empty({ icon: "search", title: title, text: text, actions: '<a class="jd-btn jd-btn--primary" href="explore.html">Browse the marketplace</a><a class="jd-btn jd-btn--secondary" href="index.html">Go home</a>' }) + "</div>";
   }
   function failed(msg) {
-    root.innerHTML = '<div style="padding:48px 0">' + JD.empty({
-      icon: "bag", title: "We could not load this product",
-      text: msg || "Please check your connection and try again.",
-      actions: '<button type="button" class="jd-btn jd-btn--secondary" id="jd-retry">Try again</button>'
-    }) + "</div>";
+    root.innerHTML = topbar + '<div style="padding:48px 0">' + JD.empty({ icon: "bag", title: "We could not load this product", text: msg || "Please check your connection and try again.", actions: '<button type="button" class="jd-btn jd-btn--secondary" id="jd-retry">Try again</button>' }) + "</div>";
   }
 
   function jsonLd(p, images, avg, count) {
@@ -45,6 +50,10 @@
     tag.textContent = JSON.stringify(ld).replace(/</g, "\\u003c");
   }
 
+  function stepper(cls, stock) {
+    return '<div class="jd-qty ' + cls + '" role="group" aria-label="Quantity"><button type="button" data-qty="-1" aria-label="Decrease quantity" disabled>' + JD.icon("minus", 18) + '</button><output class="jd-qty-out" aria-live="polite">1</output><button type="button" data-qty="1" aria-label="Increase quantity"' + (stock <= 1 ? " disabled" : "") + ">" + JD.icon("plus", 18) + "</button></div>";
+  }
+
   function render(d) {
     const p = d.product;
     const s = d.seller;
@@ -54,7 +63,6 @@
     const avg = reviews.length ? reviews.reduce((t, r) => t + Number(r.rating || 0), 0) / reviews.length : 0;
     const sellerName = JD.sellerName(s);
     const verified = !!(s && s.is_seller_verified);
-    const price = JD.money(p.price, p.currency);
     const cid = JD.esc(p.id);
     qty = 1;
 
@@ -62,6 +70,7 @@
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", (String(p.description || "").replace(/\s+/g, " ").slice(0, 150)) || p.title + " on JulaDirect");
     jsonLd(p, imgs, avg, reviews.length);
+    JD.recent.add(p.id);
 
     const stockBadge = stock <= 0 ? '<span class="jd-badge jd-badge--bad">Out of stock</span>'
       : stock <= 3 ? '<span class="jd-badge jd-badge--warn">Only ' + stock + " left</span>"
@@ -72,29 +81,33 @@
       (p.delivery_available === true ? '<span class="jd-badge">' + JD.icon("truck", 14) + "Delivery available</span>" : '<span class="jd-badge jd-badge--warn">Delivery not offered</span>');
 
     const specRows = [["Condition", p.condition], ["Category", p.category_id], ["Location", p.location], ["Listed", JD.shortDate(p.created_at)]];
-    const attrs = p.attributes && typeof p.attributes === "object" ? Object.entries(p.attributes) : [];
-    attrs.forEach(([k, v]) => specRows.push([humanize(k), specValue(v)]));
-    const specs = specRows.filter(r => r[1]).map(r => "<tr><th scope=\"row\">" + JD.esc(r[0]) + "</th><td>" + JD.esc(r[1]) + "</td></tr>").join("");
+    (p.attributes && typeof p.attributes === "object" ? Object.entries(p.attributes) : []).forEach(([k, v]) => specRows.push([humanize(k), specValue(v)]));
+    const specs = specRows.filter(r => r[1]).map(r => '<tr><th scope="row">' + JD.esc(r[0]) + "</th><td>" + JD.esc(r[1]) + "</td></tr>").join("");
 
     const reviewHtml = reviews.length
-      ? '<div style="display:flex;align-items:center;gap:12px;margin:12px 0 4px">' + JD.stars(avg) + "<strong>" + avg.toFixed(1) + " / 5</strong><span class=\"jd-muted\">" + reviews.length + (reviews.length === 1 ? " review" : " reviews") + "</span></div>" +
+      ? '<div style="display:flex;align-items:center;gap:12px;margin:12px 0 4px">' + JD.stars(avg) + "<strong>" + avg.toFixed(1) + ' / 5</strong><span class="jd-muted">' + reviews.length + (reviews.length === 1 ? " review" : " reviews") + "</span></div>" +
         reviews.map(r => '<article class="jd-review"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">' + JD.stars(r.rating) + '<span class="jd-muted" style="font-size:13px">' + JD.esc(JD.shortDate(r.created_at)) + "</span></div>" +
           (r.title ? "<strong>" + JD.esc(r.title) + "</strong>" : "") + (r.body ? '<p class="jd-prose">' + JD.esc(r.body) + "</p>" : "") +
           (r.seller_reply ? '<div class="jd-reply"><strong>Seller reply</strong><p style="margin-top:4px">' + JD.esc(r.seller_reply) + "</p></div>" : "") + "</article>").join("")
       : '<div class="jd-empty" style="margin-top:14px;padding:32px 20px"><div class="jd-empty__icon">' + JD.icon("star", 26) + "</div><h3>No verified reviews yet</h3><p>Only customers with a completed JulaDirect order can leave a review.</p></div>";
 
     const avatar = JD.safeUrl(s && s.avatar_url);
-    root.innerHTML =
+    const infoTitle = p.delivery_available === true ? "Delivery available" : "Delivery not offered";
+    const infoText = p.delivery_available === true ? "Pay when your order arrives. Cash on delivery is available at checkout." : "This seller does not offer delivery for this item. Pay on delivery is still chosen at checkout.";
+
+    root.innerHTML = topbar +
       '<nav class="jd-breadcrumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><a href="explore.html">Explore</a>' +
       (p.category_id ? '<span aria-hidden="true">/</span><a href="explore.html?category=' + encodeURIComponent(p.category_id) + '">' + JD.esc(p.category_id) + "</a>" : "") +
       '<span aria-hidden="true">/</span><span aria-current="page">' + JD.esc(p.title) + "</span></nav>" +
-      '<div class="jd-pdp"><div class="jd-gallery"><div class="jd-gallery__main"><img id="jd-main-img" src="' + JD.esc(imgs[0]) + '" alt="' + JD.esc(p.title) + '" decoding="async"></div>' +
-      (imgs.length > 1 ? '<div class="jd-thumbs" role="group" aria-label="Product images">' + imgs.map((u, i) => '<button type="button" class="jd-thumb" data-thumb="' + i + '"' + (i === 0 ? ' aria-current="true"' : "") + ' aria-label="Show image ' + (i + 1) + ' of ' + imgs.length + '"><img src="' + JD.esc(u) + '" alt="" loading="lazy"></button>').join("") + "</div>" : "") + "</div>" +
+      '<div class="jd-pdp"><div class="jd-gallery"><div class="jd-gallery__main"><img id="jd-main-img" src="' + JD.esc(imgs[0]) + '" alt="' + JD.esc(p.title) + '" decoding="async">' + (p.condition === "New" ? '<span class="jd-tag">New</span>' : "") + "</div>" +
+      (imgs.length > 1 ? '<div class="jd-thumbs" role="group" aria-label="Product images">' + imgs.map((u, i) => '<button type="button" class="jd-thumb" data-thumb="' + i + '"' + (i === 0 ? ' aria-current="true"' : "") + ' aria-label="Show image ' + (i + 1) + " of " + imgs.length + '"><img src="' + JD.esc(u) + '" alt="" loading="lazy"></button>').join("") + "</div>" : "") + "</div>" +
       '<div class="jd-buy"><div>' + (p.category_id ? '<p class="jd-eyebrow">' + JD.esc(p.category_id) + "</p>" : "") + '<h1 style="margin-top:6px">' + JD.esc(p.title) + "</h1></div>" +
+      (p.description ? '<p class="jd-pdp-lead">' + JD.esc(p.description) + "</p>" : "") +
       (reviews.length ? '<div style="display:flex;align-items:center;gap:8px">' + JD.stars(avg) + '<a class="jd-link" href="#jd-reviews">' + reviews.length + (reviews.length === 1 ? " review" : " reviews") + "</a></div>" : "") +
-      '<div class="jd-buy__price">' + JD.esc(price) + '</div><div class="jd-facts">' + facts + "</div>" +
-      '<div class="jd-buy__row"><div class="jd-qty" role="group" aria-label="Quantity"><button type="button" data-qty="-1" aria-label="Decrease quantity" disabled>' + JD.icon("minus", 18) + '</button><output id="jd-qty" aria-live="polite">1</output><button type="button" data-qty="1" aria-label="Increase quantity"' + (stock <= 1 ? " disabled" : "") + ">" + JD.icon("plus", 18) + "</button></div>" +
+      '<div class="jd-pricerow"><div class="jd-buy__price">' + priceHtml(p) + "</div>" + stepper("jd-qty--m", stock) + '</div><div class="jd-facts">' + facts + "</div>" +
+      '<div class="jd-buy__row jd-buy__row--qty">' + stepper("jd-qty--d", stock) +
       '<button type="button" class="jd-btn jd-btn--primary jd-btn--lg" data-pdp-add' + (stock <= 0 ? " disabled" : "") + ">" + JD.icon("cart", 20) + (stock <= 0 ? "Out of stock" : "Add to cart") + "</button></div>" +
+      '<div class="jd-infocard"><div><strong>' + infoTitle + "</strong><p>" + infoText + '</p></div><span class="jd-infocard__icon">' + JD.icon("truck", 26) + "</span></div>" +
       '<div class="jd-buy__row"><button type="button" class="jd-btn jd-btn--soft" data-pdp-buy' + (stock <= 0 ? " disabled" : "") + ">Buy now</button>" +
       '<button type="button" class="jd-btn jd-btn--secondary" data-wish="' + cid + '" aria-pressed="false">' + JD.icon("heart", 18) + "Save</button>" +
       '<button type="button" class="jd-btn jd-btn--secondary" data-compare="' + cid + '" aria-pressed="false">' + JD.icon("scale", 18) + "Compare</button></div>" +
@@ -109,7 +122,7 @@
       (specs ? '<h2 style="margin-top:32px">Details</h2><table class="jd-specs" style="margin-top:8px"><tbody>' + specs + "</tbody></table>" : "") + "</section>" +
       '<section id="jd-reviews" aria-labelledby="jd-rev-h"><h2 id="jd-rev-h">Customer reviews</h2>' + reviewHtml + "</section></div>" +
       (d.related.length ? '<section class="jd-section" aria-labelledby="jd-rel"><div class="jd-section__head"><h2 id="jd-rel">More in ' + JD.esc(p.category_id || "this category") + '</h2><a class="jd-link" href="explore.html?category=' + encodeURIComponent(p.category_id || "") + '">See all</a></div><div class="jd-grid" id="jd-related">' + d.related.map(JD.productCard).join("") + "</div></section>" : "") +
-      '<div class="jd-mobilebar"><div><small class="jd-muted">Price</small><br><strong>' + JD.esc(price) + '</strong></div><button type="button" class="jd-btn jd-btn--primary" data-pdp-add' + (stock <= 0 ? " disabled" : "") + ">" + (stock <= 0 ? "Out of stock" : "Add to cart") + "</button></div>";
+      '<div class="jd-mobilebar"><button type="button" class="jd-btn jd-btn--primary jd-btn--block" data-pdp-add' + (stock <= 0 ? " disabled" : "") + ">" + (stock <= 0 ? "Out of stock" : "Add to cart") + "</button></div>";
 
     document.body.classList.add("has-mobilebar");
     JD.syncWishlist(root);
@@ -124,18 +137,16 @@
       await A.ready();
       const user = await A.getUser();
       const btn = document.getElementById("jd-msg");
-      if (user && btn && user.id === p.seller_id) {
-        btn.outerHTML = '<a class="jd-btn jd-btn--soft jd-btn--sm" href="supplier/products.html">Manage</a>';
-      }
+      if (user && btn && user.id === p.seller_id) btn.outerHTML = '<a class="jd-btn jd-btn--soft jd-btn--sm" href="supplier/products.html">Manage</a>';
     } catch (e) { /* guests and errors keep the default button */ }
   }
 
   function setQty(next) {
     const stock = Number(current.product.stock || 0);
     qty = Math.min(Math.max(1, next), Math.max(1, stock));
-    document.getElementById("jd-qty").textContent = String(qty);
-    JD.$('[data-qty="-1"]').disabled = qty <= 1;
-    JD.$('[data-qty="1"]').disabled = qty >= stock;
+    JD.$$(".jd-qty-out").forEach(o => { o.textContent = String(qty); });
+    JD.$$('[data-qty="-1"]').forEach(b => { b.disabled = qty <= 1; });
+    JD.$$('[data-qty="1"]').forEach(b => { b.disabled = qty >= stock; });
   }
 
   async function load() {
@@ -151,7 +162,21 @@
     }
   }
 
+  async function share() {
+    const title = current ? current.product.title : document.title;
+    try {
+      if (navigator.share) { await navigator.share({ title: title, url: location.href }); return; }
+      await navigator.clipboard.writeText(location.href);
+      JD.toast("Link copied", "ok");
+    } catch (e) { /* user cancelled or clipboard blocked */ }
+  }
+
   document.addEventListener("click", async e => {
+    if (e.target.closest("#jd-back")) {
+      if (history.length > 1 && document.referrer.indexOf(location.origin) === 0) history.back(); else location.href = "explore.html";
+      return;
+    }
+    if (e.target.closest("#jd-share")) { share(); return; }
     if (!current) { if (e.target.closest("#jd-retry")) load(); return; }
     const thumb = e.target.closest("[data-thumb]");
     const q = e.target.closest("[data-qty]");
@@ -171,11 +196,10 @@
     } else if (buy) {
       buy.disabled = true;
       const r = await JD.addToCart(current.product.id, qty);
-      if (r && r.success) location.href = "checkout.html";
-      else buy.disabled = false;
+      if (r && r.success) location.href = "checkout.html"; else buy.disabled = false;
     } else if (msg) {
-      const A = JD.auth();
       try {
+        const A = JD.auth();
         await A.ready();
         const user = await A.getUser();
         if (!user) { location.href = JD.loginUrl(); return; }

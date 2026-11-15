@@ -236,7 +236,7 @@
       (b.corner_label ? '<p class="jd-to__corner jd-to__fade" style="--d:1.2s">' + JD.esc(b.corner_label) + "</p>" : "") +
       (b.stat_value ? '<div class="jd-to__stat jd-to__fade" style="--d:1.3s"><strong id="jd-to-stat">' + JD.esc(b.stat_value) + "</strong>" + (b.stat_label ? "<span>" + JD.esc(b.stat_label) + "</span>" : "") + "</div>" : "") +
       (href ? '<a class="jd-to__cta jd-to__fade" style="--d:1.4s" href="' + JD.esc(href) + '"' + (external ? ' rel="noopener"' : "") + "><i>" + JD.icon("arrowUpRight", 24) + "</i><span>" + JD.esc(ctaLabel) + "</span></a>" : "") +
-      '<svg class="jd-to__orn" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2c2.6 0 4.4 2.2 4.4 5 0 1.8-.8 3.2-2 4.4 1.2-.4 2.6-.4 4-.1 2.5.6 4.3 2.9 3.5 5.4-.6 2.5-2.9 4.1-5.4 3.6-1.5-.3-2.8-1.1-3.7-2.2.5 1.4.7 2.8.3 4.2-.8 2.5-3.2 4-5.7 3.2-2.5-.8-3.9-3.2-3.3-5.7.4-1.5 1.3-2.7 2.5-3.5-1.5.1-2.9-.3-4-1.2C3.7 14.600 3.600 11.800 5.400 10c1.800-1.800 4.600-1.900 6.600-.4 1 .8 1.700 1.800 2 3-.3-1.500-.2-3 .6-4.300C15.500 6 15.700 4 16 2Z"/></svg>' +
+      '<svg class="jd-to__orn" viewBox="0 0 32 32" aria-hidden="true"><g fill="currentColor"><circle cx="16" cy="8" r="6"/><circle cx="24" cy="16" r="6"/><circle cx="16" cy="24" r="6"/><circle cx="8" cy="16" r="6"/></g></svg>' +
       "</div>";
     if (preview) {
       const pill = document.createElement("div");

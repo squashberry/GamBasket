@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>Homepage banners — JulaDirect Admin</title>
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#1451e6">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../css/jd.css">
+</head>
+<body class="jd">
+    <div id="jd-header"></div>
+
+    <main id="jd-main" class="jd-container">
+        <nav class="jd-breadcrumb" aria-label="Breadcrumb"><a href="../index.html">Home</a><span aria-hidden="true">/</span><a href="index.html">Administration</a><span aria-hidden="true">/</span><span aria-current="page">Homepage banners</span></nav>
+        <div class="jd-page-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+            <div><h1 style="font-size:clamp(1.6rem,3vw,2.3rem)">Homepage banners</h1><p>Create the full-screen banner shown on the homepage, switch it on or off, and change it any time.</p></div>
+            <button type="button" class="jd-btn jd-btn--primary" id="jd-new" hidden>New banner</button>
+        </div>
+        <div id="jd-note" class="jd-callout" hidden>
+            <span>Only one banner can be live. While it is live, the homepage hides the other banners and the central search bar, and shows a minimal menu bar instead. Turning a banner on turns the current one off.</span>
+        </div>
+        <div id="jd-list" aria-live="polite"><div class="jd-skel" style="height:120px" aria-hidden="true"></div></div>
+    </main>
+
+    <dialog class="jd-dialog jd-dialog--wide" id="jd-form-dialog" aria-labelledby="jd-form-title">
+        <form id="jd-form" novalidate>
+            <div><h2 id="jd-form-title" style="font-size:1.3rem">New banner</h2><p class="jd-muted" style="margin-top:6px">Put each headline word or phrase on its own line (up to 3 lines per side).</p></div>
+            <div class="jd-form-grid">
+                <div class="jd-field jd-span2"><label class="jd-label" for="f-name">Internal name</label><input class="jd-input" id="f-name" maxlength="80" required placeholder="e.g. Eid collection"></div>
+                <div class="jd-field"><label class="jd-label" for="f-headline_left">Headline, left side</label><textarea class="jd-textarea" id="f-headline_left" maxlength="60" required placeholder="where&#10;- style"></textarea></div>
+                <div class="jd-field"><label class="jd-label" for="f-headline_right">Headline, right side (optional)</label><textarea class="jd-textarea" id="f-headline_right" maxlength="60" placeholder="lives&#10;- now"></textarea></div>
+                <div class="jd-field"><label class="jd-label" for="f-kicker">Small label (left)</label><input class="jd-input" id="f-kicker" maxlength="40" placeholder="//FASHION"></div>
+                <div class="jd-field"><label class="jd-label" for="f-tagline">Tagline (top right)</label><input class="jd-input" id="f-tagline" maxlength="60" placeholder="//STYLED FOR LIFE."></div>
+                <div class="jd-field jd-span2"><label class="jd-label" for="f-body">Short paragraph <span class="jd-hint" id="f-body-count">0 / 280</span></label><textarea class="jd-textarea" id="f-body" maxlength="280"></textarea></div>
+                <div class="jd-field"><label class="jd-label" for="f-corner_label">Bottom-left note</label><input class="jd-input" id="f-corner_label" maxlength="60" placeholder="/ New Collection 2026"></div>
+                <div class="jd-field"><label class="jd-label" for="f-stat_value">Highlight number</label><input class="jd-input" id="f-stat_value" maxlength="16" placeholder="280K"></div>
+                <div class="jd-field"><label class="jd-label" for="f-stat_label">Highlight label</label><input class="jd-input" id="f-stat_label" maxlength="40" placeholder="People we inspire"></div>
+                <div class="jd-field"><label class="jd-label" for="f-cta_label">Button label</label><input class="jd-input" id="f-cta_label" maxlength="30" placeholder="Shop now"></div>
+                <div class="jd-field jd-span2"><label class="jd-label" for="f-cta_url">Button link</label><input class="jd-input" id="f-cta_url" maxlength="300" placeholder="explore.html?category=Fashion"><span class="jd-hint">A page on this site (for example explore.html?sort=newest) or a full https:// link. Leave empty for no button.</span></div>
+                <div class="jd-field jd-span2"><label class="jd-label" for="f-image_url">Image link (https)</label><input class="jd-input" id="f-image_url" maxlength="600" inputmode="url" placeholder="https://"><span class="jd-hint">A transparent PNG cut-out works best. It is centred between the two headlines.</span><img class="jd-imgprev" id="f-img-prev" alt="" hidden></div>
+                <div class="jd-field"><label class="jd-label" for="f-image_style">Image style</label><select class="jd-select" id="f-image_style"><option value="cutout">Cut-out (headline behind)</option><option value="framed">Framed photo</option></select></div>
+                <div class="jd-field"><label class="jd-label" for="f-theme">Colour theme</label><select class="jd-select" id="f-theme"><option value="light">Light</option><option value="dark">Dark navy</option><option value="blue">JulaDirect blue</option></select></div>
+                <div class="jd-field"><label class="jd-label" for="f-starts_at">Show from (optional)</label><input class="jd-input" id="f-starts_at" type="datetime-local"></div>
+                <div class="jd-field"><label class="jd-label" for="f-ends_at">Show until (optional)</label><input class="jd-input" id="f-ends_at" type="datetime-local"></div>
+            </div>
+            <div class="jd-form-note" id="jd-form-status" role="status"></div>
+            <div class="jd-dialog__actions">
+                <button type="button" class="jd-btn jd-btn--secondary" id="jd-form-cancel">Cancel</button>
+                <button type="button" class="jd-btn jd-btn--soft" id="jd-form-preview">Save &amp; preview</button>
+                <button type="submit" class="jd-btn jd-btn--primary" id="jd-form-save">Save</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="jd-dialog" id="jd-confirm" aria-labelledby="jd-confirm-title">
+        <form method="dialog">
+            <div><h2 id="jd-confirm-title" style="font-size:1.3rem"></h2><p class="jd-muted" id="jd-confirm-text" style="margin-top:6px"></p></div>
+            <div class="jd-dialog__actions">
+                <button type="submit" class="jd-btn jd-btn--secondary" value="cancel">Cancel</button>
+                <button type="submit" class="jd-btn jd-btn--primary" value="ok" id="jd-confirm-ok">Confirm</button>
+            </div>
+        </form>
+    </dialog>
+
+    <div id="jd-footer"></div>
+    <div id="jd-bottomnav"></div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/jd-core.js"></script>
+    <script src="../js/jd-data.js"></script>
+    <script src="../js/jd-admin-banners.js"></script>
+</body>
+</html>

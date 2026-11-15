@@ -449,4 +449,62 @@ Deno.serve(async (req: Request) => {
         }
         if (session.status !== "pending") return json({ error: "This checkout session is no longer available." }, 409);
         const claim = await rest("juladirect_store_checkout_sessions?id=eq." + session.id +
-          "&status=eq.pending&order_id=is.nu
+          "&status=eq.pending&order_id=is.null", {
+            method: "PATCH",
+            headers: { Prefer: "return=representation" },
+            body: JSON.stringify({ status: "processing", buyer_id: auth.user.id, updated_at: new Date().toISOString() })
+          });
+        if (!claim?.length) return json({ error: "This checkout session is already being processed. Refresh and try again." }, 409);
+        try {
+          const cart = parseCart(session.cart);
+          const order = await rpcAsUser("create_order", {
+            p_items: cart,
+            p_fulfillment_type: input?.fulfillment_type === "pickup" ? "pickup" : "delivery",
+            p_delivery_address: input?.fulfillment_type === "pickup" ? null : safeString(input?.delivery_address, 500),
+            p_delivery_region: input?.fulfillment_type === "pickup" ? null : safeString(input?.delivery_region, 100),
+            p_delivery_area: input?.fulfillment_type === "pickup" ? null : safeString(input?.delivery_area, 100),
+            p_delivery_phone: digits(input?.delivery_phone),
+            p_delivery_instructions: input?.fulfillment_type === "pickup" ? null : safeString(input?.delivery_instructions, 500),
+            p_payment_method: method,
+            p_coupon_code: null
+          }, auth.token);
+          orderId = String(order?.id || "");
+          if (!uuid(orderId)) throw new Error("JulaDirect did not return a valid order reference.");
+          await rest("juladirect_store_checkout_sessions?id=eq." + session.id, {
+            method: "PATCH",
+            body: JSON.stringify({ status: "ordered", order_id: orderId, updated_at: new Date().toISOString() })
+          });
+        } catch (error) {
+          await rest("juladirect_store_checkout_sessions?id=eq." + session.id + "&order_id=is.null", {
+            method: "PATCH",
+            body: JSON.stringify({ status: "pending", buyer_id: null, updated_at: new Date().toISOString() })
+          }).catch(() => null);
+          throw error;
+        }
+      }
+      const paymentResponse = await fetch(supabaseUrl() + "/functions/v1/gambasket-modempay-checkout", {
+        method: "POST",
+        headers: {
+          apikey: serviceKey(),
+          Authorization: "Bearer " + auth.token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ order_id: orderId, payment_method: method, idempotency_key: crypto.randomUUID() })
+      });
+      const paymentData = await readJson(paymentResponse);
+      if (!paymentResponse.ok || !paymentData?.payment_url) {
+        return json({ error: paymentData?.error || "JulaDirect could not open ModemPay checkout. Your order remains unpaid and can be retried from this page." }, 502);
+      }
+      return json({ success: true, order_id: orderId, order_number: paymentData.order_number, payment_url: paymentData.payment_url });
+    }
+
+    return json({ error: "Unknown integration action." }, 400);
+  } catch (error) {
+    const message = String((error as Error)?.message || "The JulaDirect store integration could not complete this request.");
+    const status = /sign in|session is invalid/i.test(message) ? 401 :
+      /already connected|already linked|belongs to another/i.test(message) ? 409 :
+      /expired|already been used/i.test(message) ? 410 :
+      /not available|not published|not enabled/i.test(message) ? 409 : 400;
+    return json({ error: message.slice(0, 450) }, status);
+  }
+});

@@ -46,6 +46,7 @@
 
   JD.data = {
     PAGE_SIZE,
+    attachSellers,
     categoryIcon: id => ICONS[id] || "bag",
 
     /* Category and seller counts derived from live approved listings. */

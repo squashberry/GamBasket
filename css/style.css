@@ -1520,7 +1520,7 @@ html.dark .skeleton {
         display: block;
         position: relative;
         background:
-            linear-gradient(135deg, rgba(15, 23, 42, 0.82) 0%, rgba(7, 81, 74, 0.78) 50%, color-mix(in srgb, var(--blue) 72%, transparent) 100%),
+            linear-gradient(135deg, rgba(15, 23, 42, 0.82) 0%, rgba(30, 58, 138, 0.78) 50%, color-mix(in srgb, var(--blue) 72%, transparent) 100%),
             url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
         color: #ffffff;
         padding: 64px 32px 56px;

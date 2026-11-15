@@ -25,6 +25,13 @@
     .jd-website-note{margin-top:18px;padding:15px 17px;border-radius:13px;background:var(--surface-secondary,#f3f6fa);font-size:13px;line-height:1.65;color:var(--text-secondary,#64748b)}
     .jd-website-error{color:#b42318;background:#fff1f0;padding:12px 14px;border-radius:10px;display:none;margin:16px 0}
     .jd-website-link{display:inline-flex;align-items:center;gap:6px;color:#2563eb;font-weight:700;text-decoration:none}
+    .jd-site-list{display:grid;gap:12px;margin-top:14px;width:100%}
+    .jd-site-card{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px;border:1px solid var(--border,#e4e8ef);border-radius:13px;background:var(--surface-secondary,#f8fafc)}
+    .jd-site-info{min-width:0}.jd-site-info strong{display:block;overflow-wrap:anywhere}.jd-site-info small{display:block;color:var(--text-secondary,#64748b);margin-top:4px}
+    .jd-site-actions{display:flex;gap:9px;flex-wrap:wrap;flex:none}
+    .jd-site-actions a{font-size:13px;font-weight:750;text-decoration:none;border-radius:9px;padding:9px 12px;background:#eaf2ff;color:#1757b7}
+    .jd-site-actions a.live{background:#eaf7ef;color:#17643a}
+    @media(max-width:760px){.jd-site-card{align-items:flex-start;flex-direction:column}.jd-site-actions{width:100%}}
     @media(max-width:760px){.jd-website-grid{grid-template-columns:1fr}.jd-website-hero{padding:23px}.jd-website-mark{width:64px;height:64px;font-size:30px}.jd-website-wrap{padding-top:12px}}
   </style>
 </head>
@@ -88,9 +95,10 @@
               <div class="jd-website-actions"><a id="createWebsiteButton" class="seller-button seller-button-primary" href="https://squashberrypro.pages.dev/builder" target="_blank" rel="noopener noreferrer" aria-disabled="true">Create website ↗</a></div>
             </article>
             <article class="jd-website-card">
-              <h3>Manage my website</h3>
-              <p>Return to your published website project to update its design, products and checkout settings.</p>
-              <div class="jd-website-actions"><a id="manageWebsiteButton" class="seller-button seller-button-secondary" href="#" target="_blank" rel="noopener noreferrer" hidden>Manage website ↗</a><a id="publicWebsiteButton" class="jd-website-link" href="#" target="_blank" rel="noopener noreferrer" hidden>View live website ↗</a><span id="noWebsiteText" style="font-size:13px;color:var(--text-secondary)">No published website linked yet.</span></div>
+              <h3>My active store websites</h3>
+              <p>Every published SquashberryPro store connected to this seller account appears here. Open any site to manage its design, catalogue and checkout settings.</p>
+              <p id="noWebsiteText" style="font-size:13px;color:var(--text-secondary)">No active published SquashberryPro store website yet.</p>
+              <div id="publishedSitesList" class="jd-site-list" hidden></div>
             </article>
             <article class="jd-website-card">
               <h3>One inventory, everywhere</h3>

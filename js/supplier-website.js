@@ -9,7 +9,7 @@
     el.textContent = message;
     el.style.display = "block";
   };
-  async function invoke(action, token) {
+  async function invoke(action, token, extra = {}) {
     const response = await fetch(API, {
       method: "POST",
       headers: {
@@ -17,7 +17,7 @@
         Authorization: "Bearer " + token,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ action })
+      body: JSON.stringify({ action, ...extra })
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || "JulaDirect could not complete this request.");
@@ -40,13 +40,13 @@
     $("sellerLoading").hidden = true;
     $("sellerProtectedContent").hidden = false;
 
+    const returnTo = new URLSearchParams(window.location.search).get("return_to") || "/builder";
     const status = await invoke("seller_status", session.access_token);
     const dot = $("sellerConnectionDot");
     const label = $("sellerConnectionStatus");
     const business = $("sellerBusinessName");
     const create = $("createWebsiteButton");
-    const manage = $("manageWebsiteButton");
-    const publicLink = $("publicWebsiteButton");
+    const sitesList = $("publishedSitesList");
     const noSite = $("noWebsiteText");
     const connect = $("connectJulaButton");
 
@@ -59,15 +59,50 @@
       create.style.pointerEvents = "auto";
       connect.textContent = "Account connected";
       connect.disabled = true;
-      const site = status.published_site;
-      if (site?.site_id) {
-        manage.href = "https://squashberrypro.pages.dev/builder/site/" + encodeURIComponent(site.site_id);
-        manage.hidden = false;
+      const sites = Array.isArray(status.published_sites)
+        ? status.published_sites
+        : (status.published_site ? [status.published_site] : []);
+      sitesList.replaceChildren();
+      if (sites.length) {
         noSite.hidden = true;
-        if (site.public_url) {
-          publicLink.href = site.public_url;
-          publicLink.hidden = false;
+        sitesList.hidden = false;
+        for (const site of sites) {
+          if (!site?.site_id) continue;
+          const row = document.createElement("article");
+          row.className = "jd-site-card";
+          const info = document.createElement("div");
+          info.className = "jd-site-info";
+          const name = document.createElement("strong");
+          name.textContent = site.site_name || "Store website";
+          const slug = document.createElement("small");
+          slug.textContent = site.site_slug ? "squashberrypro.pages.dev/" + site.site_slug : "Published on SquashberryPro";
+          info.append(name, slug);
+          const actions = document.createElement("div");
+          actions.className = "jd-site-actions";
+          const manageLink = document.createElement("a");
+          manageLink.href = "https://squashberrypro.pages.dev/builder/site/" + encodeURIComponent(site.site_id);
+          manageLink.target = "_blank";
+          manageLink.rel = "noopener noreferrer";
+          manageLink.textContent = "Manage";
+          actions.appendChild(manageLink);
+          try {
+            const liveUrl = new URL(site.public_url);
+            if (liveUrl.origin === "https://squashberrypro.pages.dev") {
+              const liveLink = document.createElement("a");
+              liveLink.className = "live";
+              liveLink.href = liveUrl.href;
+              liveLink.target = "_blank";
+              liveLink.rel = "noopener noreferrer";
+              liveLink.textContent = "View live site ↗";
+              actions.appendChild(liveLink);
+            }
+          } catch { /* Skip malformed public URLs. */ }
+          row.append(info, actions);
+          sitesList.appendChild(row);
         }
+      } else {
+        sitesList.hidden = true;
+        noSite.hidden = false;
       }
     } else {
       dot.classList.remove("ok");
@@ -83,7 +118,7 @@
       connect.textContent = "Preparing secure connection…";
       $("sellerPageError").style.display = "none";
       try {
-        const result = await invoke("start_link", session.access_token);
+        const result = await invoke("start_link", session.access_token, { return_to: returnTo });
         window.location.assign(result.connect_url);
       } catch (error) {
         showError(error instanceof Error ? error.message : "Could not start account linking.");

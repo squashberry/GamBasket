@@ -92,6 +92,17 @@ function safeString(value: unknown, max = 160): string {
 function digits(value: unknown): string {
   return String(value ?? "").replace(/[^\d]/g, "").slice(0, 20);
 }
+function safeProReturnTo(value: unknown): string {
+  const fallback = "/builder";
+  try {
+    const target = new URL(String(value || fallback), "https://squashberrypro.pages.dev");
+    if (target.origin !== "https://squashberrypro.pages.dev") return fallback;
+    if (target.pathname !== "/builder" && !target.pathname.startsWith("/builder/")) return fallback;
+    return target.pathname + target.search + target.hash;
+  } catch {
+    return fallback;
+  }
+}
 function parseCart(value: unknown): Array<{ product_id: string; quantity: number }> {
   if (!Array.isArray(value) || value.length < 1 || value.length > 25) {
     throw new Error("Your basket must contain between 1 and 25 products.");
@@ -229,8 +240,10 @@ Deno.serve(async (req: Request) => {
           method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(row)
         });
       }
-      const url = "https://squashberrypro.pages.dev/integrations/juladirect?link_code=" + encodeURIComponent(code);
-      return json({ success: true, link_code: code, expires_at: expires, connect_url: url, seller_name: seller.business_name || "Your JulaDirect store" });
+      const returnTo = safeProReturnTo(input?.return_to);
+      const url = "https://squashberrypro.pages.dev/integrations/juladirect?link_code=" +
+        encodeURIComponent(code) + "&return_to=" + encodeURIComponent(returnTo);
+      return json({ success: true, link_code: code, expires_at: expires, connect_url: url, return_to: returnTo, seller_name: seller.business_name || "Your JulaDirect store" });
     }
 
     if (action === "complete_link") {
@@ -275,11 +288,18 @@ Deno.serve(async (req: Request) => {
       const rows = await rest("juladirect_store_connections?select=seller_user_id,pro_user_id,status&seller_user_id=eq." +
         encodeURIComponent(auth.user.id) + "&limit=1");
       const link = rows?.[0];
-      if (!link || link.status !== "active" || !link.pro_user_id) return json({ connected: false, published_site: null });
+      if (!link || link.status !== "active" || !link.pro_user_id) {
+        return json({ connected: false, published_site: null, published_sites: [] });
+      }
       const seller = await sellerProfile(auth.user.id);
-      const sites = await rest("juladirect_store_sites?select=site_id,site_slug,site_name,public_url,is_published,updated_at&seller_user_id=eq." +
-        encodeURIComponent(auth.user.id) + "&is_published=eq.true&order=updated_at.desc&limit=1");
-      return json({ connected: true, seller_name: seller.business_name || "JulaDirect seller", published_site: sites?.[0] || null });
+      const sites = await rest("juladirect_store_sites?select=site_id,site_slug,site_name,public_url,is_published,updated_at,jula_checkout_enabled,whatsapp_checkout_enabled&seller_user_id=eq." +
+        encodeURIComponent(auth.user.id) + "&is_published=eq.true&order=updated_at.desc&limit=50");
+      return json({
+        connected: true,
+        seller_name: seller.business_name || "JulaDirect seller",
+        published_site: sites?.[0] || null,
+        published_sites: sites || []
+      });
     }
 
     if (action === "pro_status") {

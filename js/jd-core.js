@@ -283,13 +283,39 @@
       '<div><h3>Support</h3><ul><li><a href="help.html">Help centre</a></li><li><a href="customer-care.html">Customer care</a></li><li><a href="security.html">Security</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="about.html">About JulaDirect</a></li></ul></div>' +
       '</div><div class="jd-footer__base"><span>&copy; ' + new Date().getFullYear() + " JulaDirect. Made in The Gambia.</span><span>Trade. Shop. Connect.</span></div></div></footer>";
   }
-  function bottomNavHtml(active) {
-    const item = (key, href, icon, label, extra) => '<a href="' + href + '"' + (active === key ? ' aria-current="page"' : "") + ">" + JD.icon(icon, 22) + "<span>" + label + "</span>" + (extra || "") + "</a>";
-    return '<nav class="jd-bottomnav" aria-label="Primary">' +
-      item("home", "index.html", "home", "Home") + item("explore", "explore.html", "grid", "Explore") +
-      item("wishlist", "wishlist.html", "heart", "Wishlist") +
-      item("cart", "cart.html", "cart", "Cart", '<em class="jd-badge-count" data-cart-count hidden>0</em>') +
-      item("account", "me.html", "user", "Account") + "</nav>";
+  /* Floating, expanding tab navigation. Collapsed: a pill showing the current
+     section and a toggle. Expanded: every primary tab in place. */
+  const FNAV_TABS = [
+    ["home", "index.html", "home", "Home"],
+    ["explore", "explore.html", "grid", "Explore"],
+    ["wishlist", "wishlist.html", "heart", "Wishlist"],
+    ["cart", "cart.html", "cart", "Cart"],
+    ["account", "me.html", "user", "Account"]
+  ];
+  function floatingNavHtml(active) {
+    const cur = FNAV_TABS.find(t => t[0] === active);
+    const tabs = FNAV_TABS.map(t =>
+      '<a class="jd-fnav__tab" href="' + t[1] + '"' + (active === t[0] ? ' aria-current="page"' : "") + ">" + JD.icon(t[2], 20) + "<span>" + t[3] + "</span>" +
+      (t[0] === "cart" ? '<em class="jd-badge-count" data-cart-count hidden>0</em>' : "") + "</a>"
+    ).join("");
+    return '<nav class="jd-fnav" id="jd-fnav" aria-label="Primary">' +
+      '<span class="jd-fnav__current">' + JD.icon(cur ? cur[2] : "grid", 20) + "<span>" + (cur ? cur[3] : "Menu") + "</span></span>" +
+      '<div class="jd-fnav__tabs" id="jd-fnav-tabs">' + tabs + "</div>" +
+      '<button class="jd-fnav__toggle" id="jd-fnav-toggle" type="button" aria-expanded="false" aria-controls="jd-fnav-tabs" aria-label="Open navigation">' + JD.icon("grid", 22) + "</button></nav>";
+  }
+  function bindFloatingNav() {
+    const nav = document.getElementById("jd-fnav");
+    const btn = document.getElementById("jd-fnav-toggle");
+    if (!nav || !btn) return;
+    const set = open => {
+      nav.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      btn.innerHTML = JD.icon(open ? "close" : "grid", 22);
+    };
+    btn.addEventListener("click", e => { e.stopPropagation(); set(!nav.classList.contains("is-open")); });
+    document.addEventListener("click", e => { if (nav.classList.contains("is-open") && !nav.contains(e.target)) set(false); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && nav.classList.contains("is-open")) { set(false); btn.focus(); } });
   }
 
   async function renderAccount() {
@@ -352,7 +378,7 @@
     const b = document.getElementById("jd-bottomnav");
     if (h) h.innerHTML = headerHtml();
     if (f) f.outerHTML = footerHtml();
-    if (b) b.outerHTML = bottomNavHtml(o.active || "");
+    if (b) { b.outerHTML = floatingNavHtml(o.active || ""); bindFloatingNav(); }
     const q = document.getElementById("jd-q");
     if (q) q.value = JD.params().get("q") || "";
     renderAccount();

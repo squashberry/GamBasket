@@ -14,6 +14,8 @@
             }
         })();
     </script>
+    <link rel="stylesheet" href="css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body>
 
@@ -60,7 +62,7 @@
     <!-- DESKTOP MARKETPLACE APPLICATION HEADER -->
     <header class="desktop-app-header">
         <a href="index.html" class="desktop-app-brand">
-            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--blue);width:20px;height:20px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </a>
         <div class="desktop-app-search">
             <a href="explore.html" class="desktop-search-fake-input">
@@ -133,12 +135,12 @@
         <!-- HEADER ROW -->
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
             <div>
-                <p class="section-eyebrow" style="margin-bottom: 4px; letter-spacing: 1px; font-weight: 800; color: #2563eb;">SAVED PRODUCTS</p>
+                <p class="section-eyebrow" style="margin-bottom: 4px; letter-spacing: 1px; font-weight: 800; color: var(--blue);">SAVED PRODUCTS</p>
                 <h1 style="font-size: 26px; font-weight: 800; color: var(--text); margin: 0;">My Wishlist</h1>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
                 <span id="wishlistCountBadge" style="font-size: 13px; font-weight: 700; color: var(--text-secondary); background: var(--surface-secondary); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);">Loading...</span>
-                <a href="explore.html" style="font-size: 13px; font-weight: 700; color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <a href="explore.html" style="font-size: 13px; font-weight: 700; color: var(--blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
                     <span>Explore Products</span>
                     <svg class="ui-icon" style="width: 14px; height: 14px;"><use href="#icon-search"></use></svg>
                 </a>
@@ -266,7 +268,7 @@
                     if (countBadge) countBadge.textContent = "Sign In Required";
                     container.innerHTML = `
                         <div style="text-align: center; padding: 70px 20px; background: var(--surface); border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-small); max-width: 480px; margin: 20px auto;">
-                            <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
+                            <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: var(--blue); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
                                 <svg class="ui-icon" style="width: 32px; height: 32px;"><use href="#icon-heart"></use></svg>
                             </div>
                             <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 8px; color: var(--text);">Sign in to view your wishlist</h2>
@@ -274,7 +276,7 @@
                                 Please log in to see your saved items, track price updates, and access your wishlist across all your devices.
                             </p>
                             <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                                <a href="login.html?redirect=wishlist.html" class="primary-btn" style="padding: 12px 26px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: #2563eb; color: #fff;">
+                                <a href="login.html?redirect=wishlist.html" class="primary-btn" style="padding: 12px 26px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: var(--blue); color: #fff;">
                                     Log In
                                 </a>
                                 <a href="signup.html?redirect=wishlist.html" class="secondary-btn" style="padding: 12px 24px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: 14px; border: 1px solid var(--border); color: var(--text); background: var(--surface-secondary);">
@@ -302,14 +304,14 @@
                     if (!items || items.length === 0) {
                         container.innerHTML = `
                             <div style="text-align: center; padding: 70px 20px; background: var(--surface); border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-small); max-width: 500px; margin: 20px auto;">
-                                <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
+                                <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: var(--blue); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
                                     <svg class="ui-icon" style="width: 32px; height: 32px;"><use href="#icon-heart"></use></svg>
                                 </div>
                                 <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 8px; color: var(--text);">Your wishlist is empty</h2>
                                 <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0 auto 24px; max-width: 340px;">
                                     Save products you love while exploring the JulaDirect marketplace and they will appear here.
                                 </p>
-                                <a href="explore.html" class="primary-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: #2563eb; color: #fff;">
+                                <a href="explore.html" class="primary-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: var(--blue); color: #fff;">
                                     <svg class="ui-icon" style="width: 16px; height: 16px;"><use href="#icon-search"></use></svg>
                                     <span>Explore Products</span>
                                 </a>
@@ -345,13 +347,13 @@
                                             ${product.name}
                                         </h3>
                                         
-                                        <div style="font-size: 18px; font-weight: 800; color: #2563eb; margin-bottom: 8px;">
+                                        <div style="font-size: 18px; font-weight: 800; color: var(--blue); margin-bottom: 8px;">
                                             D ${formatPrice(product.price)}
                                         </div>
 
                                         <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; gap: 6px;">
                                             <span style="display: inline-flex; align-items: center; gap: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                                <svg class="ui-icon" style="width: 12px; height: 12px; flex-shrink: 0; color: #2563eb;"><use href="#icon-pin"></use></svg>
+                                                <svg class="ui-icon" style="width: 12px; height: 12px; flex-shrink: 0; color: var(--blue);"><use href="#icon-pin"></use></svg>
                                                 <span>${product.location || "Greater Banjul"}</span>
                                             </span>
                                             <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 600; background: var(--surface-secondary); padding: 2px 8px; border-radius: 6px; flex-shrink: 0;">
@@ -362,7 +364,7 @@
 
                                     <!-- Actions -->
                                     <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border);">
-                                        <button onclick="window.addWishlistToCart('${product.id}')" style="flex: 1; padding: 10px 12px; border-radius: 10px; background: #2563eb; color: #ffffff; font-size: 13px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                                        <button onclick="window.addWishlistToCart('${product.id}')" style="flex: 1; padding: 10px 12px; border-radius: 10px; background: var(--blue); color: #ffffff; font-size: 13px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
                                             <svg class="ui-icon" style="width: 14px; height: 14px;"><use href="#icon-cart"></use></svg>
                                             <span>Add to Cart</span>
                                         </button>
@@ -390,7 +392,7 @@
                             <p style="color: var(--text-secondary); font-size: 13px; margin: 0 auto 20px; max-width: 300px;">
                                 Please check your connection and try again.
                             </p>
-                            <button onclick="window.renderWishlistPage()" class="primary-btn" style="padding: 11px 24px; border-radius: 10px; font-weight: 700; border: none; background: #2563eb; color: #fff; cursor: pointer;">
+                            <button onclick="window.renderWishlistPage()" class="primary-btn" style="padding: 11px 24px; border-radius: 10px; font-weight: 700; border: none; background: var(--blue); color: #fff; cursor: pointer;">
                                 Try Again
                             </button>
                         </div>
@@ -460,5 +462,6 @@
             }
         })();
     </script>
+    <script src="js/jd-ui.js" defer></script>
 </body>
 </html>

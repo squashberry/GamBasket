@@ -177,8 +177,91 @@
     if (e.target.closest("#jd-recent-clear")) { JD.recent.clear(); $("jd-recent-sec").hidden = true; JD.toast("Recently visited cleared", "ok"); }
   });
 
+  /* ---------- takeover banner (admin-managed, one live at a time) ---------- */
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const safeHref = u => {
+    const v = String(u || "").trim();
+    return /^https:\/\/[^\s]+$/.test(v) || /^[A-Za-z0-9_.\/?=&#%-]+$/.test(v) ? v : "";
+  };
+  function lines(text, start) {
+    return String(text || "").split(/\r?\n/).map(t => t.trim()).filter(Boolean).slice(0, 3)
+      .map((t, i) => '<span class="jd-to__line"><span style="--d:' + (start + i * 0.12).toFixed(2) + 's">' + JD.esc(t) + "</span></span>").join("");
+  }
+  function countUp(el, raw) {
+    const m = String(raw).match(/^([\d.,]+)(.*)$/);
+    if (!m || reduceMotion) { el.textContent = raw; return; }
+    const target = parseFloat(m[1].replace(/,/g, ""));
+    if (!Number.isFinite(target)) { el.textContent = raw; return; }
+    const decimals = (m[1].split(".")[1] || "").length;
+    const t0 = performance.now() + 1100;
+    const fmt = v => v.toLocaleString("en-GB", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    el.textContent = fmt(0) + m[2];
+    (function tick(now) {
+      const p = Math.min(1, Math.max(0, (now - t0) / 1600));
+      el.textContent = fmt(target * (1 - Math.pow(1 - p, 3))) + m[2];
+      if (p < 1) requestAnimationFrame(tick); else el.textContent = m[1] + m[2];
+    })(performance.now());
+  }
+  function parallax(section) {
+    if (reduceMotion || !window.matchMedia("(pointer: fine)").matches) return;
+    const par = section.querySelector(".jd-to__par");
+    if (!par) return;
+    let raf = 0;
+    section.addEventListener("pointermove", e => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const r = section.getBoundingClientRect();
+        const dx = (e.clientX - r.left) / r.width - 0.5;
+        const dy = (e.clientY - r.top) / r.height - 0.5;
+        par.style.setProperty("--px", (dx * 22).toFixed(1) + "px");
+        par.style.setProperty("--py", (dy * 14).toFixed(1) + "px");
+      });
+    });
+    section.addEventListener("pointerleave", () => { par.style.setProperty("--px", "0px"); par.style.setProperty("--py", "0px"); });
+  }
+  function renderTakeover(b, preview) {
+    const sec = $("jd-takeover");
+    const img = JD.safeUrl(b.image_url);
+    const href = safeHref(b.cta_url);
+    const ctaLabel = (b.cta_label || "Shop now");
+    const external = /^https:/.test(href);
+    sec.setAttribute("data-theme", b.theme || "light");
+    sec.innerHTML = '<div class="jd-to__inner">' +
+      '<h1 class="jd-to__head"><span class="jd-to__l">' + lines(b.headline_left, 0.15) + "</span>" + (b.headline_right ? '<span class="jd-to__r">' + lines(b.headline_right, 0.4) + "</span>" : "") + "</h1>" +
+      (img ? '<div class="jd-to__figure" data-style="' + JD.esc(b.image_style || "cutout") + '"><div class="jd-to__par"><img class="jd-to__img" src="' + JD.esc(img) + '" alt="" decoding="async"></div></div>' : "") +
+      (b.tagline ? '<p class="jd-to__tag jd-to__fade" style="--d:.9s">' + JD.esc(b.tagline) + "</p>" : "") +
+      (b.kicker ? '<p class="jd-to__kicker jd-to__fade" style="--d:1s">' + JD.esc(b.kicker) + "</p>" : "") +
+      (b.body ? '<p class="jd-to__body jd-to__fade" style="--d:1.1s">' + JD.esc(b.body) + "</p>" : "") +
+      (b.corner_label ? '<p class="jd-to__corner jd-to__fade" style="--d:1.2s">' + JD.esc(b.corner_label) + "</p>" : "") +
+      (b.stat_value ? '<div class="jd-to__stat jd-to__fade" style="--d:1.3s"><strong id="jd-to-stat">' + JD.esc(b.stat_value) + "</strong>" + (b.stat_label ? "<span>" + JD.esc(b.stat_label) + "</span>" : "") + "</div>" : "") +
+      (href ? '<a class="jd-to__cta jd-to__fade" style="--d:1.4s" href="' + JD.esc(href) + '"' + (external ? ' rel="noopener"' : "") + "><i>" + JD.icon("arrowUpRight", 24) + "</i><span>" + JD.esc(ctaLabel) + "</span></a>" : "") +
+      '<svg class="jd-to__orn" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2c2.6 0 4.4 2.2 4.4 5 0 1.8-.8 3.2-2 4.4 1.2-.4 2.6-.4 4-.1 2.5.6 4.3 2.9 3.5 5.4-.6 2.5-2.9 4.1-5.4 3.6-1.5-.3-2.8-1.1-3.7-2.2.5 1.4.7 2.8.3 4.2-.8 2.5-3.2 4-5.7 3.2-2.5-.8-3.9-3.2-3.3-5.7.4-1.5 1.3-2.7 2.5-3.5-1.5.1-2.9-.3-4-1.2C3.7 14.600 3.600 11.800 5.400 10c1.800-1.800 4.600-1.900 6.600-.4 1 .8 1.700 1.800 2 3-.3-1.500-.2-3 .6-4.300C15.500 6 15.700 4 16 2Z"/></svg>' +
+      "</div>";
+    if (preview) {
+      const pill = document.createElement("div");
+      pill.className = "jd-preview";
+      pill.innerHTML = '<span>Previewing <strong>' + JD.esc(b.name) + '</strong> (' + (b.is_active ? "live" : "not live") + ')</span><a href="admin/banners.html">Back to banners</a>';
+      document.body.appendChild(pill);
+    }
+    const stat = document.getElementById("jd-to-stat");
+    if (stat) countUp(stat, b.stat_value);
+    parallax(sec);
+  }
+  async function bootBanner() {
+    const pv = JD.params().get("preview_banner");
+    let banner = pv ? await JD.data.bannerById(pv) : null;
+    const preview = !!banner;
+    if (!banner) banner = await JD.data.activeBanner();
+    if (!banner) { JD.takeover.set(null); $("jd-takeover").innerHTML = ""; return; }
+    JD.takeover.set(banner.theme || "light");
+    if (preview) { try { sessionStorage.setItem("jd_to_hint", "0"); } catch (e) { /* ignore */ } }
+    renderTakeover(banner, preview);
+  }
+
   JD.mountShell({ active: "home" });
   JD.bindProductActions(document);
+  bootBanner();
   renderTrust();
   loadStats();
   loadNew();

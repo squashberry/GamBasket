@@ -30,30 +30,50 @@
         </section>
 
         <div class="jd-container">
+            <section class="jd-mbanner" aria-label="New arrivals">
+                <div>
+                    <small>New arrivals</small>
+                    <h2>Fresh from local sellers</h2>
+                    <p>The latest listings across The Gambia.</p>
+                    <a class="jd-btn jd-btn--onblue jd-btn--sm" href="explore.html?sort=newest">Shop now</a>
+                </div>
+                <div id="jd-mbanner-img"></div>
+            </section>
+
             <div class="jd-stats" id="jd-stats" aria-live="polite" hidden></div>
 
             <section class="jd-section" id="jd-cats-sec" aria-labelledby="jd-cats-title">
                 <div class="jd-section__head">
-                    <div><h2 id="jd-cats-title">Shop by category</h2><p>Browse what sellers are listing right now.</p></div>
-                    <a class="jd-link" href="explore.html">All products <span class="jd-ico-arrow"></span></a>
+                    <div><h2 id="jd-cats-title">Popular categories</h2><p>Browse what sellers are listing right now.</p></div>
+                    <a class="jd-link" href="explore.html">See all <span class="jd-ico-arrow"></span></a>
                 </div>
                 <div class="jd-cats" id="jd-cats"></div>
+            </section>
+
+            <section class="jd-section" id="jd-pop-sec" aria-labelledby="jd-pop-title">
+                <div class="jd-section__head">
+                    <div><h2 id="jd-pop-title">Best sellers</h2><p>Ranked by completed sales.</p></div>
+                    <a class="jd-link" href="explore.html?sort=popular">See all <span class="jd-ico-arrow"></span></a>
+                </div>
+                <div id="jd-pop-state"></div>
+                <div class="jd-flash" id="jd-flash"></div>
+                <div class="jd-grid jd-only-d" id="jd-pop"></div>
             </section>
 
             <section class="jd-section" aria-labelledby="jd-new-title">
                 <div class="jd-section__head">
                     <div><h2 id="jd-new-title">New arrivals</h2><p>The latest listings from sellers across The Gambia.</p></div>
-                    <a class="jd-link" href="explore.html?sort=newest">See all new <span class="jd-ico-arrow"></span></a>
+                    <a class="jd-link" href="explore.html?sort=newest">See all <span class="jd-ico-arrow"></span></a>
                 </div>
                 <div class="jd-grid" id="jd-new"></div>
             </section>
 
-            <section class="jd-section" aria-labelledby="jd-pop-title">
+            <section class="jd-section" id="jd-recent-sec" aria-labelledby="jd-recent-title" hidden>
                 <div class="jd-section__head">
-                    <div><h2 id="jd-pop-title">Popular right now</h2><p>Best-selling products, ranked by completed sales.</p></div>
-                    <a class="jd-link" href="explore.html?sort=popular">See all popular <span class="jd-ico-arrow"></span></a>
+                    <div><h2 id="jd-recent-title">Recently visited</h2><p>Pick up where you left off.</p></div>
+                    <button type="button" class="jd-link" id="jd-recent-clear">Clear</button>
                 </div>
-                <div class="jd-grid" id="jd-pop"></div>
+                <div class="jd-recent" id="jd-recent"></div>
             </section>
 
             <section class="jd-section" id="jd-sellers-sec" aria-labelledby="jd-sellers-title" hidden>
@@ -76,7 +96,7 @@
                 </div>
             </section>
 
-            <section class="jd-section" aria-labelledby="jd-how-title">
+            <section class="jd-section jd-only-d" aria-labelledby="jd-how-title">
                 <div class="jd-section__head"><h2 id="jd-how-title">How JulaDirect works</h2><a class="jd-link" href="how-it-works.html">Learn more <span class="jd-ico-arrow"></span></a></div>
                 <div class="jd-steps">
                     <div class="jd-step"><div class="jd-step__n">1</div><h3>Find what you need</h3><p>Search or browse categories, filter by price and location, compare listings and save favourites to your wishlist.</p></div>

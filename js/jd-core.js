@@ -76,6 +76,8 @@
     wallet: '<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M16 13.5h.01"/>',
     bookmark: '<path d="M7 4.5h10a1 1 0 0 1 1 1V20l-6-3.8L6 20V5.5a1 1 0 0 1 1-1Z"/>'
   };
+  PATHS.menu = '<path d="M4 7h16M4 12h16M4 17h10"/>';
+  PATHS.arrowUpRight = '<path d="M7 17 17 7M8 7h9v9"/>';
   JD.icon = (name, size) => {
     const s = size || 20;
     return '<svg class="jd-i" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (PATHS[name] || "") + "</svg>";
@@ -219,25 +221,27 @@
     const s = p._seller || {};
     const stock = Number(p.stock || 0);
     const sold = Number(p.sales_count || 0);
+    const price = JD.money(p.price, p.currency);
     const flags = [];
     if (stock <= 0) flags.push('<span class="jd-badge jd-badge--bad">Sold out</span>');
     else if (stock <= 3) flags.push('<span class="jd-badge jd-badge--warn">Only ' + stock + " left</span>");
-    if (p.delivery_available === true) flags.push('<span class="jd-badge">' + JD.icon("truck", 14) + "Delivery</span>");
+    if (sold >= 10) flags.push('<span class="jd-badge jd-badge--top">Best seller</span>');
+    if (s.verified) flags.push('<span class="jd-badge jd-badge--verified">' + JD.icon("shield", 13) + "Verified</span>");
+    if (p.delivery_available === true) flags.push('<span class="jd-badge jd-badge--delivery">' + JD.icon("truck", 14) + "Delivery</span>");
     return '<article class="jd-pcard">' +
       '<a class="jd-pcard__media" href="' + href + '" tabindex="-1" aria-hidden="true"><img src="' + JD.esc(img) + '" alt="" loading="lazy" decoding="async">' +
       (flags.length ? '<span class="jd-pcard__flags">' + flags.join("") + "</span>" : "") + "</a>" +
       '<button class="jd-pcard__fav" type="button" data-wish="' + id + '" aria-pressed="false" aria-label="Save to wishlist">' + JD.icon("heart", 19) + "</button>" +
+      '<button type="button" class="jd-pcard__cmp jd-pcard__cmp--float" data-compare="' + id + '" aria-pressed="false" aria-label="Add to comparison" title="Compare">' + JD.icon("scale", 17) + "</button>" +
       '<div class="jd-pcard__body">' +
-      '<div class="jd-pcard__price">' + JD.esc(JD.money(p.price, p.currency)) + "</div>" +
+      '<div class="jd-pcard__price">' + JD.esc(price) + "</div>" +
       '<a class="jd-pcard__title" href="' + href + '">' + JD.esc(p.title) + "</a>" +
       '<div class="jd-pcard__meta"><span>' + JD.icon("pin", 13) + JD.esc(p.location || "The Gambia") + "</span>" + (p.condition ? "<span>" + JD.esc(p.condition) + "</span>" : "") + "</div>" +
+      '<button type="button" class="jd-pcard__buy" data-add="' + id + '" aria-label="' + (stock <= 0 ? "Sold out" : "Add " + JD.esc(p.title) + " to cart, " + JD.esc(price)) + '"' + (stock <= 0 ? " disabled" : "") + ">" + JD.icon("bag", 17) + "<span>" + (stock <= 0 ? "Sold out" : JD.esc(price)) + "</span></button>" +
       '<div class="jd-pcard__foot"><span class="jd-pcard__sold">' + (sold > 0 ? sold.toLocaleString("en-GB") + " sold" : JD.esc(p.condition || "New listing")) + "</span>" +
       '<button type="button" class="jd-pcard__add" data-add="' + id + '" aria-label="Add ' + JD.esc(p.title) + ' to cart"' + (stock <= 0 ? " disabled" : "") + ">" + JD.icon("plus", 18) + "</button></div>" +
       '<div class="jd-pcard__seller">' + (s.verified ? JD.icon("shield", 14) : "") + "<span>" + JD.esc(s.name || "JulaDirect member") + "</span></div>" +
-      "</div>" +
-      '<div class="jd-pcard__actions"><button type="button" class="jd-btn jd-btn--soft jd-btn--sm jd-btn--block" data-add="' + id + '"' + (stock <= 0 ? " disabled" : "") + ">" + JD.icon("cart", 16) + (stock <= 0 ? "Unavailable" : "Add to cart") + "</button>" +
-      '<button type="button" class="jd-pcard__cmp" data-compare="' + id + '" aria-pressed="false" aria-label="Add to comparison" title="Compare">' + JD.icon("scale", 17) + "</button></div>" +
-      "</article>";
+      "</div></article>";
   };
 
   JD.bindProductActions = root => {
@@ -280,6 +284,12 @@
       '<div class="jd-top"><div class="jd-container jd-top__in"><span>' + JD.icon("truck", 15) + 'Delivery across Greater Banjul &middot; Pay on delivery</span>' +
       '<nav class="jd-top__links" aria-label="Quick links"><a href="supplier/index.html">Sell on JulaDirect</a><a href="help.html">Help</a><a href="customer-care.html">Customer care</a></nav></div></div>' +
       '<header class="jd-header">' +
+      /* takeover bar: shown only while a full-screen homepage banner is live */
+      '<div class="jd-tbar jd-container"><button type="button" class="jd-tbtn" id="jd-menu-btn" aria-label="Open menu" aria-haspopup="dialog">' + JD.icon("menu", 22) + "</button>" +
+      '<a class="jd-tbar__logo" href="index.html" aria-label="JulaDirect home"><span class="jd-logo__word"><b>Jula</b>Direct</span></a>' +
+      '<div class="jd-tbar__actions"><button type="button" class="jd-tbtn" id="jd-search-btn" aria-label="Search" aria-haspopup="dialog">' + JD.icon("search", 21) + "</button>" +
+      '<a class="jd-tbtn" href="cart.html" aria-label="Cart">' + JD.icon("cart", 21) + '<em class="jd-badge-count" data-cart-count hidden>0</em></a>' +
+      '<a class="jd-tbtn" href="me.html" aria-label="Account">' + JD.icon("user", 21) + "</a></div></div>" +
       /* mobile app header */
       '<div class="jd-mhead jd-container"><div class="jd-mhead__row">' +
       '<button class="jd-area" type="button" id="jd-area-btn" aria-haspopup="dialog"><span class="jd-roundbtn">' + JD.icon("pin", 22) + '</span><span class="jd-area__txt"><small>Shop in</small><strong id="jd-area-label">All Gambia</strong></span>' + JD.icon("chevronDown", 18) + "</button>" +
@@ -289,13 +299,14 @@
       '<a class="jd-msearch__filter" href="explore.html#filters" aria-label="Open filters">' + JD.icon("filter", 22) + "</a></form></div>" +
       /* desktop header */
       '<div class="jd-container jd-header__row">' +
-      '<a class="jd-logo" href="index.html" aria-label="JulaDirect home">' + JD.logoMark(36) + '<span class="jd-logo__word"><b>Jula</b>Direct</span></a>' +
+      '<a class="jd-logo" href="index.html" aria-label="JulaDirect home"><span class="jd-logo__word"><b>Jula</b>Direct</span></a>' +
       '<form class="jd-search" role="search" action="explore.html" method="get"><label class="jd-sr" for="jd-q">Search JulaDirect</label>' +
-      '<input id="jd-q" name="q" type="search" placeholder="Search products, brands and sellers" autocomplete="off" maxlength="100">' +
+      '<input id="jd-q" name="q" type="search" placeholder="Search" autocomplete="off" maxlength="100">' +
       '<button class="jd-search__btn" type="submit" aria-label="Search">' + JD.icon("search", 20) + "</button></form>" +
-      '<nav class="jd-actions" aria-label="Wishlist, cart and account">' +
-      '<a class="jd-act jd-act--wish" href="wishlist.html">' + JD.icon("heart", 22) + "<span>Wishlist</span></a>" +
-      '<a class="jd-act" href="cart.html" aria-label="Cart">' + JD.icon("cart", 22) + '<span>Cart</span><em class="jd-badge-count" data-cart-count hidden>0</em></a>' +
+      '<nav class="jd-actions" aria-label="Orders, wishlist, cart and account">' +
+      '<a class="jd-act jd-act--orders" href="orders.html">' + JD.icon("package", 20) + "<span>Orders</span></a>" +
+      '<a class="jd-act jd-act--wish" href="wishlist.html">' + JD.icon("heart", 20) + "<span>Wishlist</span></a>" +
+      '<a class="jd-act" href="cart.html" aria-label="Cart">' + JD.icon("cart", 20) + '<span>Cart</span><em class="jd-badge-count" data-cart-count hidden>0</em></a>' +
       '<div class="jd-account" id="jd-account"></div></nav></div>' +
       '<div class="jd-catrail"><div class="jd-container jd-catrail__in" id="jd-catrail" role="navigation" aria-label="Categories"></div></div></header>';
   }
@@ -401,7 +412,7 @@
     if (roles.includes("seller") || isAdmin) work += link("supplier/index.html", "store", "Seller Centre");
     if (roles.includes("delivery_worker") || isAdmin) work += link("delivery/index.html", "truck", "Courier workspace");
     if (roles.includes("marketplace_worker") || isAdmin) work += link("worker/index.html", "shield", "Operations centre");
-    if (isAdmin) work += link("admin/index.html", "settings", "Administration");
+    if (isAdmin) work += link("admin/index.html", "settings", "Administration") + link("admin/banners.html", "tag", "Homepage banners");
     box.innerHTML = '<button class="jd-act" type="button" id="jd-account-btn" aria-haspopup="true" aria-expanded="false" aria-controls="jd-menu"><span class="jd-avatar" aria-hidden="true">' + JD.esc(name.charAt(0).toUpperCase()) + "</span><span>" + JD.esc(name) + "</span></button>" +
       '<div class="jd-menu" id="jd-menu" hidden><div class="jd-menu__label">My JulaDirect</div>' +
       link("me.html", "user", "My account") + link("orders.html", "package", "Orders &amp; tracking") + link("wishlist.html", "heart", "Wishlist") +
@@ -432,6 +443,70 @@
     rail.innerHTML = html;
   }
 
+  /* ---------- homepage takeover mode ---------- */
+  JD.takeover = {
+    set(theme) {
+      const on = !!theme;
+      document.body.classList.toggle("jd-takeover-on", on);
+      if (on) document.body.setAttribute("data-to-theme", theme); else document.body.removeAttribute("data-to-theme");
+      try { sessionStorage.setItem("jd_to_hint", on ? theme : "0"); } catch (e) { /* ignore */ }
+    }
+  };
+  function applyTakeoverHint() {
+    if (!document.body.classList.contains("is-homepage")) return;
+    try {
+      const h = sessionStorage.getItem("jd_to_hint");
+      if (h === "light" || h === "dark" || h === "blue") { document.body.classList.add("jd-takeover-on"); document.body.setAttribute("data-to-theme", h); }
+    } catch (e) { /* ignore */ }
+  }
+  function closePanels() { JD.$$(".jd-panel").forEach(p => p.remove()); document.body.style.overflow = ""; }
+  function openMenu() {
+    if (document.getElementById("jd-menu-panel")) return;
+    const p = document.createElement("div");
+    p.id = "jd-menu-panel";
+    p.className = "jd-panel";
+    p.setAttribute("role", "dialog");
+    p.setAttribute("aria-modal", "true");
+    p.setAttribute("aria-label", "Menu");
+    const a = (h, l) => '<a href="' + h + '">' + l + "</a>";
+    p.innerHTML = '<div class="jd-panel__top jd-container"><span class="jd-logo__word"><b>Jula</b>Direct</span><button type="button" class="jd-tbtn" data-panel-close aria-label="Close menu">' + JD.icon("close", 22) + "</button></div>" +
+      '<nav class="jd-panel__nav jd-container" aria-label="Menu">' + a("explore.html", "Shop all") + '<div class="jd-panel__cats" id="jd-panel-cats"></div>' +
+      a("wishlist.html", "Wishlist") + a("orders.html", "Orders") + a("messages.html", "Messages") + a("supplier/index.html", "Sell on JulaDirect") + a("help.html", "Help") + "</nav>";
+    document.body.appendChild(p);
+    document.body.style.overflow = "hidden";
+    p.addEventListener("click", e => { if (e.target.closest("[data-panel-close]") || e.target.closest("a")) closePanels(); });
+    const first = p.querySelector("[data-panel-close]");
+    if (first) first.focus();
+    if (JD.data && JD.data.categoryStats) JD.data.categoryStats().then(st => {
+      const el = document.getElementById("jd-panel-cats");
+      if (el) el.innerHTML = (st.categories || []).slice(0, 8).map(c => '<a href="explore.html?category=' + encodeURIComponent(c.id) + '">' + JD.esc(c.id) + "</a>").join("");
+    }).catch(() => {});
+  }
+  function openSearchPanel() {
+    if (document.getElementById("jd-search-panel")) return;
+    const p = document.createElement("div");
+    p.id = "jd-search-panel";
+    p.className = "jd-panel jd-panel--search";
+    p.setAttribute("role", "dialog");
+    p.setAttribute("aria-modal", "true");
+    p.setAttribute("aria-label", "Search");
+    p.innerHTML = '<form class="jd-panel__search jd-container" role="search" action="explore.html" method="get">' + JD.icon("search", 28) +
+      '<label class="jd-sr" for="jd-q-p">Search JulaDirect</label><input id="jd-q-p" name="q" type="search" placeholder="Search products, brands and sellers" autocomplete="off" maxlength="100">' +
+      '<button type="button" class="jd-tbtn" data-panel-close aria-label="Close search">' + JD.icon("close", 22) + "</button></form>";
+    document.body.appendChild(p);
+    document.body.style.overflow = "hidden";
+    p.addEventListener("click", e => { if (e.target.closest("[data-panel-close]") || e.target === p) closePanels(); });
+    const input = document.getElementById("jd-q-p");
+    if (input) input.focus();
+  }
+  function bindTakeoverBar() {
+    const m = document.getElementById("jd-menu-btn");
+    const q = document.getElementById("jd-search-btn");
+    if (m) m.addEventListener("click", openMenu);
+    if (q) q.addEventListener("click", openSearchPanel);
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".jd-panel")) closePanels(); });
+  }
+
   JD.mountShell = function (opts) {
     const o = opts || {};
     document.body.classList.add("jd");
@@ -446,6 +521,8 @@
     const qm = document.getElementById("jd-q-m");
     if (qm) qm.value = JD.params().get("q") || "";
     paintArea();
+    applyTakeoverHint();
+    bindTakeoverBar();
     const areaBtn = document.getElementById("jd-area-btn");
     if (areaBtn) areaBtn.addEventListener("click", openAreaSheet);
     renderAccount();

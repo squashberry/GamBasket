@@ -49,6 +49,52 @@
     attachSellers,
     categoryIcon: id => ICONS[id] || "bag",
 
+    /* The live homepage banner (or null). A missing table or any error means "no banner". */
+    async activeBanner() {
+      try {
+        const c = await JD.client();
+        if (!c) return null;
+        const { data, error } = await c.from("site_banners").select("*").eq("is_active", true).order("updated_at", { ascending: false }).limit(1);
+        if (error || !data || !data[0]) return null;
+        const b = data[0];
+        const now = Date.now();
+        if (b.starts_at && new Date(b.starts_at).getTime() > now) return null;
+        if (b.ends_at && new Date(b.ends_at).getTime() < now) return null;
+        return b;
+      } catch (e) { return null; }
+    },
+    /* Admin preview of any banner by id (row-level security hides it from everyone else). */
+    async bannerById(id) {
+      if (!JD.isUuid(id)) return null;
+      try {
+        const c = await JD.client();
+        const { data, error } = await c.from("site_banners").select("*").eq("id", id).maybeSingle();
+        return error ? null : data;
+      } catch (e) { return null; }
+    },
+
+    /* Price bounds, average and a 24-bucket histogram of live listings. */
+    async priceStats() {
+      try {
+        const cached = JSON.parse(sessionStorage.getItem("jd_price") || "null");
+        if (cached && Date.now() - cached.t < 300000) return cached.v;
+      } catch (e) { /* ignore */ }
+      const c = await JD.client();
+      if (!c) return null;
+      const { data, error } = await c.from("products").select("price").eq("status", "approved").range(0, 4999);
+      if (error) throw error;
+      const prices = (data || []).map(r => Number(r.price)).filter(n => Number.isFinite(n) && n >= 0);
+      if (!prices.length) return null;
+      const min = Math.floor(Math.min.apply(null, prices));
+      const max = Math.ceil(Math.max.apply(null, prices));
+      const span = Math.max(1, max - min);
+      const bins = new Array(24).fill(0);
+      prices.forEach(p => { bins[Math.min(23, Math.floor(((p - min) / span) * 24))]++; });
+      const v = { min, max: Math.max(max, min + 1), avg: Math.round(prices.reduce((t, n) => t + n, 0) / prices.length), bins, count: prices.length };
+      try { sessionStorage.setItem("jd_price", JSON.stringify({ t: Date.now(), v })); } catch (e) { /* ignore */ }
+      return v;
+    },
+
     /* One real product photo per category (top sellers first) for category tiles. */
     async categoryImages() {
       try {

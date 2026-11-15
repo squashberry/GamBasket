@@ -49,6 +49,34 @@
     attachSellers,
     categoryIcon: id => ICONS[id] || "bag",
 
+    /* One real product photo per category (top sellers first) for category tiles. */
+    async categoryImages() {
+      try {
+        const cached = JSON.parse(sessionStorage.getItem("jd_catimg") || "null");
+        if (cached && Date.now() - cached.t < 600000) return cached.v;
+      } catch (e) { /* ignore */ }
+      const c = await JD.client();
+      if (!c) return {};
+      const { data, error } = await c.from("products").select("category_id,main_image").eq("status", "approved").not("main_image", "is", null).order("sales_count", { ascending: false }).limit(150);
+      if (error) throw error;
+      const v = {};
+      (data || []).forEach(r => { const u = JD.safeUrl(r.main_image); if (u && r.category_id && !v[r.category_id]) v[r.category_id] = u; });
+      try { sessionStorage.setItem("jd_catimg", JSON.stringify({ t: Date.now(), v })); } catch (e) { /* ignore */ }
+      return v;
+    },
+
+    /* Approved products for a list of ids, in the order given. */
+    async byIds(ids) {
+      const list = (ids || []).filter(JD.isUuid);
+      if (!list.length) return [];
+      const c = await JD.client();
+      if (!c) throw unavailable();
+      const { data, error } = await c.from("products").select("*").in("id", list).eq("status", "approved");
+      if (error) throw error;
+      const map = new Map((data || []).map(p => [p.id, p]));
+      return attachSellers(list.map(id => map.get(id)).filter(Boolean));
+    },
+
     /* Category and seller counts derived from live approved listings. */
     categoryStats(force) {
       if (statsPromise && !force) return statsPromise;

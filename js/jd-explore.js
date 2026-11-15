@@ -321,5 +321,6 @@
   fillForm();
   wire();
   load();
+  if (location.hash === "#filters" && mobile.matches) openDrawer($("jd-filters-open"));
   JD.data.categoryStats().then(s => { stats = s; renderCats(); }).catch(() => {});
 })();

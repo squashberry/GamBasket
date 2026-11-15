@@ -218,6 +218,7 @@
     const img = JD.safeUrl(p.main_image) || JD.placeholder;
     const s = p._seller || {};
     const stock = Number(p.stock || 0);
+    const sold = Number(p.sales_count || 0);
     const flags = [];
     if (stock <= 0) flags.push('<span class="jd-badge jd-badge--bad">Sold out</span>');
     else if (stock <= 3) flags.push('<span class="jd-badge jd-badge--warn">Only ' + stock + " left</span>");
@@ -230,6 +231,8 @@
       '<div class="jd-pcard__price">' + JD.esc(JD.money(p.price, p.currency)) + "</div>" +
       '<a class="jd-pcard__title" href="' + href + '">' + JD.esc(p.title) + "</a>" +
       '<div class="jd-pcard__meta"><span>' + JD.icon("pin", 13) + JD.esc(p.location || "The Gambia") + "</span>" + (p.condition ? "<span>" + JD.esc(p.condition) + "</span>" : "") + "</div>" +
+      '<div class="jd-pcard__foot"><span class="jd-pcard__sold">' + (sold > 0 ? sold.toLocaleString("en-GB") + " sold" : JD.esc(p.condition || "New listing")) + "</span>" +
+      '<button type="button" class="jd-pcard__add" data-add="' + id + '" aria-label="Add ' + JD.esc(p.title) + ' to cart"' + (stock <= 0 ? " disabled" : "") + ">" + JD.icon("plus", 18) + "</button></div>" +
       '<div class="jd-pcard__seller">' + (s.verified ? JD.icon("shield", 14) : "") + "<span>" + JD.esc(s.name || "JulaDirect member") + "</span></div>" +
       "</div>" +
       '<div class="jd-pcard__actions"><button type="button" class="jd-btn jd-btn--soft jd-btn--sm jd-btn--block" data-add="' + id + '"' + (stock <= 0 ? " disabled" : "") + ">" + JD.icon("cart", 16) + (stock <= 0 ? "Unavailable" : "Add to cart") + "</button>" +
@@ -276,7 +279,16 @@
     return '<a class="jd-skip" href="#jd-main">Skip to content</a>' +
       '<div class="jd-top"><div class="jd-container jd-top__in"><span>' + JD.icon("truck", 15) + 'Delivery across Greater Banjul &middot; Pay on delivery</span>' +
       '<nav class="jd-top__links" aria-label="Quick links"><a href="supplier/index.html">Sell on JulaDirect</a><a href="help.html">Help</a><a href="customer-care.html">Customer care</a></nav></div></div>' +
-      '<header class="jd-header"><div class="jd-container jd-header__row">' +
+      '<header class="jd-header">' +
+      /* mobile app header */
+      '<div class="jd-mhead jd-container"><div class="jd-mhead__row">' +
+      '<button class="jd-area" type="button" id="jd-area-btn" aria-haspopup="dialog"><span class="jd-roundbtn">' + JD.icon("pin", 22) + '</span><span class="jd-area__txt"><small>Shop in</small><strong id="jd-area-label">All Gambia</strong></span>' + JD.icon("chevronDown", 18) + "</button>" +
+      '<div class="jd-mhead__actions"><a class="jd-roundbtn" href="cart.html" aria-label="Cart">' + JD.icon("cart", 22) + '<em class="jd-badge-count" data-cart-count hidden>0</em></a>' +
+      '<a class="jd-roundbtn" href="me.html" aria-label="Account">' + JD.icon("user", 22) + "</a></div></div>" +
+      '<form class="jd-msearch" role="search" action="explore.html" method="get"><span class="jd-msearch__box">' + JD.icon("search", 20) + '<label class="jd-sr" for="jd-q-m">Search JulaDirect</label><input id="jd-q-m" name="q" type="search" placeholder="Search products, brands and sellers" autocomplete="off" maxlength="100"></span>' +
+      '<a class="jd-msearch__filter" href="explore.html#filters" aria-label="Open filters">' + JD.icon("filter", 22) + "</a></form></div>" +
+      /* desktop header */
+      '<div class="jd-container jd-header__row">' +
       '<a class="jd-logo" href="index.html" aria-label="JulaDirect home">' + JD.logoMark(36) + '<span class="jd-logo__word"><b>Jula</b>Direct</span></a>' +
       '<form class="jd-search" role="search" action="explore.html" method="get"><label class="jd-sr" for="jd-q">Search JulaDirect</label>' +
       '<input id="jd-q" name="q" type="search" placeholder="Search products, brands and sellers" autocomplete="off" maxlength="100">' +
@@ -287,6 +299,7 @@
       '<div class="jd-account" id="jd-account"></div></nav></div>' +
       '<div class="jd-catrail"><div class="jd-container jd-catrail__in" id="jd-catrail" role="navigation" aria-label="Categories"></div></div></header>';
   }
+
   function footerHtml() {
     return '<footer class="jd-footer"><div class="jd-container"><div class="jd-footer__grid">' +
       '<div class="jd-footer__brand"><a class="jd-logo" href="index.html" aria-label="JulaDirect home">' + JD.logoMark(36) + '<span class="jd-logo__word"><b>Jula</b>Direct</span></a>' +
@@ -296,40 +309,76 @@
       '<div><h3>Support</h3><ul><li><a href="help.html">Help centre</a></li><li><a href="customer-care.html">Customer care</a></li><li><a href="security.html">Security</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="about.html">About JulaDirect</a></li></ul></div>' +
       '</div><div class="jd-footer__base"><span>&copy; ' + new Date().getFullYear() + " JulaDirect. Made in The Gambia.</span><span>Trade. Shop. Connect.</span></div></div></footer>";
   }
-  /* Floating, expanding tab navigation. Collapsed: a pill showing the current
-     section and a toggle. Expanded: every primary tab in place. */
+  /* Floating, expanding tab navigation: a dark pill of icon tabs where the
+     active (or hovered/focused) tab expands to show its label, plus a round
+     cart button. */
   const FNAV_TABS = [
     ["home", "index.html", "home", "Home"],
     ["explore", "explore.html", "grid", "Explore"],
     ["wishlist", "wishlist.html", "heart", "Wishlist"],
-    ["cart", "cart.html", "cart", "Cart"],
     ["account", "me.html", "user", "Account"]
   ];
   function floatingNavHtml(active) {
-    const cur = FNAV_TABS.find(t => t[0] === active);
     const tabs = FNAV_TABS.map(t =>
-      '<a class="jd-fnav__tab" href="' + t[1] + '"' + (active === t[0] ? ' aria-current="page"' : "") + ">" + JD.icon(t[2], 20) + "<span>" + t[3] + "</span>" +
-      (t[0] === "cart" ? '<em class="jd-badge-count" data-cart-count hidden>0</em>' : "") + "</a>"
+      '<a class="jd-fnav__tab" href="' + t[1] + '" aria-label="' + t[3] + '"' + (active === t[0] ? ' aria-current="page"' : "") + ">" + JD.icon(t[2], 22) + "<span>" + t[3] + "</span></a>"
     ).join("");
-    return '<nav class="jd-fnav" id="jd-fnav" aria-label="Primary">' +
-      '<span class="jd-fnav__current">' + JD.icon(cur ? cur[2] : "grid", 20) + "<span>" + (cur ? cur[3] : "Menu") + "</span></span>" +
-      '<div class="jd-fnav__tabs" id="jd-fnav-tabs">' + tabs + "</div>" +
-      '<button class="jd-fnav__toggle" id="jd-fnav-toggle" type="button" aria-expanded="false" aria-controls="jd-fnav-tabs" aria-label="Open navigation">' + JD.icon("grid", 22) + "</button></nav>";
+    return '<nav class="jd-fnav" id="jd-fnav" aria-label="Primary"><div class="jd-fnav__pill">' + tabs + "</div>" +
+      '<a class="jd-fnav__fab" href="cart.html" aria-label="Cart"' + (active === "cart" ? ' aria-current="page"' : "") + ">" + JD.icon("cart", 24) + '<em class="jd-badge-count" data-cart-count hidden>0</em></a></nav>';
   }
-  function bindFloatingNav() {
-    const nav = document.getElementById("jd-fnav");
-    const btn = document.getElementById("jd-fnav-toggle");
-    if (!nav || !btn) return;
-    const set = open => {
-      nav.classList.toggle("is-open", open);
-      btn.setAttribute("aria-expanded", String(open));
-      btn.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
-      btn.innerHTML = JD.icon(open ? "close" : "grid", 22);
-    };
-    btn.addEventListener("click", e => { e.stopPropagation(); set(!nav.classList.contains("is-open")); });
-    document.addEventListener("click", e => { if (nav.classList.contains("is-open") && !nav.contains(e.target)) set(false); });
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && nav.classList.contains("is-open")) { set(false); btn.focus(); } });
+
+  /* ---------- area picker (bottom sheet) ---------- */
+  const AREAS = ["Banjul", "Serrekunda", "Kanifing", "Bakau", "Fajara", "Kotu", "Kololi", "Brufut", "Brikama"];
+  JD.area = {
+    list: AREAS,
+    get() {
+      if (/explore\.html$/i.test(location.pathname)) { const q = JD.params().get("location"); return AREAS.includes(q) ? q : "all"; }
+      try { const v = localStorage.getItem("jd_area"); return AREAS.includes(v) ? v : "all"; } catch (e) { return "all"; }
+    },
+    set(v) { try { v === "all" ? localStorage.removeItem("jd_area") : localStorage.setItem("jd_area", v); } catch (e) { /* ignore */ } }
+  };
+  function paintArea() {
+    const el = document.getElementById("jd-area-label");
+    if (el) { const a = JD.area.get(); el.textContent = a === "all" ? "All Gambia" : a; }
   }
+  function openAreaSheet() {
+    if (document.getElementById("jd-area-sheet")) return;
+    const cur = JD.area.get();
+    const scrim = document.createElement("div");
+    scrim.className = "jd-scrim";
+    scrim.id = "jd-area-scrim";
+    const sheet = document.createElement("div");
+    sheet.className = "jd-sheet";
+    sheet.id = "jd-area-sheet";
+    sheet.setAttribute("role", "dialog");
+    sheet.setAttribute("aria-modal", "true");
+    sheet.setAttribute("aria-labelledby", "jd-area-title");
+    const opt = (v, label) => '<button type="button" class="jd-radio" data-area="' + JD.esc(v) + '"><span>' + JD.esc(label) + "</span>" + (cur === v ? JD.icon("check", 18) : "") + "</button>";
+    sheet.innerHTML = '<div class="jd-sheet__grab"></div><h2 id="jd-area-title">Where do you want to shop?</h2><p class="jd-muted" style="margin-bottom:6px">Show listings in your area first.</p>' + opt("all", "All Gambia") + AREAS.map(a => opt(a, a)).join("");
+    const close = () => { scrim.remove(); sheet.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", esc); const b = document.getElementById("jd-area-btn"); if (b) b.focus(); };
+    const esc = e => { if (e.key === "Escape") close(); };
+    scrim.addEventListener("click", close);
+    sheet.addEventListener("click", e => {
+      const b = e.target.closest("[data-area]");
+      if (!b) return;
+      const v = b.getAttribute("data-area");
+      JD.area.set(v);
+      location.href = v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v);
+    });
+    document.addEventListener("keydown", esc);
+    document.body.appendChild(scrim);
+    document.body.appendChild(sheet);
+    document.body.style.overflow = "hidden";
+    const first = sheet.querySelector(".jd-radio");
+    if (first) first.focus();
+  }
+
+  /* ---------- recently visited (stored on this device only) ---------- */
+  const REC_KEY = "jd_recent_products";
+  JD.recent = {
+    ids() { try { const a = JSON.parse(localStorage.getItem(REC_KEY) || "[]"); return (Array.isArray(a) ? a : []).filter(JD.isUuid).slice(0, 12); } catch (e) { return []; } },
+    add(id) { if (!JD.isUuid(id)) return; const ids = [id].concat(this.ids().filter(x => x !== id)).slice(0, 12); try { localStorage.setItem(REC_KEY, JSON.stringify(ids)); } catch (e) { /* ignore */ } },
+    clear() { try { localStorage.removeItem(REC_KEY); } catch (e) { /* ignore */ } }
+  };
 
   async function renderAccount() {
     const box = document.getElementById("jd-account");
@@ -391,9 +440,14 @@
     const b = document.getElementById("jd-bottomnav");
     if (h) h.innerHTML = headerHtml();
     if (f) f.outerHTML = footerHtml();
-    if (b) { b.outerHTML = floatingNavHtml(o.active || ""); bindFloatingNav(); }
+    if (b) b.outerHTML = floatingNavHtml(o.active || "");
     const q = document.getElementById("jd-q");
     if (q) q.value = JD.params().get("q") || "";
+    const qm = document.getElementById("jd-q-m");
+    if (qm) qm.value = JD.params().get("q") || "";
+    paintArea();
+    const areaBtn = document.getElementById("jd-area-btn");
+    if (areaBtn) areaBtn.addEventListener("click", openAreaSheet);
     renderAccount();
     refreshCartCount();
     syncCompare();

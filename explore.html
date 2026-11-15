@@ -27,8 +27,11 @@
                 </div>
                 <form class="jd-filters__body" id="jd-filter-form" autocomplete="off" onsubmit="return false">
                     <div class="jd-fgroup"><h3>Category</h3><div id="jd-f-cats"><div class="jd-skel" style="height:120px" aria-hidden="true"></div></div></div>
-                    <div class="jd-fgroup">
-                        <h3>Price (D)</h3>
+                    <div class="jd-fgroup" id="jd-price-group">
+                        <div class="jd-fgroup__head"><h3>Price range</h3><button type="button" class="jd-reset" id="jd-price-reset">Reset</button></div>
+                        <p class="jd-fgroup__sub" id="jd-price-avg" hidden></p>
+                        <div class="jd-hist" id="jd-hist" aria-hidden="true" hidden></div>
+                        <div class="jd-range" id="jd-range" hidden><span class="jd-range__track"></span><span class="jd-range__fill" id="jd-range-fill"></span><input type="range" id="jd-rmin" aria-label="Minimum price" min="0" max="100" value="0"><input type="range" id="jd-rmax" aria-label="Maximum price" min="0" max="100" value="100"></div>
                         <div class="jd-pricebox">
                             <div class="jd-field"><label class="jd-sr" for="jd-min">Minimum price</label><input class="jd-input" id="jd-min" type="number" min="0" inputmode="numeric" placeholder="Min"></div>
                             <div class="jd-field"><label class="jd-sr" for="jd-max">Maximum price</label><input class="jd-input" id="jd-max" type="number" min="0" inputmode="numeric" placeholder="Max"></div>
@@ -58,7 +61,7 @@
                     <div class="jd-fgroup">
                         <h3>Availability</h3>
                         <label class="jd-switch"><span>In stock only</span><input type="checkbox" id="jd-stock"><span class="jd-switch__track" aria-hidden="true"></span></label>
-                        <label class="jd-switch"><span>Delivery available</span><input type="checkbox" id="jd-delivery"><span class="jd-switch__track" aria-hidden="true"></span></label>
+                        <div class="jd-field" style="margin-top:6px"><span class="jd-label" id="jd-seg-label">Delivery options</span><div class="jd-seg" role="group" aria-labelledby="jd-seg-label"><button type="button" data-seg="0" aria-pressed="true">Any</button><button type="button" data-seg="1" aria-pressed="false">Delivery</button></div></div><input type="checkbox" id="jd-delivery" class="jd-sr" tabindex="-1" aria-hidden="true">
                     </div>
                 </form>
                 <div class="jd-filters__foot">

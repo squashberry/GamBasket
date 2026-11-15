@@ -14,6 +14,7 @@
   let stats = null;
   let reqId = 0;
   let opener = null;
+  let bounds = null;
 
   const num = v => {
     if (v === "" || v === null || v === undefined) return "";
@@ -74,6 +75,8 @@
     $("jd-brand").value = state.brandModel;
     $("jd-stock").checked = state.stock;
     $("jd-delivery").checked = state.delivery;
+    syncSeg();
+    syncRange(state.min, state.max);
     $("jd-sort").value = state.sort;
     JD.$$('input[name="condition"]').forEach(r => { r.checked = r.value === state.condition; });
   }
@@ -264,11 +267,69 @@
     fillFormFrom(next);
     go(next);
   }
+  /* ---------- price range card: live histogram + dual slider ---------- */
+  function syncSeg() {
+    const on = $("jd-delivery").checked;
+    JD.$$("[data-seg]").forEach(b => b.setAttribute("aria-pressed", String((b.getAttribute("data-seg") === "1") === on)));
+  }
+  function histPaint() {
+    if (!bounds) return;
+    const lo = Number($("jd-rmin").value);
+    const hi = Number($("jd-rmax").value);
+    const span = Math.max(1, bounds.max - bounds.min);
+    const peak = Math.max.apply(null, bounds.bins) || 1;
+    $("jd-hist").innerHTML = bounds.bins.map((n, i) => {
+      const from = bounds.min + (i / 24) * span;
+      const to = bounds.min + ((i + 1) / 24) * span;
+      return '<i class="' + (to >= lo && from <= hi ? "is-in" : "") + '" style="height:' + Math.max(6, Math.round((n / peak) * 100)) + '%"></i>';
+    }).join("");
+    const fill = $("jd-range-fill");
+    fill.style.left = ((lo - bounds.min) / span) * 100 + "%";
+    fill.style.width = ((hi - lo) / span) * 100 + "%";
+  }
+  function syncRange(minVal, maxVal) {
+    if (!bounds) return;
+    const lo = minVal !== "" && minVal !== undefined ? Math.max(bounds.min, Math.min(Number(minVal), bounds.max)) : bounds.min;
+    const hi = maxVal !== "" && maxVal !== undefined ? Math.min(bounds.max, Math.max(Number(maxVal), bounds.min)) : bounds.max;
+    $("jd-rmin").value = Math.min(lo, hi);
+    $("jd-rmax").value = Math.max(lo, hi);
+    histPaint();
+  }
+  function initRange(ps) {
+    if (!ps || ps.max <= ps.min) return;
+    bounds = ps;
+    const step = String(Math.max(1, Math.round((ps.max - ps.min) / 200)));
+    ["jd-rmin", "jd-rmax"].forEach(id => { const r = $(id); r.min = ps.min; r.max = ps.max; r.step = step; });
+    $("jd-price-avg").textContent = "The average price is D " + ps.avg.toLocaleString("en-GB");
+    ["jd-price-avg", "jd-hist", "jd-range"].forEach(id => { $(id).hidden = false; });
+    syncRange(state.min, state.max);
+  }
+  function slide(which) {
+    if (!bounds) return;
+    const rmin = $("jd-rmin");
+    const rmax = $("jd-rmax");
+    let lo = Number(rmin.value);
+    let hi = Number(rmax.value);
+    if (lo > hi) { if (which === "min") { lo = hi; rmin.value = lo; } else { hi = lo; rmax.value = hi; } }
+    $("jd-min").value = lo <= bounds.min ? "" : String(lo);
+    $("jd-max").value = hi >= bounds.max ? "" : String(hi);
+    histPaint();
+  }
+
   function wire() {
     const form = $("jd-filter-form");
     const auto = JD.debounce(() => { if (!mobile.matches) go(readForm()); }, 450);
     form.addEventListener("change", e => { if (e.target.type === "number" || e.target.type === "search") return; if (!mobile.matches) go(readForm()); });
     form.addEventListener("input", e => { if (e.target.type === "number" || e.target.type === "search") auto(); });
+    $("jd-rmin").addEventListener("input", () => { slide("min"); auto(); });
+    $("jd-rmax").addEventListener("input", () => { slide("max"); auto(); });
+    ["jd-min", "jd-max"].forEach(id => $(id).addEventListener("input", () => syncRange($("jd-min").value, $("jd-max").value)));
+    $("jd-price-reset").addEventListener("click", () => { $("jd-min").value = ""; $("jd-max").value = ""; syncRange("", ""); if (!mobile.matches) go(readForm()); });
+    JD.$$("[data-seg]").forEach(b => b.addEventListener("click", () => {
+      $("jd-delivery").checked = b.getAttribute("data-seg") === "1";
+      syncSeg();
+      if (!mobile.matches) go(readForm());
+    }));
     $("jd-sort").addEventListener("change", e => go(Object.assign({}, state, { sort: e.target.value, page: 1 })));
     $("jd-filters-open").addEventListener("click", e => openDrawer(e.currentTarget));
     $("jd-filters-close").addEventListener("click", closeDrawer);
@@ -323,4 +384,5 @@
   load();
   if (location.hash === "#filters" && mobile.matches) openDrawer($("jd-filters-open"));
   JD.data.categoryStats().then(s => { stats = s; renderCats(); }).catch(() => {});
+  JD.data.priceStats().then(initRange).catch(() => {});
 })();

@@ -1487,7 +1487,7 @@
                             <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </a>`
                     }
-                    <a href="me.html" class="btn-signup" style="font-size: 12px; padding: 7px 16px; background: #2563eb; color: #ffffff; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                    <a href="me.html" class="btn-signup" style="font-size: 12px; padding: 7px 16px; background: var(--blue); color: #ffffff; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
                         <svg class="ui-icon" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.6 3.1-5.5 7-5.5s6.4 1.9 7 5.5"/></svg>
                         <span>${displayName}</span>
                     </a>
@@ -1507,7 +1507,7 @@
                         </a>`
                     }
                     <a href="login.html" class="btn-login" style="color:var(--text);text-decoration:none;font-size:13px;font-weight:600;padding:8px 16px;border-radius:10px;border:1px solid var(--border);">Log In</a>
-                    <a href="signup.html" class="btn-signup" style="background:#2563eb;color:#ffffff;text-decoration:none;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;">Create Account</a>
+                    <a href="signup.html" class="btn-signup" style="background:var(--blue);color:#ffffff;text-decoration:none;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;">Create Account</a>
                 `;
             }
         });

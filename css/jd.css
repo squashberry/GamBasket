@@ -429,3 +429,7 @@ body.jd {
   .jd-toolbar__right { flex: 1; }
   .jd-hero__lead { font-size: 16px; }
 }
+
+/* ---------- pressed state for toggle buttons ---------- */
+.jd .jd-btn[aria-pressed="true"] { background: var(--jd-blue-50); border-color: var(--jd-blue-600); color: var(--jd-blue-700); }
+.jd .jd-btn[data-wish][aria-pressed="true"] svg { fill: currentColor; }

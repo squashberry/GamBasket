@@ -478,16 +478,6 @@ function handleImageLoading(image) {
    PRODUCT CARD
 ========================================================= */
 
-function escapeHtml(value) {
-    return String(value == null ? "" : value).replace(/[&<>"']/g, character => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[character]);
-}
-
 function createProductCard(product, index) {
 
     const card =
@@ -507,17 +497,16 @@ function createProductCard(product, index) {
         <div class="product-image">
 
             <img
-                src="${escapeHtml(product.image)}"
-                decoding="async"
-                alt="${escapeHtml(product.name)}"
+                src="${product.image}"
+                alt="${product.name}"
                 loading="lazy"
             >
 
             <button
                 class="product-heart ${isSaved ? "saved" : ""}"
-                data-product-id="${escapeHtml(product.id)}"
+                data-product-id="${product.id}"
                 type="button"
-                aria-label="Save ${escapeHtml(product.name)}"
+                aria-label="Save ${product.name}"
             >
                 ${icon("heart")}
             </button>
@@ -527,7 +516,7 @@ function createProductCard(product, index) {
         <div class="product-info">
 
             <h3 class="product-name">
-                ${escapeHtml(product.name)}
+                ${product.name}
             </h3>
 
             <p class="product-price">
@@ -535,7 +524,7 @@ function createProductCard(product, index) {
             </p>
 
             <p class="product-location">
-                ${escapeHtml(product.location)}
+                ${product.location}
             </p>
 
         </div>
@@ -562,15 +551,6 @@ function createProductCard(product, index) {
 
         }
     );
-
-    card.tabIndex = 0;
-
-    card.addEventListener("keydown", event => {
-        if (event.target === card && (event.key === "Enter" || event.key === " ")) {
-            event.preventDefault();
-            openProductModal(product);
-        }
-    });
 
     const heart =
         card.querySelector(".product-heart");

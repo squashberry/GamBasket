@@ -1603,7 +1603,7 @@
                                                 style="
                                                     display:inline-block;
                                                     margin-top:5px;
-                                                    color:var(--blue);
+                                                    color:#2563eb;
                                                     font-size:7px;
                                                 "
                                             >
@@ -1665,7 +1665,7 @@
 
                                             <strong
                                                 style="
-                                                    color:var(--blue);
+                                                    color:#2563eb;
                                                     font-size:8px;
                                                 "
                                             >
@@ -2888,7 +2888,7 @@
 
                             <strong
                                 style="
-                                    color:var(--blue);
+                                    color:#2563eb;
                                     font-size:8px;
                                 "
                             >
@@ -3038,7 +3038,7 @@
                         <span>Created: ${escapeHtml(timestamp(delivery.created_at))}</span>
                     </div>
                     <div style="display:grid;justify-items:end;gap:7px;">
-                        <strong style="color:var(--blue);font-size:8px;">${money(delivery.estimated_fee || 0)}</strong>
+                        <strong style="color:#2563eb;font-size:8px;">${money(delivery.estimated_fee || 0)}</strong>
                         <button class="admin-small-button" data-inspect-delivery="${escapeHtml(delivery.id)}" type="button">Inspect</button>
                     </div>
                 </div>
@@ -5029,7 +5029,7 @@
                             <span
                                 style="
                                     margin-left:auto;
-                                    color:var(--blue);
+                                    color:#2563eb;
                                     font-size:7px;
                                     font-weight:800;
                                 "

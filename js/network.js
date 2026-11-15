@@ -278,7 +278,7 @@
                 }
 
                 .gb-network-btn-primary {
-                    background: var(--blue);
+                    background: #2563eb;
                     color: #fff;
                     border: none;
                     padding: 12px 28px;
@@ -289,13 +289,13 @@
                     display: inline-flex;
                     align-items: center;
                     gap: 8px;
-                    box-shadow: 0 4px 12px color-mix(in srgb, var(--blue) 20%, transparent);
+                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
                     transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
                 }
 
                 .gb-network-btn-primary:hover {
-                    background: var(--blue-dark);
-                    box-shadow: 0 6px 16px color-mix(in srgb, var(--blue) 30%, transparent);
+                    background: #1d4ed8;
+                    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
                 }
 
                 .gb-network-btn-primary:active {

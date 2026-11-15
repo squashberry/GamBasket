@@ -8,7 +8,7 @@
     background:
         radial-gradient(
             circle at 85% -8%,
-            color-mix(in srgb, var(--blue) 7%, transparent),
+            rgba(37, 99, 235, .07),
             transparent 30%
         ),
         var(--background, #f8fafc);
@@ -68,7 +68,7 @@
 .settings-side-heading > span {
     display: block;
 
-    color: var(--blue);
+    color: #2563eb;
 
     font-size: 9px;
 
@@ -148,7 +148,7 @@
 
 .settings-nav-item:hover {
     background:
-        color-mix(in srgb, var(--blue) 4.5%, transparent);
+        rgba(37, 99, 235, .045);
 
     color:
         var(--text, #0f172a);
@@ -161,15 +161,15 @@
     background:
         linear-gradient(
             135deg,
-            color-mix(in srgb, var(--blue) 10.5%, transparent),
-            color-mix(in srgb, var(--blue) 4.5%, transparent)
+            rgba(37, 99, 235, .105),
+            rgba(37, 99, 235, .045)
         );
 
-    color: var(--blue);
+    color: #2563eb;
 
     box-shadow:
         inset 0 0 0 1px
-        color-mix(in srgb, var(--blue) 8%, transparent);
+        rgba(37, 99, 235, .08);
 }
 
 .settings-nav-item > span:nth-child(2) {
@@ -220,7 +220,7 @@
 .settings-nav-item.active
 .settings-nav-icon {
     background:
-        color-mix(in srgb, var(--blue) 12%, transparent);
+        rgba(37, 99, 235, .12);
 }
 
 .settings-nav-icon svg {
@@ -269,7 +269,7 @@
 }
 
 .settings-side-footer a:hover {
-    color: var(--blue);
+    color: #2563eb;
 }
 
 
@@ -313,7 +313,7 @@
 .settings-section-heading span {
     display: block;
 
-    color: var(--blue);
+    color: #2563eb;
 
     font-size: 9px;
 
@@ -388,7 +388,7 @@
         linear-gradient(
             125deg,
             #0f4fc7,
-            var(--blue) 54%,
+            #2563eb 54%,
             #0ea5e9
         );
 }
@@ -433,7 +433,7 @@
     background:
         linear-gradient(
             135deg,
-            var(--blue),
+            #2563eb,
             #1e3a8a
         );
 
@@ -475,7 +475,7 @@
     border-radius: 50%;
 
     background:
-        var(--blue);
+        #2563eb;
 
     color: #fff;
 
@@ -483,7 +483,7 @@
 
     box-shadow:
         0 5px 14px
-        color-mix(in srgb, var(--blue) 28%, transparent);
+        rgba(37, 99, 235, .28);
 }
 
 .settings-avatar-edit svg {
@@ -508,7 +508,7 @@
 
     margin-bottom: 3px;
 
-    color: var(--blue);
+    color: #2563eb;
 
     font-size: 8px;
 
@@ -602,7 +602,7 @@
 .settings-card-heading > span {
     display: block;
 
-    color: var(--blue);
+    color: #2563eb;
 
     font-size: 8px;
 
@@ -717,11 +717,11 @@
 .settings-field select:focus,
 .settings-field textarea:focus {
     border-color:
-        color-mix(in srgb, var(--blue) 45%, transparent);
+        rgba(37, 99, 235, .45);
 
     box-shadow:
         0 0 0 3px
-        color-mix(in srgb, var(--blue) 7%, transparent);
+        rgba(37, 99, 235, .07);
 }
 
 .settings-field input:disabled {
@@ -753,11 +753,11 @@
 
 .settings-phone-input:focus-within {
     border-color:
-        color-mix(in srgb, var(--blue) 45%, transparent);
+        rgba(37, 99, 235, .45);
 
     box-shadow:
         0 0 0 3px
-        color-mix(in srgb, var(--blue) 7%, transparent);
+        rgba(37, 99, 235, .07);
 }
 
 .settings-phone-input > span {
@@ -840,8 +840,8 @@
     background:
         linear-gradient(
             135deg,
-            var(--blue),
-            var(--blue-dark)
+            #2563eb,
+            #1d4ed8
         );
 
     color: #fff;
@@ -856,7 +856,7 @@
 
     box-shadow:
         0 10px 25px
-        color-mix(in srgb, var(--blue) 18%, transparent);
+        rgba(37, 99, 235, .18);
 
     transition:
         transform .18s ease,
@@ -868,7 +868,7 @@
 
     box-shadow:
         0 14px 30px
-        color-mix(in srgb, var(--blue) 23%, transparent);
+        rgba(37, 99, 235, .23);
 }
 
 
@@ -887,12 +887,12 @@
 
     border:
         1px solid
-        color-mix(in srgb, var(--blue) 12%, transparent);
+        rgba(37, 99, 235, .12);
 
     border-radius: 15px;
 
     background:
-        color-mix(in srgb, var(--blue) 3.5%, transparent);
+        rgba(37, 99, 235, .035);
 }
 
 .settings-location-icon {
@@ -913,7 +913,7 @@
         #eff6ff;
 
     color:
-        var(--blue);
+        #2563eb;
 }
 
 .settings-location-icon svg {
@@ -1169,7 +1169,7 @@
 
 .settings-switch-row input:checked {
     background:
-        var(--blue);
+        #2563eb;
 }
 
 .settings-switch-row input:checked::after {
@@ -1367,7 +1367,7 @@
     background:
         radial-gradient(
             circle at 85% -8%,
-            color-mix(in srgb, var(--blue) 13%, transparent),
+            rgba(37, 99, 235, .13),
             transparent 30%
         ),
         #020617;
@@ -1392,7 +1392,7 @@
 
 .dark .settings-location-card {
     background:
-        color-mix(in srgb, var(--blue) 7%, transparent);
+        rgba(37, 99, 235, .07);
 
     border-color:
         rgba(96, 165, 250, .16);
@@ -1400,7 +1400,7 @@
 
 .dark .settings-location-icon {
     background:
-        color-mix(in srgb, var(--blue) 11%, transparent);
+        rgba(37, 99, 235, .11);
 }
 
 .dark .settings-location-fixed {

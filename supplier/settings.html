@@ -8,10 +8,12 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/seller.css">
     <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+    <link rel="stylesheet" href="../css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body class="seller-page">
     <header class="desktop-app-header">
-        <a href="../index.html" class="desktop-app-brand"><span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></a>
+        <a href="../index.html" class="desktop-app-brand"><span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" style="stroke:var(--blue);"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></a>
         <div style="flex:1;"></div>
         <div class="desktop-app-actions">
             <button class="icon-button" id="desktopThemeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon"><use href="#icon-moon"></use></svg></button>
@@ -115,14 +117,14 @@
         <section id="plans" class="seller-panel" style="margin-top:24px;">
             <div class="seller-panel-header">
                 <div>
-                    <span class="eyebrow" style="font-size:11px;font-weight:800;color:#2563eb;">SELLER PLANS</span>
+                    <span class="eyebrow" style="font-size:11px;font-weight:800;color:var(--blue);">SELLER PLANS</span>
                     <h2 class="seller-panel-title">Choose the plan that fits your business</h2>
                     <p class="seller-page-subtitle">Upgrade or change your seller plan tier at any time.</p>
                 </div>
             </div>
             <div id="sellerPlansGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-top:16px;">
-                <article class="seller-panel is-current" style="padding:20px;border:2px solid #2563eb;">
-                    <span class="badge" style="background:#2563eb;color:#fff;font-size:11px;padding:3px 8px;border-radius:12px;">CURRENT PLAN</span>
+                <article class="seller-panel is-current" style="padding:20px;border:2px solid var(--blue);">
+                    <span class="badge" style="background:var(--blue);color:#fff;font-size:11px;padding:3px 8px;border-radius:12px;">CURRENT PLAN</span>
                     <h3 style="margin:10px 0 6px;">Starter</h3>
                     <div style="font-size:24px;font-weight:800;color:var(--text);">D 300<span style="font-size:13px;color:var(--text-secondary);">/mo</span></div>
                     <p style="font-size:13px;color:var(--text-secondary);margin:8px 0 14px;">For small businesses getting started.</p>
@@ -161,7 +163,7 @@
         <section id="website-upgrades" class="seller-panel" style="margin-top:24px;">
             <div class="seller-panel-header">
                 <div>
-                    <span class="eyebrow" style="font-size:11px;font-weight:800;color:#2563eb;">BUSINESS WEBSITE</span>
+                    <span class="eyebrow" style="font-size:11px;font-weight:800;color:var(--blue);">BUSINESS WEBSITE</span>
                     <h2 class="seller-panel-title">Upgrade your website</h2>
                     <p class="seller-page-subtitle">Add more branding, remove advertisements, or add your JulaDirect store.</p>
                 </div>
@@ -236,5 +238,6 @@
         });
     })();
     </script>
+    <script src="../js/jd-ui.js" defer></script>
 </body>
 </html>

@@ -23,7 +23,7 @@
             background:
                 radial-gradient(
                     circle at 50% 18%,
-                    rgba(37, 99, 235, .10),
+                    color-mix(in srgb, var(--blue) 10%, transparent),
                     transparent 34%
                 ),
                 var(--background, #f8fafc);
@@ -43,7 +43,7 @@
             font-size: clamp(80px, 17vw, 150px);
             font-weight: 900;
             letter-spacing: -.08em;
-            color: rgba(37, 99, 235, .045);
+            color: color-mix(in srgb, var(--blue) 4.5%, transparent);
             user-select: none;
         }
 
@@ -70,10 +70,10 @@
                 linear-gradient(
                     145deg,
                     #3b82f6,
-                    #1d4ed8
+                    var(--blue-dark)
                 );
             box-shadow:
-                0 24px 45px rgba(37, 99, 235, .22),
+                0 24px 45px color-mix(in srgb, var(--blue) 22%, transparent),
                 inset 0 1px 0 rgba(255,255,255,.2);
         }
 
@@ -85,7 +85,7 @@
             width: 75px;
             height: 55px;
             transform: translateX(-50%);
-            border: 8px solid #2563eb;
+            border: 8px solid var(--blue);
             border-bottom: 0;
             border-radius: 45px 45px 0 0;
         }
@@ -147,7 +147,7 @@
 
         .wire-right {
             right: -5px;
-            background: #2563eb;
+            background: var(--blue);
             transform: rotate(12deg);
         }
 
@@ -288,8 +288,8 @@
             display: inline-flex;
             padding: 6px 11px;
             border-radius: 999px;
-            background: rgba(37,99,235,.08);
-            color: #2563eb;
+            background: color-mix(in srgb, var(--blue) 8%, transparent);
+            color: var(--blue);
             font-size: 9px;
             font-weight: 850;
             letter-spacing: .13em;
@@ -345,11 +345,11 @@
 
         .offline-btn.primary {
             border: 0;
-            background: #2563eb;
+            background: var(--blue);
             color: white;
             cursor: pointer;
             box-shadow:
-                0 10px 25px rgba(37,99,235,.20);
+                0 10px 25px color-mix(in srgb, var(--blue) 20%, transparent);
         }
 
         .offline-btn.secondary {
@@ -370,7 +370,7 @@
         }
 
         .offline-help a {
-            color: #2563eb;
+            color: var(--blue);
             font-weight: 750;
             text-decoration: none;
         }
@@ -519,7 +519,7 @@
             background:
                 radial-gradient(
                     circle at 50% 18%,
-                    rgba(37,99,235,.18),
+                    color-mix(in srgb, var(--blue) 18%, transparent),
                     transparent 34%
                 ),
                 var(--background, #020617);
@@ -539,6 +539,8 @@
 
         }
     </style>
+    <link rel="stylesheet" href="css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 
 <body>
@@ -728,5 +730,6 @@
         );
     </script>
 
+    <script src="js/jd-ui.js" defer></script>
 </body>
 </html>

@@ -47,10 +47,12 @@
     const business = $("sellerBusinessName");
     const create = $("createWebsiteButton");
     const sitesList = $("publishedSitesList");
+    const syncSites = $("syncExistingSitesButton");
     const noSite = $("noWebsiteText");
     const connect = $("connectJulaButton");
 
     if (status.connected) {
+      syncSites.hidden = false;
       dot.classList.add("ok");
       label.textContent = "JulaDirect account connected";
       business.textContent = "— " + (status.seller_name || "Seller account");
@@ -105,6 +107,7 @@
         noSite.hidden = false;
       }
     } else {
+      syncSites.hidden = true;
       dot.classList.remove("ok");
       label.textContent = "Connect your account to continue";
       business.textContent = "";

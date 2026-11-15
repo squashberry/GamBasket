@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/business-trust-growth.css">
     <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+    <link rel="stylesheet" href="../css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body>
     <main class="business-dashboard supplier-mode">
@@ -56,5 +58,6 @@
             } catch (error) { document.getElementById("supplierAnalyticsProducts").textContent = error.message || "Unable to load wholesale analytics."; }
         })();
     </script>
+    <script src="../js/jd-ui.js" defer></script>
 </body>
 </html>

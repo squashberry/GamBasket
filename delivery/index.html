@@ -5,6 +5,8 @@
   <title>Courier Workspace — JulaDirect</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/delivery.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <script>try{if(localStorage.getItem('gambasket-theme')==='dark')document.documentElement.classList.add('dark')}catch(_){}</script>
+    <link rel="stylesheet" href="../css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body class="delivery-page">
   <div id="authGate" class="delivery-auth-gate"><div class="delivery-loader"><span>GB</span></div><p id="deliveryAuthText">Opening courier workspace…</p></div>
@@ -21,5 +23,6 @@
     </main><nav class="delivery-bottom-nav"><button class="active" data-tab="overview">Overview</button><button data-tab="jobs">Requests</button><button data-tab="active">Active</button><button data-tab="earnings">Earnings</button></nav>
   </div><div id="deliveryToast" class="delivery-toast" role="status" aria-live="polite"></div>
   <script src="../js/config.js"></script><script src="../js/supabase.js"></script><script src="../js/auth-errors.js"></script><script src="../js/auth-guard.js"></script><script src="../js/states.js"></script><script src="../js/notifications.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../js/delivery.js"></script>
+    <script src="../js/jd-ui.js" defer></script>
 </body>
 </html>

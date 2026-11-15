@@ -116,6 +116,17 @@
   };
   JD.sellerName = s => (s && (s.business_name || [s.first_name, s.last_name && s.last_name.charAt(0) + "."].filter(Boolean).join(" "))) || "JulaDirect member";
 
+  /* Account area tabs shared by buyer pages. */
+  JD.accountNav = active => {
+    const tabs = [["account", "me.html", "My account"], ["orders", "orders.html", "Orders"], ["wishlist", "wishlist.html", "Wishlist"], ["messages", "messages.html", "Messages"], ["searches", "saved-searches.html", "Saved searches"], ["compare", "compare.html", "Compare"]];
+    const el = document.getElementById("jd-acctnav");
+    if (!el) return;
+    el.className = "jd-acctnav";
+    el.setAttribute("role", "navigation");
+    el.setAttribute("aria-label", "Account");
+    el.innerHTML = tabs.map(t => '<a class="jd-chip' + (t[0] === active ? " is-active" : "") + '" href="' + t[1] + '"' + (t[0] === active ? ' aria-current="page"' : "") + ">" + t[2] + "</a>").join("");
+  };
+
   /* ---------- compare list (same storage contract as compare.html) ---------- */
   const CMP_KEY = "gambasket_compare_products";
   JD.compare = {
@@ -142,9 +153,10 @@
   };
   function syncCompare() {
     const ids = JD.compare.ids();
+    const onComparePage = /compare\.html$/i.test(location.pathname);
     JD.$$("[data-compare]").forEach(b => b.setAttribute("aria-pressed", String(ids.includes(b.getAttribute("data-compare")))));
     let tray = document.getElementById("jd-compare-tray");
-    if (!ids.length) { if (tray) tray.remove(); return; }
+    if (!ids.length || onComparePage) { if (tray) tray.remove(); return; }
     if (!tray) {
       tray = document.createElement("div");
       tray.id = "jd-compare-tray";
@@ -242,6 +254,7 @@
           if (r && r.requiresAuth) return;
           const on = A.isInWishlist(wish.getAttribute("data-wish"));
           wish.setAttribute("aria-pressed", String(on));
+          window.dispatchEvent(new CustomEvent("jd:wishlist", { detail: { id: wish.getAttribute("data-wish"), on } }));
           JD.toast(on ? "Saved to your wishlist" : "Removed from your wishlist", "ok");
         } catch (err) { JD.toast("We could not update your wishlist.", "error"); }
       } else if (add) {

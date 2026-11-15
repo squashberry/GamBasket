@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Checkout - JulaDirect</title>
+    <meta name="theme-color" content="#1451e6">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="css/style.css">
-    <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
+    <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-checkout.css">
 </head>
-<body class="checkout-page">
-    <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5m6 6-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4a8.3 8.3 0 1 0 11.2 11.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol></defs></svg>
-    <header class="mobile-header"><div class="header-top"><div class="header-back-group"><button class="icon-button" id="backButton" type="button" aria-label="Go back"><svg class="ui-icon"><use href="#icon-arrow-left"></use></svg></button><a href="cart.html" class="brand">Checkout</a></div><button class="icon-button" id="themeToggle" type="button" aria-label="Toggle dark mode"><svg class="ui-icon" id="themeIcon"><use href="#icon-moon"></use></svg></button></div></header>
-    <main class="checkout-shell"><div class="checkout-head"><p class="section-eyebrow">FINAL STEP</p><h1>Complete your order</h1><p>Secure checkout through JulaDirect.</p></div><div id="checkoutError" class="checkout-error" hidden></div><form id="checkoutForm"><div class="checkout-grid"><div>
+<body class="jd checkout-page">
+    <header class="ck-bar">
+        <button class="ck-back" id="backButton" type="button" aria-label="Go back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6 6-6-6 6-6"/></svg></button>
+        <strong class="ck-bar__title">Checkout</strong>
+        <a class="ck-bar__brand" href="index.html" aria-label="JulaDirect home"><span class="jd-logo__word"><b>Jula</b>Direct</span></a>
+    </header>
+    <main class="checkout-shell"><div class="checkout-head"><p class="section-eyebrow">FINAL STEP</p><h1>Complete your order</h1><p>Secure checkout through JulaDirect.</p></div><div id="checkoutError" class="checkout-error" role="alert" hidden></div><form id="checkoutForm"><div class="checkout-grid"><div>
         <section class="checkout-section"><h2>Contact information</h2><div class="field-grid"><div class="field"><label for="fullName">Full name</label><input id="fullName" required autocomplete="name"></div><div class="field"><label for="email">Email</label><input id="email" type="email" required autocomplete="email"></div><div class="field full"><label for="phone">Gambian phone number</label><input id="phone" type="tel" placeholder="+220 000 0000" required autocomplete="tel"></div></div></section>
         <section class="checkout-section"><h2>Fulfillment</h2><div class="choice-grid"><div class="choice"><input type="radio" name="fulfillment" id="delivery" value="delivery" checked><label for="delivery"><strong>Delivery</strong><span>Bring it to your address.</span></label></div><div class="choice"><input type="radio" name="fulfillment" id="pickup" value="pickup"><label for="pickup"><strong>Store pickup</strong><span>Collect from the seller.</span></label></div></div><div id="deliveryFields"><div class="field-grid"><div class="field"><label for="region">Region</label><select id="region" required><option value="">Select region</option><option>Greater Banjul Area</option><option>West Coast Region</option><option>North Bank Region</option><option>Lower River Region</option><option>Central River Region</option><option>Upper River Region</option></select></div><div class="field"><label for="area">Area / town</label><input id="area" required></div><div class="field full"><label for="address">Street / address</label><input id="address" required></div><div class="field full"><label for="landmark">Nearest landmark</label><input id="landmark"></div><div class="field full"><label for="instructions">Delivery instructions</label><textarea id="instructions"></textarea></div></div></div><p class="checkout-note">For store pickup, the seller location will be confirmed after the order is accepted.</p></section>
         <section class="checkout-section"><h2>Coupon</h2><div class="coupon-row"><input id="couponInput" placeholder="Enter coupon code"><button id="applyCouponBtn" type="button">Apply</button></div><p id="couponMessage" class="checkout-note" aria-live="polite"></p></section>
@@ -43,4 +47,3 @@
     <script src="js/states.js"></script>
 </body>
 </html>
-

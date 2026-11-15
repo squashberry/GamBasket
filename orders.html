@@ -14,6 +14,8 @@
             }
         })();
     </script>
+    <link rel="stylesheet" href="css/jd-system.css">
+    <meta name="theme-color" content="#0a6b62">
 </head>
 <body>
 
@@ -60,7 +62,7 @@
     <!-- DESKTOP MARKETPLACE APPLICATION HEADER -->
     <header class="desktop-app-header">
         <a href="index.html" class="desktop-app-brand">
-            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>JulaDirect</span><svg class="brand-bag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--blue);width:20px;height:20px;margin:0 1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </a>
         <div class="desktop-app-search">
             <a href="explore.html" class="desktop-search-fake-input">
@@ -131,7 +133,7 @@
     <main class="mobile-app" style="padding: 20px 16px 120px; max-width: 900px; margin: 0 auto;">
         <div class="section-heading" style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
             <div>
-                <p class="section-eyebrow" style="margin-bottom: 4px; letter-spacing: 1px; font-weight: 800; color: #2563eb;">ORDER HISTORY & LIVE STATUS</p>
+                <p class="section-eyebrow" style="margin-bottom: 4px; letter-spacing: 1px; font-weight: 800; color: var(--blue);">ORDER HISTORY & LIVE STATUS</p>
                 <h1 style="font-size: 26px; font-weight: 800; color: var(--text); margin: 0;">My Orders</h1>
             </div>
         </div>
@@ -233,7 +235,7 @@
             function getStatusBadge(status) {
                 const map = {
                     pending: { label: "Pending Confirmation", color: "#d97706", bg: "#fef3c7", icon: "icon-clock" },
-                    confirmed: { label: "Confirmed", color: "#2563eb", bg: "#eff6ff", icon: "icon-check" },
+                    confirmed: { label: "Confirmed", color: "var(--blue)", bg: "#eff6ff", icon: "icon-check" },
                     processing: { label: "Processing", color: "#7c3aed", bg: "#f5f3ff", icon: "icon-box" },
                     ready_for_delivery: { label: "Ready for Delivery", color: "#0284c7", bg: "#e0f2fe", icon: "icon-truck" },
                     out_for_delivery: { label: "Out for Delivery", color: "#0284c7", bg: "#e0f2fe", icon: "icon-truck" },
@@ -263,7 +265,7 @@
                 if (!session || !session.user) {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 70px 20px; background: var(--surface); border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-small); max-width: 480px; margin: 20px auto;">
-                            <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
+                            <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: var(--blue); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
                                 <svg class="ui-icon" style="width: 32px; height: 32px;"><use href="#icon-box"></use></svg>
                             </div>
                             <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 8px; color: var(--text);">Sign in to view your orders</h2>
@@ -271,7 +273,7 @@
                                 Please log in to track active deliveries and view your JulaDirect order history.
                             </p>
                             <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                                <a href="login.html?redirect=orders.html" class="primary-btn" style="padding: 12px 26px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: #2563eb; color: #fff;">
+                                <a href="login.html?redirect=orders.html" class="primary-btn" style="padding: 12px 26px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: var(--blue); color: #fff;">
                                     Sign In
                                 </a>
                                 <a href="signup.html?redirect=orders.html" class="secondary-btn" style="padding: 12px 24px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: 14px; border: 1px solid var(--border); color: var(--text); background: var(--surface-secondary);">
@@ -294,14 +296,14 @@
                     if (!orders || orders.length === 0) {
                         container.innerHTML = `
                             <div style="text-align: center; padding: 70px 20px; background: var(--surface); border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-small); max-width: 500px; margin: 20px auto;">
-                                <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
+                                <div style="width: 68px; height: 68px; border-radius: 22px; background: #eff6ff; color: var(--blue); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
                                     <svg class="ui-icon" style="width: 32px; height: 32px;"><use href="#icon-box"></use></svg>
                                 </div>
                                 <h2 style="font-size: 20px; font-weight: 800; margin: 0 0 8px; color: var(--text);">No Orders Yet</h2>
                                 <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0 auto 24px; max-width: 320px;">
                                     Your completed orders and live delivery tracking will appear here once you place an order.
                                 </p>
-                                <a href="explore.html" class="primary-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: #2563eb; color: #fff;">
+                                <a href="explore.html" class="primary-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px; background: var(--blue); color: #fff;">
                                     <svg class="ui-icon" style="width: 16px; height: 16px;"><use href="#icon-search"></use></svg>
                                     <span>Start Shopping</span>
                                 </a>
@@ -335,27 +337,27 @@
                                          </div>
                                      `).join("")}
                                      ${["delivered", "completed"].includes(order.status) ? (order.items || []).filter(item => item.id).map(item => `
-                                         <button type="button" class="business-review-order-button" data-review-order="${order.order_id}" data-review-product="${item.id}" style="align-self:flex-start;border:0;background:transparent;color:#2563eb;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:2px 0;">Rate “${item.name}”</button>
+                                         <button type="button" class="business-review-order-button" data-review-order="${order.order_id}" data-review-product="${item.id}" style="align-self:flex-start;border:0;background:transparent;color:var(--blue);font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:2px 0;">Rate “${item.name}”</button>
                                      `).join("") : ""}
                                 </div>
 
                                 <div style="background: var(--surface-secondary); padding: 12px 14px; border-radius: 14px; font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <svg class="ui-icon" style="width: 14px; height: 14px; color: #2563eb;"><use href="#icon-pin"></use></svg>
+                                        <svg class="ui-icon" style="width: 14px; height: 14px; color: var(--blue);"><use href="#icon-pin"></use></svg>
                                         <span><strong>${order.fulfillment_type === "delivery" ? "Delivery to" : "Pickup at"}:</strong> ${order.area || "Greater Banjul"} ${order.address ? `(${order.address})` : ""}</span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                        <svg class="ui-icon" style="width: 14px; height: 14px; color: #2563eb;"><use href="#icon-cart"></use></svg>
+                                        <svg class="ui-icon" style="width: 14px; height: 14px; color: var(--blue);"><use href="#icon-cart"></use></svg>
                                         <span><strong>Payment:</strong> ${order.payment_method === "cod" || order.payment_method === "cash_on_delivery" ? "Cash on Delivery" : "ModemPay · " + String(order.payment_method || "online").toUpperCase()} · ${String(order.payment_status || "pending").replaceAll("_", " ")}</span>
                                     </div>
                                 </div>
 
-                                ${order.status === "out_for_delivery" ? '<button type="button" data-delivery-code="' + order.order_id + '" style="width:100%;margin:6px 0 12px;padding:11px;border:1px solid #2563eb;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-weight:700;cursor:pointer;">Generate buyer handoff code</button>' : ""}
+                                ${order.status === "out_for_delivery" ? '<button type="button" data-delivery-code="' + order.order_id + '" style="width:100%;margin:6px 0 12px;padding:11px;border:1px solid var(--blue);border-radius:12px;background:#eff6ff;color:var(--blue-dark);font-weight:700;cursor:pointer;">Generate buyer handoff code</button>' : ""}
                                 ${order.payment_status === "paid" && order.status !== "cancelled" ? '<button type="button" data-refund-order="' + order.order_id + '" data-refund-total="' + Number(order.total_amount || 0) + '" style="width:100%;margin:0 0 12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--text);font-weight:700;cursor:pointer;">Request a refund</button>' : ""}
-                                ${["pending","failed"].includes(order.payment_status) && ["wave","qmoney","afrimoney"].includes(order.payment_method) ? '<button type="button" data-retry-payment="' + order.order_id + '" data-payment-method="' + order.payment_method + '" style="width:100%;margin:0 0 12px;padding:11px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;">Continue secure payment</button>' : ""}
+                                ${["pending","failed"].includes(order.payment_status) && ["wave","qmoney","afrimoney"].includes(order.payment_method) ? '<button type="button" data-retry-payment="' + order.order_id + '" data-payment-method="' + order.payment_method + '" style="width:100%;margin:0 0 12px;padding:11px;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;">Continue secure payment</button>' : ""}
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border);">
                                     <span style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">Total</span>
-                                    <strong style="font-size: 18px; font-weight: 800; color: #2563eb;">D ${formatPrice(order.total_amount || 0)}</strong>
+                                    <strong style="font-size: 18px; font-weight: 800; color: var(--blue);">D ${formatPrice(order.total_amount || 0)}</strong>
                                 </div>
 
                                 ${order.status === "pending" ? `
@@ -453,7 +455,7 @@
                             <p style="color: var(--text-secondary); font-size: 13px; margin: 0 auto 20px; max-width: 300px;">
                                 Please check your connection and try again.
                             </p>
-                            <button onclick="window.renderOrdersPage()" class="primary-btn" style="padding: 11px 24px; border-radius: 10px; font-weight: 700; border: none; background: #2563eb; color: #fff; cursor: pointer;">
+                            <button onclick="window.renderOrdersPage()" class="primary-btn" style="padding: 11px 24px; border-radius: 10px; font-weight: 700; border: none; background: var(--blue); color: #fff; cursor: pointer;">
                                 Try Again
                             </button>
                         </div>
@@ -494,5 +496,6 @@
             }
         })();
     </script>
+    <script src="js/jd-ui.js" defer></script>
 </body>
 </html>

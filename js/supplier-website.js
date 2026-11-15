@@ -29,7 +29,7 @@
     await auth.ready();
     const session = await auth.getSession();
     if (!session?.user) {
-      const returnTo = "supplier/website.html";
+      const returnTo = "supplier/website.html" + window.location.search;
       window.location.replace("../login.html?redirect=" + encodeURIComponent(returnTo));
       return;
     }

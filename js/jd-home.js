@@ -50,8 +50,7 @@
   async function loadNew() {
     const grid = $("jd-new");
     setGrid(grid, JD.skeletonCards(4), true);
-    try {
-      const rows = await newest();
+    const paint = rows => {
       renderMosaic(rows);
       renderBanner(rows);
       if (!rows.length) {
@@ -61,6 +60,9 @@
       setGrid(grid, rows.map(JD.productCard).join(""), true);
       JD.syncWishlist(grid);
       JD.syncCompare();
+    };
+    try {
+      await JD.swr("home:new", () => JD.data.list("newest", 8), paint);
     } catch (e) {
       console.warn("[JulaDirect] home new", e && e.message);
       renderMosaic([]);
@@ -86,14 +88,16 @@
     state.innerHTML = "";
     flash.innerHTML = '<div class="jd-skel" style="flex:none;width:268px;height:108px;border-radius:18px"></div><div class="jd-skel" style="flex:none;width:268px;height:108px;border-radius:18px"></div>';
     setGrid(grid, JD.skeletonCards(4), true);
-    try {
-      const rows = (await JD.data.list("popular", 8)).filter(r => Number(r.sales_count || 0) > 0);
+    const paint = rows => {
       if (!rows.length) { $("jd-pop-sec").hidden = true; return; }
       $("jd-pop-sec").hidden = false;
       flash.innerHTML = rows.map(flashCard).join("");
       setGrid(grid, rows.map(JD.productCard).join(""), true);
       JD.syncWishlist(grid);
       JD.syncCompare();
+    };
+    try {
+      await JD.swr("home:popular", async () => (await JD.data.list("popular", 8)).filter(r => Number(r.sales_count || 0) > 0), paint);
     } catch (e) {
       console.warn("[JulaDirect] home popular", e && e.message);
       flash.innerHTML = "";

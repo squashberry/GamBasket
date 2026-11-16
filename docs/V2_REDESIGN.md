@@ -56,6 +56,31 @@ A full-screen, animated, typography-led banner. While one is live the homepage h
 2. Deploy the branch.
 3. As an admin, open `admin/banners.html`, create a banner, preview it, then switch it on.
 
+## SEO and indexing
+
+The site stays multi-page HTML so every product can be indexed. Before this work there was no sitemap, no robots.txt, no canonical or social tags, and product pages were drawn entirely by JavaScript, so a crawler saw an empty shell. Added as Cloudflare Pages Functions (assumes Cloudflare Pages; the repo also holds `.htaccess` and `server.conf`, which suggests another host may exist, in which case these files are inert and the same behaviour needs equivalent server rules):
+
+| File | Purpose |
+|---|---|
+| `functions/product.js` | For `/product?id=<uuid>`: reads the approved listing from Supabase's public REST API and injects title, description, canonical, Open Graph/Twitter tags, Product JSON-LD and a readable copy of the listing into the static shell. Unknown id returns 404 with noindex. Any failure serves the plain static page. |
+| `functions/sitemap.xml.js` | Key pages, every category, and up to 5,000 approved products with `lastmod`. |
+| `functions/robots.txt.js` | Private areas and search/filter combinations disallowed; absolute `Sitemap:` line. |
+| `_routes.json` | Limits Functions to those routes so static assets are not billed as invocations. |
+| `_headers` | `X-Robots-Tag: noindex` for account, dashboard and auth pages; nosniff and referrer policy; short stale-while-revalidate caching for css/js. |
+
+Credentials: the functions use `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` environment variables if set, otherwise they read the same public values from `js/config.js`. Nothing secret is introduced.
+
+Not done: category and search result pages (`explore`) are still rendered client-side. Product URLs are discoverable through the sitemap, which is the main indexing path, but server-rendering `explore` would help category pages rank. After deploying, submit `/sitemap.xml` in Google Search Console and test a product URL with the URL Inspection tool to confirm the rendered HTML contains the listing.
+
+## App-like navigation (without a single-page app)
+
+- Cross-document view transitions (`@view-transition`): header, floating nav, buy bar and seller sidebar stay in place while the content cross-fades (Chrome and Safari; others get a short fade-in).
+- Speculative prefetching (Speculation Rules, with a link-prefetch fallback), primary tabs warmed eagerly; skipped on Save-Data and 2G.
+- `JD.swr`: cached-first rendering of public marketplace data (home lists, every Explore query, product pages), re-rendering only when fresh data differs. Never used for carts, wishlists or orders.
+- Back/forward cache: restored pages refresh cart, account, wishlist and compare state.
+- `manifest.webmanifest` and `sw.js`: installable shell. The worker is network-first for pages and css/js (a deploy is never masked by a stale copy), cache-first for images, and never touches cross-origin or non-GET requests. To remove it, deploy a `sw.js` that unregisters itself.
+- The manifest only has an SVG icon; install prompts on some browsers need 192px and 512px PNG icons.
+
 ## Unchanged by design
 
 Payments, COD commission reserve, ModemPay verification, order transactions and every existing migration, function and policy are untouched. `checkout.html` keeps the Cash on Delivery / "Coming soon" contract the deployed smoke test asserts.

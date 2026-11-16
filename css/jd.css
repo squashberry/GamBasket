@@ -817,3 +817,23 @@ body[data-to-theme="blue"] .jd-tbar__logo .jd-logo__word, body[data-to-theme="bl
 .jd-ssr img { max-width: 100%; height: auto; border-radius: 16px; background: var(--jd-soft); }
 .jd-ssr ul { padding-left: 20px; color: var(--jd-ink-2); }
 .jd-ssr nav { font-size: 13px; color: var(--jd-ink-3); }
+
+/* =====================================================================
+   App-like page switching. Pages stay real HTML documents (crawlable); the
+   browser cross-fades only the content while the header, floating
+   navigation and buy bar stay in place. Browsers without cross-document view
+   transitions get a short fade-in instead.
+   ===================================================================== */
+@view-transition { navigation: auto; }
+html { background: #eef1f8; }
+body.jd a, body.jd button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.jd-header { view-transition-name: jd-header; }
+.jd-fnav { view-transition-name: jd-fnav; }
+.jd-mobilebar { view-transition-name: jd-mobilebar; }
+::view-transition-group(jd-header), ::view-transition-group(jd-fnav), ::view-transition-group(jd-mobilebar) { animation-duration: 0s; }
+::view-transition-old(root) { animation: .14s ease both jd-vt-out; }
+::view-transition-new(root) { animation: .24s cubic-bezier(.2, .8, .2, 1) both jd-vt-in; }
+@keyframes jd-vt-out { to { opacity: 0; } }
+@keyframes jd-vt-in { from { opacity: 0; transform: translateY(10px); } }
+@supports not (view-transition-name: none) { body.jd #jd-main { animation: jd-vt-in .24s cubic-bezier(.2, .8, .2, 1) both; } }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } body.jd #jd-main { animation: none; } }

@@ -507,6 +507,101 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".jd-panel")) closePanels(); });
   }
 
+  /* ---------- instant navigation, cache-first rendering, installable shell ---------- */
+  const prefetched = new Set();
+  const nativeSpeculation = !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules"));
+  function prefetchLink(a) {
+    if (nativeSpeculation) return;
+    try {
+      const u = new URL(a.href, location.href);
+      if (u.origin !== location.origin || u.href === location.href || a.target === "_blank" || a.hasAttribute("download")) return;
+      if (u.hash && u.pathname === location.pathname) return;
+      if (prefetched.has(u.href) || prefetched.size >= 24) return;
+      prefetched.add(u.href);
+      const l = document.createElement("link");
+      l.rel = "prefetch";
+      l.href = u.href;
+      l.as = "document";
+      document.head.appendChild(l);
+    } catch (e) { /* ignore */ }
+  }
+  function bindInstantNav() {
+    const c = navigator.connection;
+    const slow = !!(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || "")));
+    if (!slow) {
+      if (nativeSpeculation) {
+        const s = document.createElement("script");
+        s.type = "speculationrules";
+        s.textContent = JSON.stringify({ prefetch: [
+          { where: { selector_matches: ".jd-fnav a" }, eagerness: "eager" },
+          { where: { and: [{ href_matches: "/*" }, { not: { selector_matches: "[data-no-prefetch]" } }] }, eagerness: "moderate" }
+        ] });
+        document.head.appendChild(s);
+      } else {
+        let t;
+        const find = e => (e.target && e.target.closest ? e.target.closest("a[href]") : null);
+        document.addEventListener("pointerover", e => { const a = find(e); if (!a || e.pointerType === "touch") return; clearTimeout(t); t = setTimeout(() => prefetchLink(a), 70); }, { passive: true });
+        ["pointerdown", "touchstart"].forEach(ev => document.addEventListener(ev, e => { const a = find(e); if (a) prefetchLink(a); }, { passive: true }));
+        (window.requestIdleCallback || setTimeout)(() => JD.$$(".jd-fnav a").forEach(prefetchLink), 1500);
+      }
+    }
+    /* Restored from the back/forward cache: refresh anything that may have changed. */
+    window.addEventListener("pageshow", e => {
+      if (e.persisted) { refreshCartCount(); renderAccount(); JD.syncWishlist(document); syncCompare(); }
+    });
+  }
+  function registerApp() {
+    if (!document.querySelector('link[rel="manifest"]')) {
+      const l = document.createElement("link");
+      l.rel = "manifest";
+      l.href = "/manifest.webmanifest";
+      document.head.appendChild(l);
+    }
+    if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+      window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+    }
+  }
+
+  /* Stale-while-revalidate for public marketplace data. onData runs with cached
+     data immediately (if any), then again with fresh data only when it differs.
+     Never used for carts, wishlists, orders or anything personal. */
+  const SWR = "jd_swr:";
+  function swrPrune(max) {
+    const keys = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const k = sessionStorage.key(i);
+      if (k && k.indexOf(SWR) === 0) { try { keys.push([k, JSON.parse(sessionStorage.getItem(k)).t]); } catch (e) { sessionStorage.removeItem(k); } }
+    }
+    keys.sort((a, b) => a[1] - b[1]);
+    while (keys.length > max) sessionStorage.removeItem(keys.shift()[0]);
+  }
+  function swrWrite(key, value) {
+    const payload = JSON.stringify({ t: Date.now(), v: value });
+    try { sessionStorage.setItem(SWR + key, payload); swrPrune(24); }
+    catch (e) { try { swrPrune(4); sessionStorage.setItem(SWR + key, payload); } catch (e2) { /* storage full or unavailable */ } }
+  }
+  JD.swr = async function (key, fetcher, onData, opts) {
+    const maxAge = (opts && opts.maxAge) || 3600000;
+    let cachedStr = null;
+    try {
+      const raw = sessionStorage.getItem(SWR + key);
+      if (raw) {
+        const c = JSON.parse(raw);
+        if (c && Date.now() - c.t < maxAge) { cachedStr = JSON.stringify(c.v); onData(c.v, { stale: true }); }
+      }
+    } catch (e) { cachedStr = null; }
+    try {
+      const fresh = await fetcher();
+      swrWrite(key, fresh);
+      if (cachedStr !== null && JSON.stringify(fresh) === cachedStr) return fresh;
+      onData(fresh, { stale: false });
+      return fresh;
+    } catch (e) {
+      if (cachedStr === null) throw e;
+      return null;
+    }
+  };
+
   JD.mountShell = function (opts) {
     const o = opts || {};
     document.body.classList.add("jd");
@@ -523,6 +618,8 @@
     paintArea();
     applyTakeoverHint();
     bindTakeoverBar();
+    bindInstantNav();
+    registerApp();
     const areaBtn = document.getElementById("jd-area-btn");
     if (areaBtn) areaBtn.addEventListener("click", openAreaSheet);
     renderAccount();

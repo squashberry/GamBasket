@@ -211,3 +211,19 @@
   .seller-page [style*="border-right:1px"] { max-height: 180px; border-right: 0 !important; border-bottom: 1px solid var(--seller-line); }
 }
 @media (prefers-reduced-motion: reduce) { .seller-page.seller-ready .seller-main { transition: none; } .seller-product-card { transition: none; } }
+
+/* ---------- app-like page switching (header and sidebar stay put) ---------- */
+@view-transition { navigation: auto; }
+html { background: #eef1f8; }
+.seller-page .desktop-app-header { view-transition-name: seller-header; }
+.seller-sidebar { view-transition-name: seller-sidebar; }
+.seller-bottom-nav { view-transition-name: seller-bottom-nav; }
+::view-transition-group(seller-header), ::view-transition-group(seller-sidebar), ::view-transition-group(seller-bottom-nav) { animation-duration: 0s; }
+::view-transition-old(root) { animation: .12s ease both seller-vt-out; }
+::view-transition-new(root) { animation: .22s cubic-bezier(.2, .8, .2, 1) both seller-vt-in; }
+@keyframes seller-vt-out { to { opacity: 0; } }
+@keyframes seller-vt-in { from { opacity: 0; transform: translateY(8px); } }
+/* Show the page immediately instead of holding it invisible until the profile loads;
+   access is still gated by #sellerProtectedContent. */
+.seller-page:not(.seller-ready) .seller-main { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }

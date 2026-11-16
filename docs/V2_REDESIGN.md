@@ -17,9 +17,19 @@ No build step (the site is static HTML on Cloudflare Pages), so the new frontend
 
 ## Pages
 
-Rebuilt on the v2 design: homepage, Explore, product, cart, wishlist, compare, admin banner manager.
+Rebuilt on the v2 design: homepage, Explore, product, cart, wishlist, compare, admin banner manager, Seller Centre Overview.
+Restyled by rewriting one shared stylesheet, with no markup or script changes:
+- **Auth** (`css/auth.css`, plus `css/auth-recovery.css` for forgot-password): login, signup, reset-password, verify-email and forgot-password in a split-screen layout with a fixed blue brand panel. Every state class the scripts toggle is styled.
+- **Seller Centre** (`css/seller.css`): all 14 `supplier/*` pages (floating sidebar, KPI cards, panels, tables, chips, floating mobile nav). `css/seller-website.css` and `css/seller-wallet.css` are untouched but inherit the new palette through re-pointed tokens; expect to review the Website and Earnings pages visually.
 Restyled with logic untouched: checkout (every id, input name, value, `disabled` flag, script and load order preserved; `css/jd-checkout.css`).
-**Not yet migrated (still the old design):** login, signup, forgot/reset password, email verification, account (`me`), orders, messages, saved searches, store pages, Seller Centre, Administration (other than banners), courier, operations, affiliate, static/legal pages.
+**Not yet migrated (still the old design):** account (`me`), orders, messages, saved searches, store pages, Administration (other than banners), courier, operations, affiliate, static/legal pages.
+
+### Findings worth knowing
+
+- The previous Seller Overview never loaded data: nothing populated pending orders, product count, recent orders, inventory alerts or the sales chart, and the sales/fee tiles depended on a script the page did not load. It displayed hardcoded zeros and "Sales chart will appear here". The rebuilt Overview computes everything from the seller's own orders and products, using the same sales and 5% fee formula as `js/seller-earnings.js`.
+- The previous wishlist page substituted a stock photo and a fake "Marketplace Product" for rows it could not resolve; the rebuilt page reports unavailable items honestly.
+- `js/seller-earnings.js` `openGamBasketFeePayment` shows a browser `alert()` saying to connect the gateway: it is a placeholder, not a working fee payment flow. Not changed here.
+- The seller commission is hardcoded at 5% in the earnings module while `js/seller.js` has per-plan rates. The Overview follows the earnings module for consistency; reconcile the two.
 
 ## Design references
 
@@ -64,3 +74,5 @@ Payments, COD commission reserve, ModemPay verification, order transactions and 
 - No dark mode in the v2 design (the legacy toggle was not carried over).
 - Delivery wording on the product page reads `delivery_available`; confirm what checkout does for items where it is false.
 - `css/style.css` and the legacy page scripts remain for unmigrated pages, so the site is visibly two designs until they are migrated.
+- Dark mode is not carried over to the auth and seller skins either (their theme toggles are hidden).
+- The auth brand panel text and dashboard illustration are decorative CSS pseudo-elements, so they are not announced by screen readers and cannot be translated without CSS changes.

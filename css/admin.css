@@ -10,7 +10,7 @@
             rgba(37,99,235,.06),
             transparent 28%
         ),
-        var(--background,#f5f7fb);
+        var(--background,#eef1f8);
     color:var(--text,#0f172a);
 }
 
@@ -50,10 +50,10 @@
     border-radius:50%;
     background:
         conic-gradient(
-            #2563eb,
-            #38bdf8,
+            #1451e6,
+            #5b8cff,
             transparent,
-            #2563eb
+            #1451e6
         );
     animation:loaderRotate 1.8s linear infinite;
 }
@@ -65,7 +65,7 @@
     place-items:center;
     border-radius:22px;
     background:#091627;
-    color:#60a5fa;
+    color:#2f6bff;
 }
 
 .admin-loader-logo svg {
@@ -75,7 +75,7 @@
 
 .admin-loader-kicker {
     margin-top:20px;
-    color:#60a5fa;
+    color:#2f6bff;
     font-size:8px;
     font-weight:900;
     letter-spacing:.2em;
@@ -110,8 +110,8 @@
     background:
         linear-gradient(
             90deg,
-            #2563eb,
-            #38bdf8
+            #1451e6,
+            #5b8cff
         );
     transition:width .45s ease;
 }
@@ -129,7 +129,7 @@
     width:6px;
     height:6px;
     border-radius:50%;
-    background:#22c55e;
+    background:#1fae78;
     box-shadow:
         0 0 0 4px rgba(34,197,94,.08);
 }
@@ -194,7 +194,7 @@
     background:
         linear-gradient(
             135deg,
-            #2563eb,
+            #1451e6,
             #0ea5e9
         );
     color:#fff;
@@ -247,8 +247,8 @@
     background:
         linear-gradient(
             135deg,
-            #2563eb,
-            #1d4ed8
+            #1451e6,
+            #0e3dbd
         );
     color:#fff;
     font-size:11px;
@@ -283,7 +283,7 @@
     height:7px;
     flex:0 0 7px;
     border-radius:50%;
-    background:#22c55e;
+    background:#1fae78;
     box-shadow:
         0 0 0 4px rgba(34,197,94,.07);
 }
@@ -350,7 +350,7 @@
 }
 
 .admin-nav-item.active .admin-nav-icon {
-    color:#60a5fa;
+    color:#2f6bff;
     background:rgba(37,99,235,.13);
 }
 
@@ -451,7 +451,7 @@
 }
 
 .admin-breadcrumb b {
-    color:#cbd5e1;
+    color:#cfd9ee;
 }
 
 .admin-breadcrumb strong {
@@ -493,7 +493,7 @@
     padding:3px 5px;
     border:1px solid var(--border);
     border-radius:5px;
-    background:var(--surface-secondary,#f8fafc);
+    background:var(--surface-secondary,#f4f7fd);
     font-size:6px;
 }
 
@@ -590,7 +590,7 @@
 }
 
 .admin-heading-label {
-    color:#2563eb;
+    color:#1451e6;
     font-size:7px;
     font-weight:900;
     letter-spacing:.17em;
@@ -626,8 +626,8 @@
 .admin-primary-button {
     min-height:38px;
     padding:0 14px;
-    border:1px solid #2563eb;
-    background:#2563eb;
+    border:1px solid #1451e6;
+    background:#1451e6;
     color:#fff;
     box-shadow:
         0 8px 22px rgba(37,99,235,.16);
@@ -643,20 +643,20 @@
 
 .admin-small-button.green {
     border-color:#bbf7d0;
-    background:#f0fdf4;
-    color:#15803d;
+    background:#e7f6ef;
+    color:#0b7a56;
 }
 
 .admin-small-button.red {
     border-color:#fecaca;
-    background:#fef2f2;
-    color:#dc2626;
+    background:#fdecec;
+    color:#b42328;
 }
 
 .admin-text-button {
     border:0;
     background:transparent;
-    color:#2563eb;
+    color:#1451e6;
     font:800 8px/1 inherit;
     cursor:pointer;
 }
@@ -743,7 +743,7 @@
 }
 
 .admin-card-header span {
-    color:#2563eb;
+    color:#1451e6;
     font-size:7px;
     font-weight:900;
     letter-spacing:.14em;
@@ -793,8 +793,8 @@
     background:
         linear-gradient(
             to top,
-            #1d4ed8,
-            #60a5fa
+            #0e3dbd,
+            #2f6bff
         );
     transform-origin:bottom;
     animation:
@@ -867,8 +867,8 @@
     place-items:center;
     flex:0 0 29px;
     border-radius:9px;
-    background:#eff6ff;
-    color:#2563eb;
+    background:#eef4ff;
+    color:#1451e6;
     font-size:8px;
     font-weight:900;
 }
@@ -895,7 +895,7 @@
     padding:5px 8px;
     border-radius:99px;
     background:#ecfdf5;
-    color:#15803d;
+    color:#0b7a56;
     font-size:7px;
 }
 
@@ -1026,7 +1026,7 @@
 .admin-table th {
     padding:11px 14px;
     border-bottom:1px solid var(--border);
-    background:var(--surface-secondary,#f8fafc);
+    background:var(--surface-secondary,#f4f7fd);
     color:var(--text-secondary);
     font-size:6px;
     font-weight:900;
@@ -1068,8 +1068,8 @@
 .admin-role-pill {
     padding:3px 6px;
     border-radius:99px;
-    background:#eff6ff;
-    color:#2563eb;
+    background:#eef4ff;
+    color:#1451e6;
     font-size:6px;
     font-weight:900;
     text-transform:uppercase;
@@ -1078,8 +1078,8 @@
 .admin-ban-pill {
     padding:3px 6px;
     border-radius:99px;
-    background:#fef2f2;
-    color:#dc2626;
+    background:#fdecec;
+    color:#b42328;
     font-size:6px;
     font-weight:900;
 }
@@ -1113,8 +1113,8 @@
     place-items:center;
     flex:0 0 39px;
     border-radius:12px;
-    background:#eff6ff;
-    color:#2563eb;
+    background:#eef4ff;
+    color:#1451e6;
     font-size:8px;
     font-weight:900;
 }
@@ -1167,7 +1167,7 @@
         linear-gradient(
             135deg,
             #e2e8f0,
-            #f8fafc
+            #f4f7fd
         );
     background-position:center;
     background-size:cover;
@@ -1269,8 +1269,8 @@
     border:1px solid var(--border);
     border-right:0;
     border-radius:9px 0 0 9px;
-    background:var(--surface-secondary,#f8fafc);
-    color:#2563eb;
+    background:var(--surface-secondary,#f4f7fd);
+    color:#1451e6;
 }
 
 .admin-money-field input {
@@ -1309,7 +1309,7 @@
 .admin-website-domain {
     display:block;
     margin-top:4px;
-    color:#2563eb;
+    color:#1451e6;
     font-size:7px;
 }
 
@@ -1323,7 +1323,7 @@
 .admin-website-meta span {
     padding:4px 6px;
     border-radius:99px;
-    background:var(--surface-secondary,#f8fafc);
+    background:var(--surface-secondary,#f4f7fd);
     color:var(--text-secondary);
     font-size:6px;
 }
@@ -1347,13 +1347,13 @@
 }
 
 .admin-plan-card.featured {
-    border-color:#60a5fa;
+    border-color:#2f6bff;
     box-shadow:
         0 0 0 2px rgba(37,99,235,.07);
 }
 
 .admin-plan-card > span {
-    color:#2563eb;
+    color:#1451e6;
     font-size:7px;
     font-weight:900;
     letter-spacing:.15em;
@@ -1421,8 +1421,8 @@
     display:grid;
     place-items:center;
     border-radius:12px;
-    background:#eff6ff;
-    color:#2563eb;
+    background:#eef4ff;
+    color:#1451e6;
 }
 
 .admin-category-copy {
@@ -1460,8 +1460,8 @@
     background:
         linear-gradient(
             to top,
-            #2563eb,
-            #60a5fa
+            #1451e6,
+            #2f6bff
         );
     transform-origin:bottom;
     animation:
@@ -1542,7 +1542,7 @@
     flex:0 0 36px;
     border:1px solid var(--border);
     border-radius:99px;
-    background:#cbd5e1;
+    background:#cfd9ee;
     cursor:pointer;
 }
 
@@ -1559,8 +1559,8 @@
 }
 
 .admin-settings-list input:checked {
-    border-color:#2563eb;
-    background:#2563eb;
+    border-color:#1451e6;
+    background:#1451e6;
 }
 
 .admin-settings-list input:checked::after {
@@ -1615,7 +1615,7 @@
 }
 
 .admin-drawer-header > div span {
-    color:#2563eb;
+    color:#1451e6;
     font-size:7px;
     font-weight:900;
     letter-spacing:.14em;
@@ -1651,7 +1651,7 @@
     padding:14px;
     border:1px solid var(--border);
     border-radius:14px;
-    background:var(--surface-secondary,#f8fafc);
+    background:var(--surface-secondary,#f4f7fd);
 }
 
 .admin-drawer-section {
@@ -1724,8 +1724,8 @@
 
 .admin-role-control button.active {
     border-color:#86efac;
-    background:#f0fdf4;
-    color:#15803d;
+    background:#e7f6ef;
+    color:#0b7a56;
 }
 
 .admin-user-action-grid {
@@ -1780,7 +1780,7 @@
     height:27px;
     border:0;
     border-radius:7px;
-    background:var(--surface-secondary,#f8fafc);
+    background:var(--surface-secondary,#f4f7fd);
     color:var(--text);
     cursor:pointer;
 }
@@ -2101,3 +2101,61 @@
     }
 
 }
+
+/* =====================================================================
+   JulaDirect v2 Administration skin.
+   The stylesheet above was re-toned in place (legacy sky/slate literals ->
+   the JulaDirect blue/navy system) and the custom properties it reads are
+   re-pointed here. The block below is visual only (colour, radius, shadow):
+   it does not change positioning, sizing or any state class, so the sidebar,
+   drawers, modals and mobile menu behave exactly as before.
+   ===================================================================== */
+.admin-page {
+  --background: #eef1f8;
+  --border: #e1e8f5;
+  --surface: #ffffff;
+  --surface-secondary: #f4f7fd;
+  --text: #0a1a3f;
+  --text-secondary: #66759a;
+  background: #eef1f8;
+  color: #0a1a3f;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+html { background: #eef1f8; }
+.admin-page button, .admin-page a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.admin-sidebar { background: #fff; border-color: #e1e8f5; box-shadow: 0 2px 14px rgba(10, 26, 63, .05); }
+.admin-brand { color: #0a1a3f; letter-spacing: -.04em; }
+.admin-brand-mark, .admin-avatar { background: #1451e6; color: #fff; }
+.admin-nav-item { border-radius: 14px; transition: background .15s, color .15s, box-shadow .15s; }
+.admin-nav-item:hover { background: #f4f7fd; }
+.admin-nav-item.active, .admin-nav-item[aria-current="page"] { background: #1451e6; color: #fff; box-shadow: 0 8px 20px rgba(20, 81, 230, .26); }
+.admin-online-dot { background: #1fae78; box-shadow: 0 0 0 4px rgba(31, 174, 120, .16); }
+.admin-topbar, .admin-mobile-header { background: #eef1f8; border-color: transparent; }
+.admin-search-trigger, .admin-top-action, .admin-top-user, .admin-icon-button { background: #fff; border-color: #e1e8f5; box-shadow: 0 2px 14px rgba(10, 26, 63, .04); color: #0a1a3f; }
+.admin-heading-label { color: #1451e6; }
+.admin-primary-button { background: #1451e6; border-color: #1451e6; color: #fff; border-radius: 13px; box-shadow: 0 8px 20px rgba(20, 81, 230, .22); }
+.admin-primary-button:hover { background: #0e3dbd; border-color: #0e3dbd; }
+.admin-small-button { border-radius: 12px; }
+.admin-text-button { color: #1451e6; }
+.admin-card, .admin-kpi, .admin-mini-card, .admin-product-card, .admin-website-card, .admin-plan-card, .admin-drawer-stat { background: #fff; border-color: transparent; border-radius: 22px; box-shadow: 0 2px 14px rgba(10, 26, 63, .05); }
+.admin-kpi-grid > .admin-kpi:first-child { background: #1451e6; color: #fff; }
+.admin-kpi-grid > .admin-kpi:first-child * { color: #fff; }
+.admin-product-card { transition: box-shadow .2s, transform .2s; }
+.admin-product-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(10, 26, 63, .1); }
+.admin-table-wrapper { background: #fff; border-color: transparent; border-radius: 22px; box-shadow: 0 2px 14px rgba(10, 26, 63, .05); }
+.admin-table th { color: #66759a; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; }
+.admin-table tbody tr:hover { background: #f6f9ff; }
+.admin-role-pill { background: #eef4ff; color: #0e3dbd; border-radius: 999px; }
+.admin-ban-pill { background: #fdecec; color: #b42328; border-radius: 999px; }
+.health-pill { border-radius: 999px; }
+.admin-list-item, .admin-category-item, .admin-log-item, .admin-activity-item { border-color: #e1e8f5; }
+.admin-chart-bar { background: #bcd2ff; }
+.admin-chart-bar:hover { background: #1451e6; }
+.admin-search-box, .admin-global-search-field { border-color: #e1e8f5; border-radius: 14px; background: #fff; }
+.admin-search-box:focus-within, .admin-global-search-field:focus-within { border-color: #1451e6; box-shadow: 0 0 0 4px #dbe7ff; }
+.admin-user-drawer, .admin-search-modal-inner { background: #fff; border-radius: 26px; }
+.admin-empty { border-color: #cfd9ee; background: #fff; border-radius: 22px; }
+.admin-loader-orbit, .admin-loader-logo { border-color: rgba(20, 81, 230, .35); }
+.admin-page :focus-visible { outline: 3px solid #2f6bff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .admin-product-card { transition: none; } }

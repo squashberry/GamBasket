@@ -12,6 +12,8 @@
 
   /* ---------- utilities ---------- */
   JD.isUuid = v => UUID.test(String(v || ""));
+  /* "../" repeated once per folder the page sits in, so shell links work from /admin/ and similar. */
+  JD.root = "../".repeat(Math.max(0, location.pathname.split("/").filter(Boolean).length - 1));
   JD.esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   JD.safeUrl = u => {
     try {
@@ -29,7 +31,7 @@
   JD.$$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
   JD.params = () => new URLSearchParams(location.search);
   JD.debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
-  JD.loginUrl = () => "login.html?redirect=" + encodeURIComponent(location.href);
+  JD.loginUrl = () => JD.root + "login.html?redirect=" + encodeURIComponent(location.href);
   JD.auth = () => window.GamBasketAuth || null;
   JD.client = async () => {
     const A = JD.auth();
@@ -373,7 +375,7 @@
       if (!b) return;
       const v = b.getAttribute("data-area");
       JD.area.set(v);
-      location.href = v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v);
+      location.href = JD.root + (v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v));
     });
     document.addEventListener("keydown", esc);
     document.body.appendChild(scrim);
@@ -427,7 +429,7 @@
     document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !menu.hidden) { close(); btn.focus(); } });
     document.getElementById("jd-signout").addEventListener("click", async () => {
       try { await A.signOut(); } catch (e) { /* proceed to leave the page */ }
-      location.href = "index.html";
+      location.href = JD.root + "index.html";
     });
   }
 
@@ -604,7 +606,12 @@
 
   JD.mountShell = function (opts) {
     const o = opts || {};
-    document.body.classList.add("jd");
+    if (!o.noBodyClass) document.body.classList.add("jd");
+    if (JD.root) {
+      const fix = el => { const h = el.getAttribute("href"); if (h && !/^(#|\/|[a-z][a-z0-9+.-]*:)/i.test(h) && !el.dataset.jdFixed) { el.setAttribute("href", JD.root + h); el.dataset.jdFixed = "1"; } };
+      const scan = n => { if (n.nodeType !== 1) return; if (n.matches("a[href]")) fix(n); n.querySelectorAll("a[href]").forEach(fix); };
+      new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(scan))).observe(document.documentElement, { childList: true, subtree: true });
+    }
     const h = document.getElementById("jd-header");
     const f = document.getElementById("jd-footer");
     const b = document.getElementById("jd-bottomnav");

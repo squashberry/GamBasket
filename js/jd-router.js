@@ -32,7 +32,12 @@
   const ROUTES = {
     index: "home", explore: "explore", wishlist: "wishlist", cart: "cart", compare: "",
     product: "", me: "account", orders: "account", messages: "account",
-    settings: "account", security: "account", "saved-searches": "account"
+    settings: "account", security: "account", "saved-searches": "account",
+    "supplier/index": "", "supplier/add-product": "", "supplier/analytics": "",
+    "supplier/customers": "", "supplier/earnings": "", "supplier/edit-product": "",
+    "supplier/messages": "", "supplier/orders": "", "supplier/pickup-delivery": "",
+    "supplier/products": "", "supplier/quotes": "", "supplier/settings": "",
+    "supplier/store": "", "supplier/website": ""
   };
   const WARM_ROUTES = ["index", "explore", "wishlist", "cart", "compare"];
   /* Page-specific body classes are switched with the active pane. */
@@ -53,11 +58,19 @@
     try { url = u instanceof URL ? u : new URL(String(u), location.href); } catch (e) { return null; }
     if (url.origin !== location.origin) return null;
     const parts = url.pathname.split("/").filter(Boolean);
+    if (parts[0] === "supplier") {
+      if (parts.length > 2) return null;
+      const page = (parts[1] || "index").replace(/\.html$/i, "");
+      const route = "supplier/" + page;
+      return Object.prototype.hasOwnProperty.call(ROUTES, route) ? route : null;
+    }
     const last = (parts.pop() || "index").replace(/\.html$/i, "");
     if (parts.length) return null;
     return Object.prototype.hasOwnProperty.call(ROUTES, last) ? last : null;
   }
   const fileFor = route => route + ".html";
+  const isSupplierRoute = route => typeof route === "string" && route.startsWith("supplier/");
+  const sameRouteFamily = (a, b) => isSupplierRoute(a) === isSupplierRoute(b);
 
   /* ---------- listener scoping ---------- */
   function scopeListener(pane, type, fn) {
@@ -241,6 +254,19 @@
   }
 
   function syncShell(route, url) {
+    if (isSupplierRoute(route)) {
+      const navRoute = ({
+        "supplier/edit-product": "supplier/products",
+        "supplier/analytics": "supplier/index",
+        "supplier/pickup-delivery": "supplier/settings",
+        "supplier/quotes": "supplier/orders"
+      })[route] || route;
+      document.querySelectorAll(".seller-nav a[href], .seller-mobile-nav a[href]").forEach(a => {
+        const on = routeOf(a.href) === navRoute;
+        a.classList.toggle("active", on);
+        if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      });
+    }
     const active = ROUTES[route];
     document.querySelectorAll(".jd-fnav__tab, .jd-fnav__fab").forEach(a => {
       const linkRoute = routeOf(a.getAttribute("href"));
@@ -292,7 +318,7 @@
   }
 
   function makePane(route, wrapper, main, flags) {
-    const pane = { route, el: wrapper, main, flags: new Set(flags), strippedIds: null, scrollY: 0, title: document.title, desc: "" };
+    const pane = { route, el: wrapper, main, flags: new Set(flags), strippedIds: null, scrollY: 0, title: document.title, desc: "", scriptKeys: new Set() };
     pane.flags.forEach(c => MANAGED.add(c));
     wrapper.hidden = false;
     panes.set(route, pane);
@@ -304,7 +330,10 @@
     if (token !== navToken) return null;
     const doc = new DOMParser().parseFromString(html, "text/html");
     const main = doc.getElementById("jd-main") || doc.querySelector("main");
-    if (!main || !doc.getElementById("jd-header")) throw new Error("not an app page");
+    if (!main || (!isSupplierRoute(route) && !doc.getElementById("jd-header"))) throw new Error("not an app page");
+    if (isSupplierRoute(route) && doc.querySelector(".seller-shell") && !document.querySelector(".seller-shell")) {
+      throw new Error("supplier workspace shell is not mounted");
+    }
     await loadStyles(doc);
     if (token !== navToken) return null;
 
@@ -312,18 +341,25 @@
     wrapper.className = "jd-pane";
     wrapper.setAttribute("data-route", route);
     wrapper.appendChild(document.importNode(main, true));
-    appendPageSupport(wrapper, doc.body, main, true);
+    if (!isSupplierRoute(route)) appendPageSupport(wrapper, doc.body, main, true);
     appendHeadStyles(wrapper, doc);
 
     const flags = Array.from(doc.body.classList).filter(c => c !== "jd");
+    if (isSupplierRoute(route) && !flags.includes("seller-page")) flags.push("seller-page");
     const pane = makePane(route, wrapper, wrapper.querySelector("main"), flags);
     pane.el.hidden = true;
     const dm = doc.querySelector('meta[name="description"]');
     pane.title = (doc.title || document.title);
     pane.desc = dm ? dm.getAttribute("content") || "" : "";
 
-    const { footer, nav } = shellNodes();
-    (footer || nav || document.body.lastElementChild).before(wrapper);
+    if (isSupplierRoute(route)) {
+      const sellerShell = document.querySelector(".seller-shell");
+      if (sellerShell) sellerShell.appendChild(wrapper);
+      else (document.querySelector("footer") || document.body.lastElementChild).before(wrapper);
+    } else {
+      const { footer, nav } = shellNodes();
+      (footer || nav || document.body.lastElementChild).before(wrapper);
+    }
     if (token !== navToken) { panes.delete(route); wrapper.remove(); return null; }
 
     /* The destination URL and active pane are established before page code runs. */
@@ -336,10 +372,19 @@
       for (const original of Array.from(doc.querySelectorAll("script"))) {
         if (original.hasAttribute("src")) {
           const src = new URL(original.getAttribute("src"), url.href).href;
-          if (!have.has(src)) {
+          const path = new URL(src).pathname;
+          const paneModule = isSupplierRoute(route) && /\/js\/(?:seller(?:-[a-z-]+)?|supplier-website|business-roles|business-analytics|product-attributes)\.js$/i.test(path);
+          if (paneModule) {
+            if (!pane.scriptKeys.has(src)) {
+              const cacheKey = src + (src.includes("?") ? "&" : "?") + "jd-pane=" + encodeURIComponent(route);
+              await loadScript(cacheKey);
+              pane.scriptKeys.add(src);
+            }
+          } else if (!have.has(src)) {
             await loadScript(src);
             have.add(src);
           }
+          if (token !== navToken) return null;
           continue;
         }
         const type = (original.getAttribute("type") || "").trim().toLowerCase();
@@ -362,7 +407,7 @@
     let url;
     try { url = new URL(String(target), location.href); } catch (e) { location.href = String(target); return false; }
     const route = routeOf(url);
-    if (!ready || !route) { location.href = url.href; return false; }
+    if (!ready || !route || (current && !sameRouteFamily(current.route, route))) { location.href = url.href; return false; }
     const token = ++navToken;
     const existing = panes.get(route);
     if (existing) {
@@ -398,7 +443,8 @@
     if ((a.target && a.target !== "_self") || a.hasAttribute("download") || a.hasAttribute("data-no-router")) return;
     let url;
     try { url = new URL(a.href, location.href); } catch (err) { return; }
-    if (!routeOf(url)) return;
+    const route = routeOf(url);
+    if (!route || (current && !sameRouteFamily(current.route, route))) return;
     if (url.hash && url.pathname === location.pathname && url.search === location.search) return;
     e.preventDefault();
     navigate(url.href);
@@ -410,7 +456,8 @@
     const action = f.getAttribute("action");
     if (!action) return;
     const url = new URL(action, location.href);
-    if (!routeOf(url)) return;
+    const route = routeOf(url);
+    if (!route || (current && !sameRouteFamily(current.route, route))) return;
     const params = new URLSearchParams();
     new FormData(f).forEach((v, k) => { if (typeof v === "string" && v !== "") params.append(k, v); });
     url.search = params.toString();
@@ -419,7 +466,7 @@
   }
   function onPop() {
     const route = routeOf(location.href);
-    if (!route) { location.reload(); return; }
+    if (!route || (current && !sameRouteFamily(current.route, route))) { location.reload(); return; }
     const pane = panes.get(route);
     if (pane && pane === current) {
       window.dispatchEvent(new CustomEvent("jd:pane:show", { detail: { route, first: false, url: location.href } }));
@@ -449,10 +496,17 @@
     wrapper.setAttribute("data-route", route);
     main.before(wrapper);
     wrapper.appendChild(main);
-    appendPageSupport(wrapper, document.body, main, false);
+    if (!isSupplierRoute(route)) appendPageSupport(wrapper, document.body, main, false);
     const flags = Array.from(document.body.classList).filter(c => c !== "jd");
+    if (isSupplierRoute(route) && !flags.includes("seller-page")) flags.push("seller-page");
     const dm = document.querySelector('meta[name="description"]');
     const pane = makePane(route, wrapper, main, flags);
+    if (isSupplierRoute(route)) {
+      document.querySelectorAll("script[src]").forEach(script => {
+        const src = new URL(script.getAttribute("src"), location.href);
+        if (/\/js\/(?:seller(?:-[a-z-]+)?|supplier-website|business-roles|business-analytics|product-attributes)\.js$/i.test(src.pathname)) pane.scriptKeys.add(src.href);
+      });
+    }
     pane.title = document.title;
     pane.desc = dm ? dm.getAttribute("content") || "" : "";
     current = pane;

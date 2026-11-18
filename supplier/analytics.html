@@ -27,6 +27,7 @@
             <div id="supplierAnalyticsProducts" class="business-list"><div class="business-empty">Loading supplier analytics…</div></div>
         </section>
     </main>
+    <script src="../js/jd-router.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/supabase.js"></script>
     <script src="../js/auth-errors.js"></script>
@@ -56,5 +57,6 @@
             } catch (error) { document.getElementById("supplierAnalyticsProducts").textContent = error.message || "Unable to load wholesale analytics."; }
         })();
     </script>
+    <script>window.JD?.router?.init?.();</script>
 </body>
 </html>

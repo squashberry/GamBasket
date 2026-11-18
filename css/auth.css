@@ -181,3 +181,8 @@ button, input { font: inherit; }
   .auth-page .signup-step, .auth-page .success-state { animation: none; }
   .auth-page .progress-line span { transition: none; }
 }
+
+/* app-like page switching between auth pages */
+@view-transition { navigation: auto; }
+html { background: #fff; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }

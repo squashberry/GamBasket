@@ -150,13 +150,14 @@
     $("jd-count").textContent = "Searching\u2026";
     setGrid(JD.skeletonCards(8), true);
     $("jd-pagination").innerHTML = "";
-    try {
-      const res = await JD.data.search(state);
+    const snap = Object.assign({}, state);
+    const paint = (res, meta) => {
       if (my !== reqId) return;
-      if (!res.rows.length && res.total > 0 && state.page > res.pages) {
+      if (!res.rows.length && res.total > 0 && snap.page > res.pages && !(meta && meta.stale)) {
         state.page = res.pages;
         history.replaceState(null, "", urlFor(state));
-        return load();
+        load();
+        return;
       }
       $("jd-count").textContent = res.total === 0 ? "No products found" : res.total.toLocaleString("en-GB") + (res.total === 1 ? " product" : " products") + (res.pages > 1 ? " \u00b7 page " + res.page + " of " + res.pages : "");
       activeChips(res.rows);
@@ -167,26 +168,30 @@
           text: "Try removing a filter or using a broader search term. You can also save this search to be notified when a match is listed.",
           actions: '<button type="button" class="jd-btn jd-btn--primary" data-clear-all>Clear filters</button><a class="jd-btn jd-btn--secondary" href="explore.html">Browse everything</a>'
         }), false);
+        $("jd-pagination").innerHTML = "";
         return;
       }
       setGrid(res.rows.map(JD.productCard).join(""), true);
       pagination(res);
       JD.syncWishlist($("productGrid"));
       JD.syncCompare();
-    } catch (e) {
+    };
+    try {
+      await JD.swr("explore:" + toQuery(snap), () => JD.data.search(snap), paint);
+    } catch (err) {
       if (my !== reqId) return;
-      if (e && e.code === "PGRST103" && state.page > 1) {
+      if (err && err.code === "PGRST103" && state.page > 1) {
         state.page = 1;
         history.replaceState(null, "", urlFor(state));
         return load();
       }
-      console.warn("[JulaDirect] explore", e && e.message);
+      console.warn("[JulaDirect] explore", err && err.message);
       $("jd-count").textContent = "Something went wrong";
       activeChips(null);
       setGrid(JD.empty({
         icon: "search",
         title: "We could not load products",
-        text: (e && e.message) || "Please check your connection and try again.",
+        text: (err && err.message) || "Please check your connection and try again.",
         actions: '<button type="button" class="jd-btn jd-btn--secondary" id="jd-retry">Try again</button>'
       }), false);
     }

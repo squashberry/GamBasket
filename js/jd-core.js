@@ -12,6 +12,8 @@
 
   /* ---------- utilities ---------- */
   JD.isUuid = v => UUID.test(String(v || ""));
+  /* "../" repeated once per folder the page sits in, so shell links work from /admin/ and similar. */
+  JD.root = "../".repeat(Math.max(0, location.pathname.split("/").filter(Boolean).length - 1));
   JD.esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   JD.safeUrl = u => {
     try {
@@ -29,7 +31,7 @@
   JD.$$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
   JD.params = () => new URLSearchParams(location.search);
   JD.debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
-  JD.loginUrl = () => "login.html?redirect=" + encodeURIComponent(location.href);
+  JD.loginUrl = () => JD.root + "login.html?redirect=" + encodeURIComponent(location.href);
   JD.auth = () => window.GamBasketAuth || null;
   JD.client = async () => {
     const A = JD.auth();
@@ -373,7 +375,7 @@
       if (!b) return;
       const v = b.getAttribute("data-area");
       JD.area.set(v);
-      location.href = v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v);
+      location.href = JD.root + (v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v));
     });
     document.addEventListener("keydown", esc);
     document.body.appendChild(scrim);
@@ -427,7 +429,7 @@
     document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !menu.hidden) { close(); btn.focus(); } });
     document.getElementById("jd-signout").addEventListener("click", async () => {
       try { await A.signOut(); } catch (e) { /* proceed to leave the page */ }
-      location.href = "index.html";
+      location.href = JD.root + "index.html";
     });
   }
 
@@ -507,9 +509,109 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".jd-panel")) closePanels(); });
   }
 
+  /* ---------- instant navigation, cache-first rendering, installable shell ---------- */
+  const prefetched = new Set();
+  const nativeSpeculation = !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules"));
+  function prefetchLink(a) {
+    if (nativeSpeculation) return;
+    try {
+      const u = new URL(a.href, location.href);
+      if (u.origin !== location.origin || u.href === location.href || a.target === "_blank" || a.hasAttribute("download")) return;
+      if (u.hash && u.pathname === location.pathname) return;
+      if (prefetched.has(u.href) || prefetched.size >= 24) return;
+      prefetched.add(u.href);
+      const l = document.createElement("link");
+      l.rel = "prefetch";
+      l.href = u.href;
+      l.as = "document";
+      document.head.appendChild(l);
+    } catch (e) { /* ignore */ }
+  }
+  function bindInstantNav() {
+    const c = navigator.connection;
+    const slow = !!(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || "")));
+    if (!slow) {
+      if (nativeSpeculation) {
+        const s = document.createElement("script");
+        s.type = "speculationrules";
+        s.textContent = JSON.stringify({ prefetch: [
+          { where: { selector_matches: ".jd-fnav a" }, eagerness: "eager" },
+          { where: { and: [{ href_matches: "/*" }, { not: { selector_matches: "[data-no-prefetch]" } }] }, eagerness: "moderate" }
+        ] });
+        document.head.appendChild(s);
+      } else {
+        let t;
+        const find = e => (e.target && e.target.closest ? e.target.closest("a[href]") : null);
+        document.addEventListener("pointerover", e => { const a = find(e); if (!a || e.pointerType === "touch") return; clearTimeout(t); t = setTimeout(() => prefetchLink(a), 70); }, { passive: true });
+        ["pointerdown", "touchstart"].forEach(ev => document.addEventListener(ev, e => { const a = find(e); if (a) prefetchLink(a); }, { passive: true }));
+        (window.requestIdleCallback || setTimeout)(() => JD.$$(".jd-fnav a").forEach(prefetchLink), 1500);
+      }
+    }
+    /* Restored from the back/forward cache: refresh anything that may have changed. */
+    window.addEventListener("pageshow", e => {
+      if (e.persisted) { refreshCartCount(); renderAccount(); JD.syncWishlist(document); syncCompare(); }
+    });
+  }
+  function registerApp() {
+    if (!document.querySelector('link[rel="manifest"]')) {
+      const l = document.createElement("link");
+      l.rel = "manifest";
+      l.href = "/manifest.webmanifest";
+      document.head.appendChild(l);
+    }
+    if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+      window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+    }
+  }
+
+  /* Stale-while-revalidate for public marketplace data. onData runs with cached
+     data immediately (if any), then again with fresh data only when it differs.
+     Never used for carts, wishlists, orders or anything personal. */
+  const SWR = "jd_swr:";
+  function swrPrune(max) {
+    const keys = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const k = sessionStorage.key(i);
+      if (k && k.indexOf(SWR) === 0) { try { keys.push([k, JSON.parse(sessionStorage.getItem(k)).t]); } catch (e) { sessionStorage.removeItem(k); } }
+    }
+    keys.sort((a, b) => a[1] - b[1]);
+    while (keys.length > max) sessionStorage.removeItem(keys.shift()[0]);
+  }
+  function swrWrite(key, value) {
+    const payload = JSON.stringify({ t: Date.now(), v: value });
+    try { sessionStorage.setItem(SWR + key, payload); swrPrune(24); }
+    catch (e) { try { swrPrune(4); sessionStorage.setItem(SWR + key, payload); } catch (e2) { /* storage full or unavailable */ } }
+  }
+  JD.swr = async function (key, fetcher, onData, opts) {
+    const maxAge = (opts && opts.maxAge) || 3600000;
+    let cachedStr = null;
+    try {
+      const raw = sessionStorage.getItem(SWR + key);
+      if (raw) {
+        const c = JSON.parse(raw);
+        if (c && Date.now() - c.t < maxAge) { cachedStr = JSON.stringify(c.v); onData(c.v, { stale: true }); }
+      }
+    } catch (e) { cachedStr = null; }
+    try {
+      const fresh = await fetcher();
+      swrWrite(key, fresh);
+      if (cachedStr !== null && JSON.stringify(fresh) === cachedStr) return fresh;
+      onData(fresh, { stale: false });
+      return fresh;
+    } catch (e) {
+      if (cachedStr === null) throw e;
+      return null;
+    }
+  };
+
   JD.mountShell = function (opts) {
     const o = opts || {};
-    document.body.classList.add("jd");
+    if (!o.noBodyClass) document.body.classList.add("jd");
+    if (JD.root) {
+      const fix = el => { const h = el.getAttribute("href"); if (h && !/^(#|\/|[a-z][a-z0-9+.-]*:)/i.test(h) && !el.dataset.jdFixed) { el.setAttribute("href", JD.root + h); el.dataset.jdFixed = "1"; } };
+      const scan = n => { if (n.nodeType !== 1) return; if (n.matches("a[href]")) fix(n); n.querySelectorAll("a[href]").forEach(fix); };
+      new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(scan))).observe(document.documentElement, { childList: true, subtree: true });
+    }
     const h = document.getElementById("jd-header");
     const f = document.getElementById("jd-footer");
     const b = document.getElementById("jd-bottomnav");
@@ -523,6 +625,8 @@
     paintArea();
     applyTakeoverHint();
     bindTakeoverBar();
+    bindInstantNav();
+    registerApp();
     const areaBtn = document.getElementById("jd-area-btn");
     if (areaBtn) areaBtn.addEventListener("click", openAreaSheet);
     renderAccount();

@@ -1,0 +1,108 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/css/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
+/js/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+
+/sw.js
+  Cache-Control: no-cache
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+
+/supplier/*
+  X-Robots-Tag: noindex, nofollow
+
+/delivery/*
+  X-Robots-Tag: noindex, nofollow
+
+/worker/*
+  X-Robots-Tag: noindex, nofollow
+
+/affiliate/*
+  X-Robots-Tag: noindex, nofollow
+
+/cart
+  X-Robots-Tag: noindex, nofollow
+
+/cart.html
+  X-Robots-Tag: noindex, nofollow
+
+/checkout
+  X-Robots-Tag: noindex, nofollow
+
+/checkout.html
+  X-Robots-Tag: noindex, nofollow
+
+/me
+  X-Robots-Tag: noindex, nofollow
+
+/me.html
+  X-Robots-Tag: noindex, nofollow
+
+/orders
+  X-Robots-Tag: noindex, nofollow
+
+/orders.html
+  X-Robots-Tag: noindex, nofollow
+
+/messages
+  X-Robots-Tag: noindex, nofollow
+
+/messages.html
+  X-Robots-Tag: noindex, nofollow
+
+/wishlist
+  X-Robots-Tag: noindex, nofollow
+
+/wishlist.html
+  X-Robots-Tag: noindex, nofollow
+
+/compare
+  X-Robots-Tag: noindex, nofollow
+
+/compare.html
+  X-Robots-Tag: noindex, nofollow
+
+/saved-searches
+  X-Robots-Tag: noindex, nofollow
+
+/saved-searches.html
+  X-Robots-Tag: noindex, nofollow
+
+/login
+  X-Robots-Tag: noindex, nofollow
+
+/login.html
+  X-Robots-Tag: noindex, nofollow
+
+/signup
+  X-Robots-Tag: noindex, nofollow
+
+/signup.html
+  X-Robots-Tag: noindex, nofollow
+
+/forgot-password
+  X-Robots-Tag: noindex, nofollow
+
+/forgot-password.html
+  X-Robots-Tag: noindex, nofollow
+
+/reset-password
+  X-Robots-Tag: noindex, nofollow
+
+/reset-password.html
+  X-Robots-Tag: noindex, nofollow
+
+/verify-email
+  X-Robots-Tag: noindex, nofollow
+
+/verify-email.html
+  X-Robots-Tag: noindex, nofollow

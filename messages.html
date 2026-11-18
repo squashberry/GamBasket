@@ -6,9 +6,12 @@
     <title>Messages - JulaDirect</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-legacy.css">
     <script>if (localStorage.getItem("gambasket-theme") === "dark") document.documentElement.classList.add("dark");</script>
 </head>
-<body class="messages-page">
+<body class="messages-page jd-legacy">
+<div class="jd jd-wrap"><div id="jd-header"></div></div>
     <svg class="messages-icon-sprite" aria-hidden="true"><defs>
         <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5m6 6-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
         <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -30,6 +33,12 @@
     <nav class="bottom-navigation"><button class="nav-item" data-page="home" type="button"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-home"></use></svg></span><span class="nav-label">Home</span></button><button class="nav-item" data-page="explore" type="button"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><span class="nav-label">Explore</span></button><button class="nav-item" data-page="orders" type="button"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-box"></use></svg></span><span class="nav-label">Orders</span></button><button class="nav-item" data-page="wishlist" type="button"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-heart"></use></svg></span><span class="nav-label">Wishlist</span></button><button class="nav-item" data-page="me" type="button"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-user"></use></svg></span><span class="nav-label">Me</span></button></nav>
     <script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/auth-errors.js"></script><script src="js/auth-guard.js"></script><script src="js/notifications.js"></script><script src="js/messages.js"></script>
     <script src="js/states.js"></script>
+
+<div class="jd jd-wrap"><div id="jd-footer"></div></div>
+<div class="jd jd-wrap"><div id="jd-bottomnav"></div></div>
+<script src="js/jd-core.js"></script>
+<script src="js/jd-data.js"></script>
+<script src="js/jd-legacy.js"></script>
 </body>
 </html>
 

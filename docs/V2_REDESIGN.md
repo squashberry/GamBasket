@@ -17,9 +17,19 @@ No build step (the site is static HTML on Cloudflare Pages), so the new frontend
 
 ## Pages
 
-Rebuilt on the v2 design: homepage, Explore, product, cart, wishlist, compare, admin banner manager.
+Rebuilt on the v2 design: homepage, Explore, product, cart, wishlist, compare, admin banner manager, Seller Centre Overview.
+Restyled by rewriting one shared stylesheet, with no markup or script changes:
+- **Auth** (`css/auth.css`, plus `css/auth-recovery.css` for forgot-password): login, signup, reset-password, verify-email and forgot-password in a split-screen layout with a fixed blue brand panel. Every state class the scripts toggle is styled.
+- **Seller Centre** (`css/seller.css`): all 14 `supplier/*` pages (floating sidebar, KPI cards, panels, tables, chips, floating mobile nav). `css/seller-website.css` and `css/seller-wallet.css` are untouched but inherit the new palette through re-pointed tokens; expect to review the Website and Earnings pages visually.
 Restyled with logic untouched: checkout (every id, input name, value, `disabled` flag, script and load order preserved; `css/jd-checkout.css`).
-**Not yet migrated (still the old design):** login, signup, forgot/reset password, email verification, account (`me`), orders, messages, saved searches, store pages, Seller Centre, Administration (other than banners), courier, operations, affiliate, static/legal pages.
+**Not yet migrated (still the old design):** account (`me`), orders, messages, saved searches, store pages, Administration (other than banners), courier, operations, affiliate, static/legal pages.
+
+### Findings worth knowing
+
+- The previous Seller Overview never loaded data: nothing populated pending orders, product count, recent orders, inventory alerts or the sales chart, and the sales/fee tiles depended on a script the page did not load. It displayed hardcoded zeros and "Sales chart will appear here". The rebuilt Overview computes everything from the seller's own orders and products, using the same sales and 5% fee formula as `js/seller-earnings.js`.
+- The previous wishlist page substituted a stock photo and a fake "Marketplace Product" for rows it could not resolve; the rebuilt page reports unavailable items honestly.
+- `js/seller-earnings.js` `openGamBasketFeePayment` shows a browser `alert()` saying to connect the gateway: it is a placeholder, not a working fee payment flow. Not changed here.
+- The seller commission is hardcoded at 5% in the earnings module while `js/seller.js` has per-plan rates. The Overview follows the earnings module for consistency; reconcile the two.
 
 ## Design references
 
@@ -46,6 +56,31 @@ A full-screen, animated, typography-led banner. While one is live the homepage h
 2. Deploy the branch.
 3. As an admin, open `admin/banners.html`, create a banner, preview it, then switch it on.
 
+## SEO and indexing
+
+The site stays multi-page HTML so every product can be indexed. Before this work there was no sitemap, no robots.txt, no canonical or social tags, and product pages were drawn entirely by JavaScript, so a crawler saw an empty shell. Added as Cloudflare Pages Functions (assumes Cloudflare Pages; the repo also holds `.htaccess` and `server.conf`, which suggests another host may exist, in which case these files are inert and the same behaviour needs equivalent server rules):
+
+| File | Purpose |
+|---|---|
+| `functions/product.js` | For `/product?id=<uuid>`: reads the approved listing from Supabase's public REST API and injects title, description, canonical, Open Graph/Twitter tags, Product JSON-LD and a readable copy of the listing into the static shell. Unknown id returns 404 with noindex. Any failure serves the plain static page. |
+| `functions/sitemap.xml.js` | Key pages, every category, and up to 5,000 approved products with `lastmod`. |
+| `functions/robots.txt.js` | Private areas and search/filter combinations disallowed; absolute `Sitemap:` line. |
+| `_routes.json` | Limits Functions to those routes so static assets are not billed as invocations. |
+| `_headers` | `X-Robots-Tag: noindex` for account, dashboard and auth pages; nosniff and referrer policy; short stale-while-revalidate caching for css/js. |
+
+Credentials: the functions use `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` environment variables if set, otherwise they read the same public values from `js/config.js`. Nothing secret is introduced.
+
+Not done: category and search result pages (`explore`) are still rendered client-side. Product URLs are discoverable through the sitemap, which is the main indexing path, but server-rendering `explore` would help category pages rank. After deploying, submit `/sitemap.xml` in Google Search Console and test a product URL with the URL Inspection tool to confirm the rendered HTML contains the listing.
+
+## App-like navigation (without a single-page app)
+
+- Cross-document view transitions (`@view-transition`): header, floating nav, buy bar and seller sidebar stay in place while the content cross-fades (Chrome and Safari; others get a short fade-in).
+- Speculative prefetching (Speculation Rules, with a link-prefetch fallback), primary tabs warmed eagerly; skipped on Save-Data and 2G.
+- `JD.swr`: cached-first rendering of public marketplace data (home lists, every Explore query, product pages), re-rendering only when fresh data differs. Never used for carts, wishlists or orders.
+- Back/forward cache: restored pages refresh cart, account, wishlist and compare state.
+- `manifest.webmanifest` and `sw.js`: installable shell. The worker is network-first for pages and css/js (a deploy is never masked by a stale copy), cache-first for images, and never touches cross-origin or non-GET requests. To remove it, deploy a `sw.js` that unregisters itself.
+- The manifest only has an SVG icon; install prompts on some browsers need 192px and 512px PNG icons.
+
 ## Unchanged by design
 
 Payments, COD commission reserve, ModemPay verification, order transactions and every existing migration, function and policy are untouched. `checkout.html` keeps the Cash on Delivery / "Coming soon" contract the deployed smoke test asserts.
@@ -64,3 +99,5 @@ Payments, COD commission reserve, ModemPay verification, order transactions and 
 - No dark mode in the v2 design (the legacy toggle was not carried over).
 - Delivery wording on the product page reads `delivery_available`; confirm what checkout does for items where it is false.
 - `css/style.css` and the legacy page scripts remain for unmigrated pages, so the site is visibly two designs until they are migrated.
+- Dark mode is not carried over to the auth and seller skins either (their theme toggles are hidden).
+- The auth brand panel text and dashboard illustration are decorative CSS pseudo-elements, so they are not announced by screen readers and cannot be translated without CSS changes.

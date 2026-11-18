@@ -7,6 +7,8 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-legacy.css">
     <script>
         (() => {
             const savedTheme = localStorage.getItem("gambasket-theme");
@@ -16,7 +18,8 @@
         })();
     </script>
 </head>
-<body>
+<body class="jd-legacy">
+<div class="jd jd-wrap"><div id="jd-header"></div></div>
 
     <!-- SVG ICONS SPRITE -->
     <svg width="0" height="0" style="position:absolute;display:none;" aria-hidden="true">
@@ -174,6 +177,12 @@
     <script src="js/auth-errors.js"></script>
     <script src="js/auth-guard.js"></script>
     <script src="js/states.js"></script>
+
+<div class="jd jd-wrap"><div id="jd-footer"></div></div>
+<div class="jd jd-wrap"><div id="jd-bottomnav"></div></div>
+<script src="js/jd-core.js"></script>
+<script src="js/jd-data.js"></script>
+<script src="js/jd-legacy.js"></script>
 </body>
 </html>
 

@@ -151,11 +151,13 @@
 
   async function load() {
     if (!JD.isUuid(id)) { notFound("This product link is not valid", "Check the link or browse the marketplace to find what you need."); return; }
-    try {
-      const d = await JD.data.product(id);
-      if (!d.product) { notFound("This product is no longer available", "It may have been sold, removed or is awaiting review."); return; }
+    const paint = d => {
+      if (!d.product) { current = null; notFound("This product is no longer available", "It may have been sold, removed or is awaiting review."); return; }
       current = d;
       render(d);
+    };
+    try {
+      await JD.swr("product:" + id, () => JD.data.product(id), paint);
     } catch (e) {
       console.warn("[JulaDirect] product", e && e.message);
       failed(e && e.message);

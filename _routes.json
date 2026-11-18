@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/product", "/sitemap.xml", "/robots.txt"],
+  "exclude": []
+}

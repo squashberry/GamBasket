@@ -1,0 +1,44 @@
+/* =====================================================================
+   JulaDirect v2 bridge for pages that still run on the legacy stylesheet.
+   Loaded after css/style.css and css/jd.css on those pages. It:
+   1. re-points the legacy colour tokens to the JulaDirect blue/navy system,
+      so every legacy component (cards, buttons, forms) picks up the palette;
+   2. hides the legacy header, nav, footer and mobile chrome (they stay in the
+      DOM, so legacy scripts that look them up keep working);
+   3. lets the new shell (header, footer, floating nav) take their place.
+   No page content, markup or script is changed.
+   ===================================================================== */
+:root, :root.dark, html.dark {
+  --blue: #1451e6;
+  --blue-dark: #0e3dbd;
+  --blue-light: #eef4ff;
+  --primary: #1451e6;
+  --primary-dark: #0e3dbd;
+  --background: #eef1f8;
+  --surface: #ffffff;
+  --surface-secondary: #f4f7fd;
+  --text: #0a1a3f;
+  --text-secondary: #66759a;
+  --text-muted: #66759a;
+  --border: #e1e8f5;
+  color-scheme: light;
+}
+.jd-wrap { display: contents; }
+body.jd-legacy {
+  min-height: 100vh;
+  padding-bottom: 104px;
+  background: #eef1f8;
+  color: #0a1a3f;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body.jd-legacy .desktop-app-header, body.jd-legacy .desktop-nav-header, body.jd-legacy .desktop-app-nav,
+body.jd-legacy .mobile-header, body.jd-legacy .bottom-navigation, body.jd-legacy .desktop-footer,
+body.jd-legacy #themeToggle, body.jd-legacy #desktopThemeToggle { display: none !important; }
+body.jd-legacy main { color: #0a1a3f; }
+body.jd-legacy main h1, body.jd-legacy main h2, body.jd-legacy main h3 { color: #0a1a3f; letter-spacing: -.025em; }
+body.jd-legacy main a:not([class]) { color: #1451e6; }
+/* panels and sheets the shell appends straight to <body> (outside the .jd wrapper) */
+.jd-panel, .jd-panel *, .jd-sheet, .jd-sheet *, .jd-toasts, .jd-toasts *, .jd-scrim, .jd-compare-tray, .jd-compare-tray * { box-sizing: border-box; }
+.jd-panel, .jd-sheet, .jd-toasts, .jd-compare-tray { font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: #0a1a3f; }

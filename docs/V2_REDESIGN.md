@@ -115,3 +115,13 @@ Payments, COD commission reserve, ModemPay verification, order transactions and 
 - `css/style.css` and the legacy page scripts remain for unmigrated pages, so the site is visibly two designs until they are migrated.
 - Dark mode is not carried over to the auth and seller skins either (their theme toggles are hidden).
 - The auth brand panel text and dashboard illustration are decorative CSS pseudo-elements, so they are not announced by screen readers and cannot be translated without CSS changes.
+
+## Seller Studio (seller dashboard rewrite)
+
+`supplier/index.html` is a new single-page workspace (hash routes `#/overview`, `#/orders`, `#/products`, `#/customers`, `#/reviews`, `#/earnings`, `#/more`) built on `css/sx.css`, `js/sx-data.js` (data layer) and `js/sx-app.js` (UI). It does not use `jd-core.js` or the legacy `seller*.js` scripts. Light and dark themes are supported.
+
+New capabilities: period comparison and zero-filled sales chart, "needs your attention" list, monthly goals, order drawer with timeline and private notes, bulk stock/price editing with a save bar, customer insights (repeat buyers, lifetime spend), public replies to reviews, wallet and payout summary.
+
+**Before deploying:** apply `supabase/migrations/20261119000000_seller_studio_v2.sql`. Without it the Studio still loads: analytics are computed in the browser from the seller's own orders, but goals, order notes and review replies show an "update needed" message. The migration was written but not run against a live database from this environment, so test it on a branch first.
+
+Notes: a price change on a live listing sends it back to `pending_review` (existing `guard_product_write` trigger); stock changes are instant. Money uses merchandise value (subtotal minus discount, cancelled excluded) and the 5% fee estimate; the wallet remains the source of truth. Legacy seller pages (messages, store, website, pickup-delivery, settings, add/edit product) are still linked from the Studio and keep their old design.

@@ -1,0 +1,37 @@
+name: Persistent route browser smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - fix/in-place-product-account-tabs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: juladirect-router-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  persistent-router:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install test dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test product and account navigation without document reloads
+        env:
+          CI: "true"
+        run: npx playwright test tests/marketplace-smoke.spec.js --grep "Product details and account pages"

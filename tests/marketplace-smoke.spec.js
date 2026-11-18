@@ -442,7 +442,7 @@ test("Legacy sample notifications are removed instead of shown as activity", asy
 test("Product details and account pages stay inside the persistent app shell", async ({ page }) => {
   await mockBackend(page, { products: [iphone, samsung] });
   await page.goto("/explore.html");
-  await expect(page.locator("#productGrid .product-card")).toHaveCount(2);
+  await expect(page.locator("#productGrid .jd-pcard")).toHaveCount(2);
 
   await page.evaluate(() => {
     window.__jdPersistentDocumentProbe = { document, marker: "same-document" };

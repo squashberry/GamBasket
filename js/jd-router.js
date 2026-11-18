@@ -29,12 +29,17 @@
   JD.rawAddEventListener = rawAdd;
 
   /* route -> which floating-nav tab is active while it is shown */
-  const ROUTES = { index: "home", explore: "explore", wishlist: "wishlist", cart: "cart", compare: "" };
-  /* Body classes that belong to one pane and must not leak into another. */
-  const MANAGED = ["is-homepage", "has-mobilebar", "jd-pdp-page"];
+  const ROUTES = {
+    index: "home", explore: "explore", wishlist: "wishlist", cart: "cart", compare: "",
+    product: "", me: "account", orders: "account", messages: "account",
+    settings: "account", security: "account", "saved-searches": "account"
+  };
+  const WARM_ROUTES = ["index", "explore", "wishlist", "cart", "compare"];
+  /* Page-specific body classes are switched with the active pane. */
+  const MANAGED = new Set(["is-homepage", "has-mobilebar", "jd-pdp-page", "jd-legacy", "me-page", "messages-page", "settings-page"]);
   /* Events that only make sense for the pane that registered them. */
   const POINTER = new Set(["click", "auxclick", "dblclick", "pointerdown", "pointerup", "mousedown", "mouseup", "touchstart", "touchend", "input", "change", "submit", "focusin", "focusout"]);
-  const WHEN_ACTIVE = new Set(["keydown", "keyup", "keypress", "popstate", "hashchange"]);
+  const WHEN_ACTIVE = new Set(["keydown", "keyup", "keypress", "popstate", "hashchange", "DOMContentLoaded", "jd:pane:show", "jd:pane:hide"]);
 
   const panes = new Map();
   let current = null;
@@ -148,15 +153,75 @@
     return Promise.all(waits);
   }
 
+  /* Legacy account pages keep support markup outside <main>. Retain their hidden
+     headers, icon sprites, dialogs and page footer inside the pane so the page
+     scripts can still find the controls they expect. */
+  function appendPageSupport(wrapper, body, main, clone) {
+    const copiedSources = new Set();
+    const add = node => {
+      if (copiedSources.has(node)) return;
+      copiedSources.add(node);
+      wrapper.appendChild(clone ? document.importNode(node, true) : node);
+    };
+    Array.from(body.children).forEach(node => {
+      if (node === main || node.tagName === "SCRIPT") return;
+      if (node.classList && node.classList.contains("jd-wrap")) return;
+      if (["jd-header", "jd-footer", "jd-bottomnav"].includes(node.id)) return;
+      const tag = node.tagName;
+      const sprite = tag === "SVG" && (node.querySelector("symbol") || node.hasAttribute("aria-hidden"));
+      if (!["HEADER", "NAV", "FOOTER", "DIALOG"].includes(tag) && !sprite) return;
+      add(node);
+    });
+    body.querySelectorAll("dialog").forEach(dialog => {
+      if (main.contains(dialog) || copiedSources.has(dialog)) return;
+      if (Array.from(copiedSources).some(node => node.contains && node.contains(dialog))) return;
+      add(dialog);
+    });
+  }
+
+  function appendHeadStyles(wrapper, doc) {
+    doc.querySelectorAll("style").forEach(style => wrapper.appendChild(document.importNode(style, true)));
+  }
+
+  function runInlineScript(source, type) {
+    const script = document.createElement("script");
+    if (type) script.type = type;
+    script.textContent = source || "";
+    document.head.appendChild(script);
+    script.remove();
+  }
+
+  function setPaneIds(activePane) {
+    panes.forEach(pane => {
+      if (pane === activePane) {
+        if (pane.strippedIds) {
+          pane.strippedIds.forEach(([node, id]) => {
+            if (node.isConnected) node.setAttribute("id", id);
+          });
+          pane.strippedIds = null;
+        }
+        return;
+      }
+      if (pane.strippedIds) return;
+      pane.strippedIds = [];
+      pane.el.querySelectorAll("[id]").forEach(node => {
+        pane.strippedIds.push([node, node.id]);
+        node.removeAttribute("id");
+      });
+    });
+  }
+
   /* ---------- panes ---------- */
   function shellNodes() { return { footer: document.querySelector(".jd-footer"), nav: document.getElementById("jd-fnav") }; }
   function pushUrl(url) { if (url.href !== location.href) history.pushState({ jdRoute: routeOf(url) }, "", url.href); }
 
   function setFlags(pane) {
+    pane.flags.forEach(c => MANAGED.add(c));
     MANAGED.forEach(c => document.body.classList.toggle(c, pane.flags.has(c)));
   }
   /* Pane-owned body classes: applies to <body> only while that pane is showing. */
   JD.paneClass = function (route, cls, on) {
+    MANAGED.add(cls);
     const pane = panes.get(route);
     if (!pane) { document.body.classList.toggle(cls, !!on); return; }
     if (on) pane.flags.add(cls); else pane.flags.delete(cls);
@@ -178,7 +243,8 @@
   function syncShell(route, url) {
     const active = ROUTES[route];
     document.querySelectorAll(".jd-fnav__tab, .jd-fnav__fab").forEach(a => {
-      const on = routeOf(a.getAttribute("href")) === route && active !== "";
+      const linkRoute = routeOf(a.getAttribute("href"));
+      const on = active !== "" && (linkRoute === route || (active === "account" && linkRoute === "me"));
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
     const q = route === "explore" ? new URL(url.href).searchParams.get("q") || "" : "";
@@ -199,7 +265,8 @@
     const changed = current !== pane;
     current = pane;
     pane.el.hidden = false;
-    panes.forEach(p => { if (p.main) { if (p === pane) p.main.id = "jd-main"; else p.main.removeAttribute("id"); } });
+    setPaneIds(pane);
+    if (pane.route === "product") pane.flags.add("jd-pdp-page");
     setFlags(pane);
     if (pane.route === "index") {
       if (JD.takeover && JD.takeover.apply) JD.takeover.apply();
@@ -225,7 +292,8 @@
   }
 
   function makePane(route, wrapper, main, flags) {
-    const pane = { route, el: wrapper, main, flags: new Set(flags), scrollY: 0, title: document.title, desc: "" };
+    const pane = { route, el: wrapper, main, flags: new Set(flags), strippedIds: null, scrollY: 0, title: document.title, desc: "" };
+    pane.flags.forEach(c => MANAGED.add(c));
     wrapper.hidden = false;
     panes.set(route, pane);
     return pane;
@@ -235,9 +303,8 @@
     const html = await fetchHtml(route);
     if (token !== navToken) return null;
     const doc = new DOMParser().parseFromString(html, "text/html");
-    const main = doc.getElementById("jd-main");
+    const main = doc.getElementById("jd-main") || doc.querySelector("main");
     if (!main || !doc.getElementById("jd-header")) throw new Error("not an app page");
-    if (Array.from(doc.body.querySelectorAll("script")).some(s => !s.getAttribute("src"))) throw new Error("inline script");
     await loadStyles(doc);
     if (token !== navToken) return null;
 
@@ -245,9 +312,10 @@
     wrapper.className = "jd-pane";
     wrapper.setAttribute("data-route", route);
     wrapper.appendChild(document.importNode(main, true));
-    Array.from(doc.body.children).forEach(n => { if (n.tagName === "DIALOG") wrapper.appendChild(document.importNode(n, true)); });
+    appendPageSupport(wrapper, doc.body, main, true);
+    appendHeadStyles(wrapper, doc);
 
-    const flags = Array.from(doc.body.classList).filter(c => MANAGED.indexOf(c) !== -1);
+    const flags = Array.from(doc.body.classList).filter(c => c !== "jd");
     const pane = makePane(route, wrapper, wrapper.querySelector("main"), flags);
     pane.el.hidden = true;
     const dm = doc.querySelector('meta[name="description"]');
@@ -258,25 +326,33 @@
     (footer || nav || document.body.lastElementChild).before(wrapper);
     if (token !== navToken) { panes.delete(route); wrapper.remove(); return null; }
 
-    /* URL and body state must be in place before the page script runs: it reads both. */
+    /* The destination URL and active pane are established before page code runs. */
     if (push) pushUrl(url);
     activate(pane, url, { first: true });
-    /* Give the new pane the unique ids; restore the others afterwards. */
-    const strip = [];
-    const mine = new Set(Array.from(wrapper.querySelectorAll("[id]")).map(n => n.id));
-    panes.forEach(p => {
-      if (p === pane) return;
-      p.el.querySelectorAll("[id]").forEach(n => { if (mine.has(n.id) && n.id !== "jd-main") { strip.push([n, n.id]); n.removeAttribute("id"); } });
-    });
 
     const have = loadedScripts();
     const end = beginScope(pane);
     try {
-      const srcs = Array.from(doc.body.querySelectorAll("script[src]")).map(s => new URL(s.getAttribute("src"), location.href).href);
-      for (const src of srcs) { if (!have.has(src)) await loadScript(src); }
+      for (const original of Array.from(doc.querySelectorAll("script"))) {
+        if (original.hasAttribute("src")) {
+          const src = new URL(original.getAttribute("src"), url.href).href;
+          if (!have.has(src)) {
+            await loadScript(src);
+            have.add(src);
+          }
+          continue;
+        }
+        const type = (original.getAttribute("type") || "").trim().toLowerCase();
+        if (!type || type === "text/javascript" || type === "application/javascript") {
+          runInlineScript(original.textContent, type);
+        }
+      }
+      /* Some legacy page initializers wait for DOMContentLoaded even though this
+         document is already live. Re-fire it with listener scoping so only this
+         visible pane receives those one-time initializers. */
+      document.dispatchEvent(new Event("DOMContentLoaded", { bubbles: true }));
     } finally {
       end();
-      strip.forEach(([n, id]) => n.setAttribute("id", id));
     }
     return pane;
   }
@@ -345,7 +421,10 @@
     const route = routeOf(location.href);
     if (!route) { location.reload(); return; }
     const pane = panes.get(route);
-    if (pane && pane === current) return;      /* a tab's own history (e.g. Explore filters) */
+    if (pane && pane === current) {
+      window.dispatchEvent(new CustomEvent("jd:pane:show", { detail: { route, first: false, url: location.href } }));
+      return;
+    }
     navigate(location.href, { push: false });
   }
 
@@ -363,15 +442,15 @@
   let initial = null;
   (function prepare() {
     const route = routeOf(location.href);
-    const main = document.getElementById("jd-main");
+    const main = document.getElementById("jd-main") || document.querySelector("main");
     if (!route || !main || !history.pushState || window.top !== window) return;
     const wrapper = document.createElement("div");
     wrapper.className = "jd-pane";
     wrapper.setAttribute("data-route", route);
     main.before(wrapper);
     wrapper.appendChild(main);
-    Array.from(document.body.children).forEach(n => { if (n.tagName === "DIALOG") wrapper.appendChild(n); });
-    const flags = MANAGED.filter(c => document.body.classList.contains(c));
+    appendPageSupport(wrapper, document.body, main, false);
+    const flags = Array.from(document.body.classList).filter(c => c !== "jd");
     const dm = document.querySelector('meta[name="description"]');
     const pane = makePane(route, wrapper, main, flags);
     pane.title = document.title;
@@ -398,7 +477,7 @@
     const slow = !!(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || "")));
     if (!slow) {
       const idle = window.requestIdleCallback || (fn => setTimeout(fn, 1200));
-      window.addEventListener("load", () => idle(() => Object.keys(ROUTES).forEach(r => { if (r !== initial.route) warm(r); })));
+      window.addEventListener("load", () => idle(() => WARM_ROUTES.forEach(r => { if (r !== initial.route) warm(r); })));
     }
   };
 })();

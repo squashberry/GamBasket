@@ -80,7 +80,8 @@ jobs:
 
           pages = [
               "worker-apply.html", "quick-sell.html", "supplier/add-product.html",
-              "product.html", "explore.html", "compare.html", "saved-searches.html"
+              "product.html", "explore.html", "compare.html", "saved-searches.html",
+              "me.html", "orders.html", "messages.html", "settings.html", "security.html"
           ]
           checked = 0
           for page in pages:
@@ -147,6 +148,28 @@ jobs:
           assert "openNotifications();" in notification_js
 
           print(f"Validated {len(buyer_routes)} buyer routes, {len(admin_routes)} legacy admin routes, admin deep links, and notification shortcuts.")
+          PY
+
+      - name: Check persistent in-place app routes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          router = Path("js/jd-router.js").read_text(encoding="utf-8")
+          for route in ("product", "me", "orders", "messages", "settings", "security", "saved-searches"):
+              assert f'{route}: "' in router or f'"{route}": "' in router, f"Missing in-place route: {route}"
+          assert 'doc.getElementById("jd-main") || doc.querySelector("main")' in router
+          assert "runInlineScript(original.textContent, type)" in router
+          assert 'new Event("DOMContentLoaded"' in router
+          for page in ("product.html", "me.html", "orders.html", "messages.html", "saved-searches.html", "settings.html", "security.html"):
+              content = Path(page).read_text(encoding="utf-8")
+              router_at = content.find('src="js/jd-router.js"')
+              config_at = content.find('src="js/config.js"')
+              assert router_at >= 0 and config_at > router_at, f"{page} must load the router before page scripts"
+          product = Path("js/jd-product.js").read_text(encoding="utf-8")
+          assert "function syncProductRoute(rawUrl)" in product
+          assert 'event.detail.route === "product"' in product
+          print("Validated in-place routing for product details and all primary account pages.")
           PY
 
       - name: Guard public frontend against server secrets

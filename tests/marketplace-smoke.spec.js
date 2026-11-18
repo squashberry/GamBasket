@@ -437,3 +437,67 @@ test("Legacy sample notifications are removed instead of shown as activity", asy
     catch { return null; }
   })).toEqual([]);
 });
+
+
+test("Product details and account pages stay inside the persistent app shell", async ({ page }) => {
+  await mockBackend(page, { products: [iphone, samsung] });
+  await page.goto("/explore.html");
+  await expect(page.locator("#productGrid .jd-pcard")).toHaveCount(2);
+
+  await page.evaluate(() => {
+    window.__jdPersistentDocumentProbe = { document, marker: "same-document" };
+  });
+  await page.locator(`#productGrid a[href*="${IPHONE_ID}"]`).first().click();
+  await expect(page).toHaveURL(new RegExp(`/product\\.html\\?id=${IPHONE_ID}`));
+  await expect(page.locator("#jd-pdp")).toContainText("iPhone 13 128GB");
+  expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.document === document)).toBe(true);
+
+  await page.evaluate(id => window.JD.router.navigate(`/product.html?id=${id}`), SAMSUNG_ID);
+  await expect(page).toHaveURL(new RegExp(`/product\\.html\\?id=${SAMSUNG_ID}`));
+  await expect(page.locator("#jd-pdp")).toContainText("Samsung Galaxy S24");
+  expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.marker)).toBe("same-document");
+
+  await page.evaluate(() => window.JD.router.navigate("/me.html"));
+  await expect(page).toHaveURL(/\/me\.html$/);
+  await expect(page.locator("main.me-main")).toBeVisible();
+  expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.document === document)).toBe(true);
+  await expect(page.locator("body")).not.toHaveClass(/jd-pdp-page/);
+});
+
+
+test("Supplier dashboard navigation stays in the same document", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__jdSupplierDocument = document;
+    window.GamBasketGuard = { gatePage: async () => true, showUnauthorized: () => {} };
+    window.GamBasketBusiness = { getCurrentRoles: async () => ["supplier"], getClient: () => ({}) };
+  });
+  await page.route("**/js/**", async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/jd-router.js")) return route.continue();
+    return route.fulfill({ status: 200, contentType: "application/javascript", body: "" });
+  });
+
+  await page.goto("/supplier/add-product.html");
+  await expect(page.locator("#productForm")).toBeVisible();
+  const sameDocument = () => page.evaluate(() => window.__jdSupplierDocument === document);
+  expect(await sameDocument()).toBe(true);
+
+  await page.locator('.seller-nav a[href="earnings.html"]').click();
+  await expect(page).toHaveURL(/\/supplier\/earnings\.html$/);
+  await expect(page.locator(".seller-page-title")).toContainText("Earnings");
+  expect(await sameDocument()).toBe(true);
+
+  await page.locator('.seller-nav a[href="products.html"]').click();
+  await expect(page).toHaveURL(/\/supplier\/products\.html$/);
+  await expect(page.locator(".seller-page-title")).toContainText("Products");
+  expect(await sameDocument()).toBe(true);
+
+  await page.locator('.seller-nav a[href="add-product.html"]').click();
+  await expect(page).toHaveURL(/\/supplier\/add-product\.html$/);
+  await expect(page.locator("#productForm")).toBeVisible();
+  expect(await sameDocument()).toBe(true);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/supplier\/products\.html$/);
+  expect(await sameDocument()).toBe(true);
+});

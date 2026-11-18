@@ -47,6 +47,8 @@
 
 /* ---------- shell: floating sidebar + content ---------- */
 .seller-shell { display: grid; grid-template-columns: var(--seller-sidebar-width) minmax(0, 1fr); gap: 20px; min-height: calc(100vh - 68px); padding: 16px 20px 0 16px; }
+.seller-shell > .jd-pane { min-width: 0; width: 100%; }
+.seller-shell > .jd-pane > .seller-main { min-width: 0; width: 100%; }
 .seller-sidebar { position: sticky; top: 84px; align-self: start; display: flex; flex-direction: column; height: calc(100vh - 100px); padding: 22px 14px 16px; overflow-y: auto; border: 0; border-radius: 26px; background: #fff; box-shadow: 0 2px 14px rgba(10, 26, 63, .05); scrollbar-width: thin; }
 .seller-brand { padding: 6px 12px 20px; }
 .seller-brand::before { content: none; }

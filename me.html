@@ -6,6 +6,8 @@
     <title>My Account — JulaDirect</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-legacy.css">
 
     <script>
         (() => {
@@ -16,7 +18,8 @@
         })();
     </script>
 </head>
-<body class="me-page">
+<body class="me-page jd-legacy">
+<div class="jd jd-wrap"><div id="jd-header"></div></div>
 
         <!-- SVG ICONS SPRITE -->
         <!-- SVG ICONS SPRITE -->
@@ -404,5 +407,11 @@
             }
         })();
     </script>
+
+<div class="jd jd-wrap"><div id="jd-footer"></div></div>
+<div class="jd jd-wrap"><div id="jd-bottomnav"></div></div>
+<script src="js/jd-core.js"></script>
+<script src="js/jd-data.js"></script>
+<script src="js/jd-legacy.js"></script>
 </body>
 </html>

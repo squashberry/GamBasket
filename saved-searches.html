@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/business-trust-growth.css">
   <link rel="stylesheet" href="css/marketplace-enhancements.css">
+    <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-legacy.css">
   <style>
     .saved-page{max-width:1040px;margin:28px auto 110px;padding:0 20px}
     .saved-hero{margin:18px 0 25px}
@@ -26,7 +28,8 @@
   </style>
   <script>try{if(localStorage.getItem("gambasket-theme")==="dark")document.documentElement.classList.add("dark")}catch(_){}</script>
 </head>
-<body>
+<body class="jd-legacy">
+<div class="jd jd-wrap"><div id="jd-header"></div></div>
   <header class="desktop-app-header">
     <a href="index.html" class="desktop-app-brand"><span>JulaDirect</span><span class="brand-bag-icon">🛍️</span></a>
     <div class="desktop-app-search"><a href="explore.html" class="desktop-search-fake-input"><span>Search Gambian products, electronics, fashion...</span></a></div>
@@ -64,5 +67,11 @@
   <script src="js/notifications.js"></script>
   <script src="js/product-attributes.js"></script>
   <script src="js/saved-searches.js"></script>
+
+<div class="jd jd-wrap"><div id="jd-footer"></div></div>
+<div class="jd jd-wrap"><div id="jd-bottomnav"></div></div>
+<script src="js/jd-core.js"></script>
+<script src="js/jd-data.js"></script>
+<script src="js/jd-legacy.js"></script>
 </body>
 </html>

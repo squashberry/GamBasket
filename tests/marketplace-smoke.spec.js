@@ -458,7 +458,7 @@ test("Product details and account pages stay inside the persistent app shell", a
   expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.marker)).toBe("same-document");
 
   await page.evaluate(() => window.JD.router.navigate("/me.html"));
-  await expect(page).toHaveURL(/\\/me\\.html$/);
+  await expect(page).toHaveURL(/\/me\.html$/);
   await expect(page.locator("main.me-main")).toBeVisible();
   expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.document === document)).toBe(true);
   await expect(page.locator("body")).not.toHaveClass(/jd-pdp-page/);

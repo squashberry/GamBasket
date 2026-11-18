@@ -157,6 +157,12 @@
      headers, icon sprites, dialogs and page footer inside the pane so the page
      scripts can still find the controls they expect. */
   function appendPageSupport(wrapper, body, main, clone) {
+    const copiedSources = new Set();
+    const add = node => {
+      if (copiedSources.has(node)) return;
+      copiedSources.add(node);
+      wrapper.appendChild(clone ? document.importNode(node, true) : node);
+    };
     Array.from(body.children).forEach(node => {
       if (node === main || node.tagName === "SCRIPT") return;
       if (node.classList && node.classList.contains("jd-wrap")) return;
@@ -164,11 +170,12 @@
       const tag = node.tagName;
       const sprite = tag === "SVG" && (node.querySelector("symbol") || node.hasAttribute("aria-hidden"));
       if (!["HEADER", "NAV", "FOOTER", "DIALOG"].includes(tag) && !sprite) return;
-      wrapper.appendChild(clone ? document.importNode(node, true) : node);
+      add(node);
     });
     body.querySelectorAll("dialog").forEach(dialog => {
-      if (main.contains(dialog) || wrapper.contains(dialog)) return;
-      wrapper.appendChild(clone ? document.importNode(dialog, true) : dialog);
+      if (main.contains(dialog) || copiedSources.has(dialog)) return;
+      if (Array.from(copiedSources).some(node => node.contains && node.contains(dialog))) return;
+      add(dialog);
     });
   }
 

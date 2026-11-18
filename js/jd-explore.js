@@ -10,7 +10,7 @@
   const LOCATIONS = ["Banjul", "Serrekunda", "Kanifing", "Bakau", "Fajara", "Kotu", "Kololi", "Brufut", "Brikama"];
   const SORTS = ["newest", "price_asc", "price_desc", "popular"];
   const mobile = window.matchMedia("(max-width: 960px)");
-  let state = readState();
+  let state = null;   /* set below, once the helpers it uses exist */
   let stats = null;
   let reqId = 0;
   let opener = null;
@@ -21,6 +21,7 @@
     const n = Number(v);
     return Number.isFinite(n) && n >= 0 ? String(n) : "";
   };
+  state = readState();
   function readState() {
     const p = JD.params();
     const sort = p.get("sort") === "best-selling" ? "popular" : p.get("sort");
@@ -55,6 +56,8 @@
     if (st.page > 1) p.set("page", String(st.page));
     return p.toString();
   }
+  /* False while another tab is showing: this tab must not rewrite the URL then. */
+  const isActive = () => !JD.router || JD.router.isActive("explore");
   const urlFor = st => { const q = toQuery(st); return location.pathname + (q ? "?" + q : ""); };
 
   /* ---------- filter form <-> state ---------- */
@@ -155,7 +158,7 @@
       if (my !== reqId) return;
       if (!res.rows.length && res.total > 0 && snap.page > res.pages && !(meta && meta.stale)) {
         state.page = res.pages;
-        history.replaceState(null, "", urlFor(state));
+        if (isActive()) history.replaceState(null, "", urlFor(state));
         load();
         return;
       }
@@ -182,7 +185,7 @@
       if (my !== reqId) return;
       if (err && err.code === "PGRST103" && state.page > 1) {
         state.page = 1;
-        history.replaceState(null, "", urlFor(state));
+        if (isActive()) history.replaceState(null, "", urlFor(state));
         return load();
       }
       console.warn("[JulaDirect] explore", err && err.message);
@@ -377,7 +380,19 @@
     $("jd-save-cancel").addEventListener("click", () => $("jd-save-dialog").close());
     $("jd-save-form").addEventListener("submit", saveSearch);
 
-    window.addEventListener("popstate", () => { state = readState(); fillForm(); load(); });
+    window.addEventListener("popstate", () => {
+      const next = readState();
+      if (toQuery(next) === toQuery(state)) return;   /* tab switch or no-op: keep the results on screen */
+      state = next;
+      fillForm();
+      load();
+    });
+    /* Tab switching: close the mobile drawer when leaving; honour #filters when arriving. */
+    window.addEventListener("jd:pane:hide", e => { if (e.detail.route === "explore" && $("jd-filters").classList.contains("is-open")) closeDrawer(); });
+    window.addEventListener("jd:pane:show", e => {
+      if (e.detail.route !== "explore" || e.detail.first) return;
+      if (location.hash === "#filters" && mobile.matches) { openDrawer($("jd-filters-open")); history.replaceState(history.state, "", location.pathname + location.search); }
+    });
   }
 
   JD.mountShell({ active: "explore" });

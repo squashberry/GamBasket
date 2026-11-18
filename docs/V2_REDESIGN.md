@@ -72,6 +72,20 @@ Credentials: the functions use `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` env
 
 Not done: category and search result pages (`explore`) are still rendered client-side. Product URLs are discoverable through the sitemap, which is the main indexing path, but server-rendering `explore` would help category pages rank. After deploying, submit `/sitemap.xml` in Google Search Console and test a product URL with the URL Inspection tool to confirm the rendered HTML contains the listing.
 
+## Persistent tabs (`js/jd-router.js`)
+
+Home, Explore, Wishlist, Cart and Compare behave like tabs in an app. The pages are still plain HTML (direct loads, refreshes and SEO are unchanged), but once one of them is open, moving between them no longer loads a document.
+
+- Each tab is a *pane* (`div.jd-pane[data-route]`): built the first time it is opened, then kept alive and only hidden. Scroll position, filters, results and form input are still there when you come back. Browser back/forward switch panes.
+- The shell (header, floating nav, footer, cart badge, account menu) is mounted once. `JD.mountShell` is idempotent; later calls only repaint.
+- The first open of a tab fetches its HTML and runs its page script once. After the first page loads, the other tabs' HTML and scripts are prefetched when the browser is idle (skipped on Save-Data/2G), so first opens are quick too.
+- Page scripts are not rewritten. While a pane's script runs, the `document`/`window` listeners it registers are scoped to that pane (clicks only when the target is inside the pane, keys/popstate only while it is showing), so one tab's handlers never react to another tab's DOM. Shell-level listeners use `JD.rawAddEventListener` and stay global.
+- Body classes that belong to one tab (`is-homepage`, `has-mobilebar`, `jd-pdp-page`) and the homepage takeover banner are applied only while that tab is showing. Page scripts set tab-owned classes with `JD.paneClass(route, cls, on)`.
+- Events for page scripts: `jd:pane:show` (`detail.route`, `detail.first`) and `jd:pane:hide`. Cart, Wishlist, Compare and Home re-read their data on a repeat `show`; Explore closes its filter drawer on `hide` and honours `#filters` on `show`.
+- Links and GET search forms that point at one of these five pages are handled in-app. Everything else (account, orders, messages, product pages, seller/admin areas), modified clicks, `target`, `download` and `data-no-router` links, and any error, use a normal page load.
+- `JD.go(url)` navigates in-app when it can (used by the area picker).
+- Not yet in-app: product detail pages and the account area (`me`, `orders`, `messages`, `saved-searches`). The account pages are legacy and run inline scripts, so they need migrating first. Product pages would need per-product panes with cleanup.
+
 ## App-like navigation (without a single-page app)
 
 - Cross-document view transitions (`@view-transition`): header, floating nav, buy bar and seller sidebar stay in place while the content cross-fades (Chrome and Safari; others get a short fade-in).

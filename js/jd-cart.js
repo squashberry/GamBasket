@@ -75,7 +75,7 @@
   function render() {
     const items = state.items;
     if (!items.length) {
-      document.body.classList.remove("has-mobilebar");
+      JD.paneClass("cart", "has-mobilebar", false);
       setSub("");
       root.innerHTML = JD.empty({
         icon: "cart", title: "Your cart is empty",
@@ -110,7 +110,7 @@
       '<button type="button" class="jd-btn jd-btn--primary jd-btn--lg jd-btn--block" data-checkout' + (blocked ? " disabled" : "") + ">" + ctaLabel + "</button>" +
       '<a class="jd-link" href="explore.html" style="justify-content:center">Continue shopping</a></aside></div>' +
       '<div class="jd-mobilebar"><div><small class="jd-muted">Subtotal</small><br><strong>' + JD.esc(JD.money(subtotal)) + '</strong></div><button type="button" class="jd-btn jd-btn--primary" data-checkout' + (blocked ? " disabled" : "") + ">" + (state.auth ? "Checkout" : "Sign in") + "</button></div>";
-    document.body.classList.add("has-mobilebar");
+    JD.paneClass("cart", "has-mobilebar", true);
     JD.syncCompare();
   }
 
@@ -199,11 +199,14 @@
     const co = e.target.closest("[data-checkout]");
     if (step) { const it = findItem(step); if (it) updateQty(it, Number(it.quantity || 1) + Number(step.getAttribute("data-step"))); }
     else if (rm) { const it = findItem(rm); if (it) removeItem(it); }
-    else if (clr) { document.getElementById("jd-clear-dialog").showModal(); }
+    else if (clr) { const dlg = document.getElementById("jd-clear-dialog"); dlg.returnValue = ""; dlg.showModal(); }
     else if (co) { location.href = state.auth ? "checkout.html" : "login.html?redirect=" + encodeURIComponent("checkout.html"); }
     else if (e.target.closest("#jd-retry")) { load(); }
   });
   document.getElementById("jd-clear-dialog").addEventListener("close", e => { if (e.target.returnValue === "clear") clearAll(); });
+
+  /* Opening the Cart tab again: refresh quietly, the page stays on screen. */
+  window.addEventListener("jd:pane:show", e => { if (e.detail.route === "cart" && !e.detail.first) load(); });
 
   JD.mountShell({ active: "cart" });
   load();

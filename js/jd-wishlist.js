@@ -84,6 +84,8 @@
     }
   });
 
+  window.addEventListener("jd:pane:show", e => { if (e.detail.route === "wishlist" && !e.detail.first) load(); });
+
   JD.mountShell({ active: "wishlist" });
   JD.accountNav("wishlist");
   JD.bindProductActions(document);

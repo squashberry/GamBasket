@@ -116,7 +116,8 @@
   /* ---------- fetching a tab ---------- */
   async function fetchHtml(route) {
     if (htmlCache.has(route)) return htmlCache.get(route);
-    const p = fetch(fileFor(route), { credentials: "same-origin" }).then(res => {
+    const target = new URL(fileFor(route), location.origin).href;
+    const p = fetch(target, { credentials: "same-origin" }).then(res => {
       if (!res.ok || !/text\/html/i.test(res.headers.get("content-type") || "")) throw new Error("HTTP " + res.status);
       return res.text();
     });

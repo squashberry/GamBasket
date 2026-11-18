@@ -263,6 +263,9 @@
     renderTakeover(banner, preview);
   }
 
+  /* Back on the Home tab: only the device-local "recently visited" row can have changed. */
+  window.addEventListener("jd:pane:show", e => { if (e.detail.route === "index" && !e.detail.first) loadRecent(); });
+
   JD.mountShell({ active: "home" });
   JD.bindProductActions(document);
   bootBanner();

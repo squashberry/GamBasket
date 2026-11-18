@@ -837,3 +837,20 @@ body.jd a, body.jd button { -webkit-tap-highlight-color: transparent; touch-acti
 @keyframes jd-vt-in { from { opacity: 0; transform: translateY(10px); } }
 @supports not (view-transition-name: none) { body.jd #jd-main { animation: jd-vt-in .24s cubic-bezier(.2, .8, .2, 1) both; } }
 @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } body.jd #jd-main { animation: none; } }
+
+/* ---------- persistent tabs (js/jd-router.js) ---------- */
+.jd-pane { display: contents; }
+.jd-pane[hidden] { display: none !important; }
+.jd-pane--in > main, .jd-pane--in > dialog:not([open]) + main { animation: jd-pane-in .22s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes jd-pane-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.jd-navbar { position: fixed; z-index: 500; top: 0; left: 0; height: 3px; width: 0; background: var(--jd-blue-600, #1451e6); box-shadow: 0 0 8px rgba(20, 81, 230, .5); animation: jd-navbar 4s cubic-bezier(.1, .7, .2, 1) forwards; pointer-events: none; }
+.jd-navbar.is-done { width: 100%; opacity: 0; transition: width .15s ease, opacity .25s ease .1s; animation: none; }
+@keyframes jd-navbar { to { width: 88%; } }
+@media (prefers-reduced-motion: reduce) { .jd-pane--in > main { animation: none; } .jd-navbar { animation: none; width: 60%; } }
+
+/* Explore toolbar on phones: wrap instead of widening the page (which made phones zoom out). */
+@media (max-width: 960px) {
+  .jd-toolbar { min-width: 0; }
+  .jd-toolbar__right { flex-wrap: wrap; min-width: 0; width: 100%; }
+  .jd-toolbar .jd-select { flex: 1 1 100%; min-width: 0; width: 100%; }
+}

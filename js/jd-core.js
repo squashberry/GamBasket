@@ -11,6 +11,8 @@
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   /* ---------- utilities ---------- */
+  /* Shell-level listeners must never be scoped to a single tab (see jd-router.js). */
+  const rawOn = (t, type, fn, o) => (JD.rawAddEventListener || EventTarget.prototype.addEventListener).call(t, type, fn, o);
   JD.isUuid = v => UUID.test(String(v || ""));
   /* "../" repeated once per folder the page sits in, so shell links work from /admin/ and similar. */
   JD.root = "../".repeat(Math.max(0, location.pathname.split("/").filter(Boolean).length - 1));
@@ -31,6 +33,8 @@
   JD.$$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
   JD.params = () => new URLSearchParams(location.search);
   JD.debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+  /* In-app navigation when the router can handle the URL, otherwise a normal page load. */
+  JD.go = url => { if (JD.router && JD.router.canHandle(url)) JD.router.navigate(url); else location.href = url; };
   JD.loginUrl = () => JD.root + "login.html?redirect=" + encodeURIComponent(location.href);
   JD.auth = () => window.GamBasketAuth || null;
   JD.client = async () => {
@@ -86,7 +90,7 @@
   };
   JD.logoMark = (size) => '<svg width="' + (size || 36) + '" height="' + (size || 36) + '" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="9" fill="#1451e6"/><path d="M19.5 8v10.2c0 3-1.9 4.8-4.7 4.8-1.9 0-3.3-.7-4.3-2" stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"/><circle cx="19.5" cy="8" r="2" fill="#fff"/></svg>';
   JD.placeholder = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#eef4ff"/><g fill="none" stroke="#9db8f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M38 48h44l-3 34H41l-3-34Z"/><path d="M50 48v-4a10 10 0 0 1 20 0v4"/></g></svg>');
-  document.addEventListener("error", e => {
+  rawOn(document, "error", e => {
     const t = e.target;
     if (t && t.tagName === "IMG" && t.dataset.fallback !== "1") { t.dataset.fallback = "1"; t.src = JD.placeholder; }
   }, true);
@@ -157,7 +161,7 @@
   };
   function syncCompare() {
     const ids = JD.compare.ids();
-    const onComparePage = /compare\.html$/i.test(location.pathname);
+    const onComparePage = /compare(\.html)?$/i.test(location.pathname);
     JD.$$("[data-compare]").forEach(b => b.setAttribute("aria-pressed", String(ids.includes(b.getAttribute("data-compare")))));
     let tray = document.getElementById("jd-compare-tray");
     if (!ids.length || onComparePage) { if (tray) tray.remove(); return; }
@@ -250,7 +254,8 @@
     const el = root || document;
     if (el.__jdBound) return;
     el.__jdBound = true;
-    el.addEventListener("click", async e => {
+    /* Registered with the native method so it is never scoped to one tab. */
+    (JD.rawAddEventListener || el.addEventListener).call(el, "click", async e => {
       const wish = e.target.closest("[data-wish]");
       const add = e.target.closest("[data-add]");
       const cmp = e.target.closest("[data-compare]");
@@ -344,7 +349,7 @@
   JD.area = {
     list: AREAS,
     get() {
-      if (/explore\.html$/i.test(location.pathname)) { const q = JD.params().get("location"); return AREAS.includes(q) ? q : "all"; }
+      if (/explore(\.html)?$/i.test(location.pathname)) { const q = JD.params().get("location"); return AREAS.includes(q) ? q : "all"; }
       try { const v = localStorage.getItem("jd_area"); return AREAS.includes(v) ? v : "all"; } catch (e) { return "all"; }
     },
     set(v) { try { v === "all" ? localStorage.removeItem("jd_area") : localStorage.setItem("jd_area", v); } catch (e) { /* ignore */ } }
@@ -375,9 +380,9 @@
       if (!b) return;
       const v = b.getAttribute("data-area");
       JD.area.set(v);
-      location.href = JD.root + (v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v));
+      JD.go(JD.root + (v === "all" ? "explore.html" : "explore.html?location=" + encodeURIComponent(v)));
     });
-    document.addEventListener("keydown", esc);
+    rawOn(document, "keydown", esc);
     document.body.appendChild(scrim);
     document.body.appendChild(sheet);
     document.body.style.overflow = "hidden";
@@ -425,19 +430,21 @@
     const menu = document.getElementById("jd-menu");
     const close = () => { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); };
     btn.addEventListener("click", ev => { ev.stopPropagation(); const open = menu.hidden; menu.hidden = !open; btn.setAttribute("aria-expanded", String(open)); });
-    document.addEventListener("click", ev => { if (!menu.hidden && !box.contains(ev.target)) close(); });
-    document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !menu.hidden) { close(); btn.focus(); } });
+    rawOn(document, "click", ev => { if (!menu.hidden && !box.contains(ev.target)) close(); });
+    rawOn(document, "keydown", ev => { if (ev.key === "Escape" && !menu.hidden) { close(); btn.focus(); } });
     document.getElementById("jd-signout").addEventListener("click", async () => {
       try { await A.signOut(); } catch (e) { /* proceed to leave the page */ }
       location.href = JD.root + "index.html";
     });
   }
 
+  let catStats = null;
   function renderCatRail(stats) {
     const rail = document.getElementById("jd-catrail");
     if (!rail || !stats) return;
+    catStats = stats;
     const current = JD.params().get("category") || "";
-    const onExplore = /explore\.html$/i.test(location.pathname);
+    const onExplore = /explore(\.html)?$/i.test(location.pathname);
     let html = '<a class="jd-chip' + (onExplore && !current ? " is-active" : "") + '" href="explore.html">' + JD.icon("grid", 15) + "All categories</a>";
     (stats.categories || []).slice(0, 14).forEach(c => {
       html += '<a class="jd-chip' + (onExplore && current === c.id ? " is-active" : "") + '" href="explore.html?category=' + encodeURIComponent(c.id) + '">' + JD.esc(c.id) + "</a>";
@@ -447,11 +454,20 @@
 
   /* ---------- homepage takeover mode ---------- */
   JD.takeover = {
+    theme: undefined,
     set(theme) {
-      const on = !!theme;
-      document.body.classList.toggle("jd-takeover-on", on);
-      if (on) document.body.setAttribute("data-to-theme", theme); else document.body.removeAttribute("data-to-theme");
-      try { sessionStorage.setItem("jd_to_hint", on ? theme : "0"); } catch (e) { /* ignore */ }
+      this.theme = theme || null;
+      try { sessionStorage.setItem("jd_to_hint", theme ? theme : "0"); } catch (e) { /* ignore */ }
+      /* Only the homepage tab shows the takeover; other tabs keep the normal header. */
+      if (!JD.router || JD.router.isActive("index")) this.apply();
+    },
+    apply() {
+      let t = this.theme;
+      if (t === undefined) {
+        try { const h = sessionStorage.getItem("jd_to_hint"); t = h === "light" || h === "dark" || h === "blue" ? h : null; } catch (e) { t = null; }
+      }
+      document.body.classList.toggle("jd-takeover-on", !!t);
+      if (t) document.body.setAttribute("data-to-theme", t); else document.body.removeAttribute("data-to-theme");
     }
   };
   function applyTakeoverHint() {
@@ -506,7 +522,7 @@
     const q = document.getElementById("jd-search-btn");
     if (m) m.addEventListener("click", openMenu);
     if (q) q.addEventListener("click", openSearchPanel);
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".jd-panel")) closePanels(); });
+    rawOn(document, "keydown", e => { if (e.key === "Escape" && document.querySelector(".jd-panel")) closePanels(); });
   }
 
   /* ---------- instant navigation, cache-first rendering, installable shell ---------- */
@@ -542,8 +558,8 @@
       } else {
         let t;
         const find = e => (e.target && e.target.closest ? e.target.closest("a[href]") : null);
-        document.addEventListener("pointerover", e => { const a = find(e); if (!a || e.pointerType === "touch") return; clearTimeout(t); t = setTimeout(() => prefetchLink(a), 70); }, { passive: true });
-        ["pointerdown", "touchstart"].forEach(ev => document.addEventListener(ev, e => { const a = find(e); if (a) prefetchLink(a); }, { passive: true }));
+        rawOn(document, "pointerover", e => { const a = find(e); if (!a || e.pointerType === "touch") return; clearTimeout(t); t = setTimeout(() => prefetchLink(a), 70); }, { passive: true });
+        ["pointerdown", "touchstart"].forEach(ev => rawOn(document, ev, e => { const a = find(e); if (a) prefetchLink(a); }, { passive: true }));
         (window.requestIdleCallback || setTimeout)(() => JD.$$(".jd-fnav a").forEach(prefetchLink), 1500);
       }
     }
@@ -604,8 +620,18 @@
     }
   };
 
+  /* Repaints the parts of the shell that depend on the current tab/URL. */
+  JD.refreshShell = function () {
+    paintArea();
+    if (catStats) renderCatRail(catStats);
+    syncCompare();
+  };
+
   JD.mountShell = function (opts) {
     const o = opts || {};
+    /* A tab opened inside the running app calls this again: the shell is already there. */
+    if (JD._shellMounted) { if (JD.refreshShell) JD.refreshShell(); return; }
+    JD._shellMounted = true;
     if (!o.noBodyClass) document.body.classList.add("jd");
     if (JD.root) {
       const fix = el => { const h = el.getAttribute("href"); if (h && !/^(#|\/|[a-z][a-z0-9+.-]*:)/i.test(h) && !el.dataset.jdFixed) { el.setAttribute("href", JD.root + h); el.dataset.jdFixed = "1"; } };
@@ -636,6 +662,7 @@
     window.addEventListener("gambasket:cart:change", refreshCartCount);
     window.addEventListener("gambasket:auth:change", () => { renderAccount(); refreshCartCount(); JD.syncWishlist(document); });
     window.addEventListener("gambasket:compare:change", syncCompare);
-    document.addEventListener("click", e => { if (e.target.closest("[data-compare-clear]")) JD.compare.clear(); });
+    rawOn(document, "click", e => { if (e.target.closest("[data-compare-clear]")) JD.compare.clear(); });
+    if (JD.router && JD.router.init) JD.router.init();
   };
 })();

@@ -66,6 +66,8 @@
   });
   window.addEventListener("gambasket:compare:change", load);
 
+  window.addEventListener("jd:pane:show", e => { if (e.detail.route === "compare" && !e.detail.first) load(); });
+
   JD.mountShell({ active: "" });
   JD.accountNav("compare");
   JD.bindProductActions(document);

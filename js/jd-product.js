@@ -5,10 +5,11 @@
   "use strict";
   const JD = window.JD;
   const root = document.getElementById("jd-pdp");
-  const id = JD.params().get("id");
+  let id = JD.params().get("id");
   let qty = 1;
   let current = null;
   document.body.classList.add("jd-pdp-page");
+  if (JD.paneClass) JD.paneClass("product", "jd-pdp-page", true);
 
   const ICON_SHARE = '<svg class="jd-i" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg>';
   const humanize = k => { const t = String(k).replace(/[_-]+/g, " ").trim(); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -163,6 +164,24 @@
       failed(e && e.message);
     }
   }
+
+  function syncProductRoute(rawUrl) {
+    let nextId = null;
+    try { nextId = new URL(rawUrl || location.href, location.href).searchParams.get("id"); } catch (e) { nextId = null; }
+    if (nextId === id) return;
+    id = nextId;
+    current = null;
+    qty = 1;
+    document.title = "Product — JulaDirect";
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute("content", "View product details, seller information and reviews on JulaDirect.");
+    root.innerHTML = topbar + '<div class="jd-pdp" style="padding-top:28px" aria-hidden="true"><div class="jd-skel" style="aspect-ratio:1/1;border-radius:16px"></div><div style="display:grid;gap:14px"><div class="jd-skel" style="height:34px;width:80%"></div><div class="jd-skel" style="height:44px;width:40%"></div><div class="jd-skel" style="height:120px"></div><div class="jd-skel" style="height:52px"></div></div></div>';
+    load();
+  }
+
+  window.addEventListener("jd:pane:show", event => {
+    if (event.detail && event.detail.route === "product") syncProductRoute(event.detail.url);
+  });
 
   async function share() {
     const title = current ? current.product.title : document.title;

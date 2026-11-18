@@ -437,3 +437,29 @@ test("Legacy sample notifications are removed instead of shown as activity", asy
     catch { return null; }
   })).toEqual([]);
 });
+
+
+test("Product details and account pages stay inside the persistent app shell", async ({ page }) => {
+  await mockBackend(page, { products: [iphone, samsung] });
+  await page.goto("/explore.html");
+  await expect(page.locator("#productGrid .product-card")).toHaveCount(2);
+
+  await page.evaluate(() => {
+    window.__jdPersistentDocumentProbe = { document, marker: "same-document" };
+  });
+  await page.locator(`#productGrid a[href*="${IPHONE_ID}"]`).first().click();
+  await expect(page).toHaveURL(new RegExp(`/product\\.html\\?id=${IPHONE_ID}`));
+  await expect(page.locator("#jd-pdp")).toContainText("iPhone 13 128GB");
+  expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.document === document)).toBe(true);
+
+  await page.evaluate(id => window.JD.router.navigate(`/product.html?id=${id}`), SAMSUNG_ID);
+  await expect(page).toHaveURL(new RegExp(`/product\\.html\\?id=${SAMSUNG_ID}`));
+  await expect(page.locator("#jd-pdp")).toContainText("Samsung Galaxy S24");
+  expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.marker)).toBe("same-document");
+
+  await page.evaluate(() => window.JD.router.navigate("/me.html"));
+  await expect(page).toHaveURL(/\\/me\\.html$/);
+  await expect(page.locator("main.me-main")).toBeVisible();
+  expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.document === document)).toBe(true);
+  await expect(page.locator("body")).not.toHaveClass(/jd-pdp-page/);
+});

@@ -12,9 +12,21 @@
    ========================================================= */
 (function () {
   "use strict";
-  var JD = window.JD;
-  if (!JD || JD.cartFx || typeof JD.addToCart !== "function") return;
-  if (typeof Element.prototype.animate !== "function") return;
+  var bootStarted = Date.now();
+
+  function boot() {
+    var JD = window.JD;
+    if (!JD || typeof JD.addToCart !== "function") {
+      if (Date.now() - bootStarted < 10000) {
+        window.setTimeout(boot, 60);
+      } else {
+        console.warn("[JulaDirect] add-to-cart animation could not find JD.addToCart.");
+      }
+      return;
+    }
+    if (JD.cartFx) return;
+    if (typeof Element === "undefined" || typeof Element.prototype.animate !== "function") return;
+
   var rm = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
 
   var STYLE =
@@ -55,7 +67,14 @@
 
   /* The cart icon to fly to: the visible one nearest the button. */
   function pickTarget(x, y) {
-    var all = [].slice.call(document.querySelectorAll('a[href="cart.html"],a[href="/cart.html"]')).filter(visible);
+    var all = [].slice.call(document.querySelectorAll("a[href]")).filter(function (a) {
+      if (!visible(a)) return false;
+      try {
+        return /(?:^|\/)cart\.html$/i.test(new URL(a.href, window.location.href).pathname);
+      } catch (e) {
+        return false;
+      }
+    });
     var withBadge = all.filter(function (a) { return a.querySelector("[data-cart-count]"); });
     var list = withBadge.length ? withBadge : all, best = null, bd = 1e12;
     list.forEach(function (a) {
@@ -294,5 +313,8 @@
     } catch (err) { if (cur) cleanup(cur); }
   }, true);
 
-  JD.cartFx = { version: 1 };
+  JD.cartFx = { version: 2 };
+  }
+
+  boot();
 })();

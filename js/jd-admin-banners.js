@@ -7,10 +7,16 @@
   "use strict";
   const JD = window.JD;
   const $ = id => document.getElementById(id);
-  const TEXT = ["name", "headline_left", "headline_right", "kicker", "tagline", "corner_label", "body", "stat_value", "stat_label", "cta_label", "cta_url", "image_url", "image_style", "theme"];
-  const LIMITS = { name: 80, headline_left: 60, headline_right: 60, kicker: 40, tagline: 60, corner_label: 60, body: 280, stat_value: 16, stat_label: 40, cta_label: 30, cta_url: 300, image_url: 600 };
+  const TEXT = ["name", "headline_left", "headline_right", "kicker", "tagline", "corner_label", "body", "stat_value", "stat_label", "cta_label", "cta_url", "image_style", "theme", "background_color"];
+  const LIMITS = { name: 80, headline_left: 60, headline_right: 60, kicker: 40, tagline: 60, corner_label: 60, body: 280, stat_value: 16, stat_label: 40, cta_label: 30, cta_url: 300 };
+  const IMAGE_BUCKET = "site-banners";
+  const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
   let banners = [];
   let editingId = null;
+  let editingBanner = null;
+  let selectedImage = null;
+  let removeCurrentImage = false;
+  let previewObjectUrl = null;
 
   /* The site root is one level up from /admin. */
   const site = p => "../" + p;
@@ -43,10 +49,11 @@
       const st = statusOf(b);
       const img = JD.safeUrl(b.image_url);
       const sched = b.starts_at || b.ends_at ? (b.starts_at ? "From " + fmt(b.starts_at) : "") + (b.starts_at && b.ends_at ? " " : "") + (b.ends_at ? "until " + fmt(b.ends_at) : "") : "Always on while live";
+      const swatch = /^#[0-9a-f]{6}$/i.test(b.background_color || "") ? b.background_color : "";
       return '<article class="jd-row" data-id="' + JD.esc(b.id) + '"><div class="jd-row__lead"><img class="jd-bthumb" src="' + JD.esc(img || JD.placeholder) + '" alt="">' +
         '<div class="jd-row__main"><div class="jd-row__title">' + JD.esc(b.name) + ' <span class="jd-badge ' + st.cls + '">' + st.label + "</span></div>" +
         '<div class="jd-row__sub">' + JD.esc(String(b.headline_left).replace(/\s*\n\s*/g, " ")) + (b.headline_right ? " / " + JD.esc(String(b.headline_right).replace(/\s*\n\s*/g, " ")) : "") + "</div>" +
-        '<div class="jd-row__sub">' + JD.esc(sched) + " &middot; " + JD.esc(b.theme) + " theme</div></div></div>" +
+        '<div class="jd-row__sub">' + JD.esc(sched) + " &middot; " + JD.esc(swatch || (b.theme + " theme")) + (swatch ? '<span class="jd-banner-swatch" style="background:' + swatch + '"></span>' : "") + "</div></div></div>" +
         '<div class="jd-row__actions"><label class="jd-switch" style="gap:10px"><span>Live</span><input type="checkbox" data-toggle' + (b.is_active ? " checked" : "") + '><span class="jd-switch__track" aria-hidden="true"></span></label>' +
         '<a class="jd-btn jd-btn--secondary jd-btn--sm" href="' + site("index.html") + "?preview_banner=" + encodeURIComponent(b.id) + '" target="_blank" rel="noopener">Preview</a>' +
         '<button type="button" class="jd-btn jd-btn--secondary jd-btn--sm" data-edit>Edit</button>' +
@@ -102,22 +109,48 @@
   /* ---------- form ---------- */
   const field = k => $("f-" + k);
   function fillForm(b) {
-    TEXT.forEach(k => { field(k).value = b && b[k] != null ? b[k] : (k === "image_style" ? "cutout" : k === "theme" ? "light" : ""); });
+    editingBanner = b || null;
+    selectedImage = null;
+    removeCurrentImage = false;
+    if (previewObjectUrl) { URL.revokeObjectURL(previewObjectUrl); previewObjectUrl = null; }
+    TEXT.forEach(k => {
+      const fallback = k === "image_style" ? "cutout" : k === "theme" ? "light" : k === "background_color" ? "#F2EFE8" : "";
+      field(k).value = b && b[k] != null && b[k] !== "" ? b[k] : fallback;
+    });
     field("starts_at").value = toLocal(b && b.starts_at);
     field("ends_at").value = toLocal(b && b.ends_at);
+    $("f-image-file").value = "";
     $("f-body-count").textContent = field("body").value.length + " / 280";
+    $("f-image-remove").hidden = !(b && b.image_url);
     imgPreview();
+    updateColorLabel();
     status("");
   }
   function status(msg, isError) { const el = $("jd-form-status"); el.textContent = msg || ""; el.classList.toggle("is-error", !!isError); }
-  function imgPreview() {
-    const v = field("image_url").value.trim();
+  function setPreview(src) {
     const img = $("f-img-prev");
-    if (/^https:\/\/[^\s]+$/.test(v)) { img.src = v; img.hidden = false; } else { img.hidden = true; img.removeAttribute("src"); }
+    if (src) { img.src = src; img.hidden = false; }
+    else { img.hidden = true; img.removeAttribute("src"); }
+  }
+  function imgPreview() {
+    if (previewObjectUrl) { URL.revokeObjectURL(previewObjectUrl); previewObjectUrl = null; }
+    if (selectedImage) {
+      previewObjectUrl = URL.createObjectURL(selectedImage);
+      setPreview(previewObjectUrl);
+      $("f-image-remove").hidden = false;
+      return;
+    }
+    const current = !removeCurrentImage && editingBanner ? JD.safeUrl(editingBanner.image_url) : "";
+    setPreview(current);
+    $("f-image-remove").hidden = !current;
+  }
+  function updateColorLabel() {
+    $("f-background_color-value").textContent = field("background_color").value.toUpperCase();
   }
   function collect() {
     const p = {};
     TEXT.forEach(k => { p[k] = field(k).value.trim(); });
+    p.image_url = editingBanner && !removeCurrentImage ? (editingBanner.image_url || "") : "";
     p.starts_at = field("starts_at").value ? new Date(field("starts_at").value).toISOString() : "";
     p.ends_at = field("ends_at").value ? new Date(field("ends_at").value).toISOString() : "";
     return p;
@@ -126,7 +159,7 @@
     if (!p.name) return "Give the banner an internal name.";
     if (!p.headline_left) return "The left headline is required.";
     for (const k in LIMITS) if (p[k] && p[k].length > LIMITS[k]) return "Shorten \u201c" + k.replace(/_/g, " ") + "\u201d to " + LIMITS[k] + " characters or fewer.";
-    if (p.image_url && !/^https:\/\/[^\s]+$/.test(p.image_url)) return "The image link must start with https://";
+    if (!/^#[0-9a-f]{6}$/i.test(p.background_color || "")) return "Choose a valid six-digit background colour.";
     if (p.cta_url && !(/^https:\/\/[^\s]+$/.test(p.cta_url) || /^[A-Za-z0-9_.\/?=&#%-]+$/.test(p.cta_url))) return "The button link must be a page on this site or a full https:// link.";
     if (p.starts_at && p.ends_at && new Date(p.ends_at) <= new Date(p.starts_at)) return "The end time must be after the start time.";
     return "";
@@ -137,8 +170,27 @@
     if (problem) { status(problem, true); return; }
     const btns = [$("jd-form-save"), $("jd-form-preview")];
     btns.forEach(b => { b.disabled = true; });
-    status("Saving\u2026");
+    status(selectedImage ? "Uploading image…" : "Saving…");
     try {
+      if (selectedImage) {
+        const client = await JD.client();
+        if (!client || !client.storage) throw new Error("Image storage is unavailable. Refresh the page and try again.");
+        const ext = selectedImage.type === "image/png" ? "png" : selectedImage.type === "image/webp" ? "webp" : "jpg";
+        const safeName = selectedImage.name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-").slice(-72) || ("banner." + ext);
+        const path = (editingId || "new") + "/" + Date.now() + "-" + safeName;
+        const { data: uploaded, error: uploadError } = await client.storage.from(IMAGE_BUCKET).upload(path, selectedImage, {
+          cacheControl: "31536000",
+          upsert: false,
+          contentType: selectedImage.type
+        });
+        if (uploadError) throw new Error("Image upload failed: " + uploadError.message);
+        const { data: publicData } = client.storage.from(IMAGE_BUCKET).getPublicUrl(uploaded.path);
+        if (!publicData || !publicData.publicUrl) throw new Error("The image uploaded, but its public URL could not be created.");
+        p.image_url = publicData.publicUrl;
+      } else if (removeCurrentImage) {
+        p.image_url = "";
+      }
+      status("Saving banner…");
       const id = await rpc("admin_save_site_banner", { p_id: editingId, p_payload: p });
       $("jd-form-dialog").close();
       JD.toast("Banner saved", "ok");
@@ -153,6 +205,7 @@
   }
   function openForm(b) {
     editingId = b ? b.id : null;
+    editingBanner = b || null;
     $("jd-form-title").textContent = b ? "Edit banner" : "New banner";
     fillForm(b);
     $("jd-form-dialog").showModal();
@@ -194,7 +247,36 @@
   $("jd-form").addEventListener("submit", ev => { ev.preventDefault(); save(false); });
   $("jd-form-preview").addEventListener("click", () => save(true));
   $("jd-form-cancel").addEventListener("click", () => $("jd-form-dialog").close());
-  $("f-image_url").addEventListener("input", JD.debounce(imgPreview, 300));
+  $("f-image-file").addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) { selectedImage = null; imgPreview(); return; }
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      e.target.value = "";
+      selectedImage = null;
+      imgPreview();
+      status("Choose a PNG, JPG or WebP image.", true);
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      e.target.value = "";
+      selectedImage = null;
+      imgPreview();
+      status("The image is too large. Maximum size is 8 MB.", true);
+      return;
+    }
+    selectedImage = file;
+    removeCurrentImage = false;
+    imgPreview();
+    status("Image selected. It will upload when you save.");
+  });
+  $("f-image-remove").addEventListener("click", () => {
+    selectedImage = null;
+    removeCurrentImage = true;
+    $("f-image-file").value = "";
+    imgPreview();
+    status("The current image will be removed when you save.");
+  });
+  $("f-background_color").addEventListener("input", updateColorLabel);
   $("f-body").addEventListener("input", () => { $("f-body-count").textContent = $("f-body").value.length + " / 280"; });
 
   JD.mountShell({ active: "" });

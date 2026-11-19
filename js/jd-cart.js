@@ -64,7 +64,7 @@
     else if (q > st) stockLine = '<span class="jd-badge jd-badge--warn">Only ' + st + " available</span>";
     else stockLine = '<span class="jd-badge jd-badge--ok">' + JD.icon("check", 14) + st + " available</span>";
     const canInc = st === null ? q < 99 : q < st;
-    return '<article class="jd-citem" data-id="' + pid + '"' + idx + ">" +
+    return '<article class="jd-citem" data-id="' + pid + '" data-quantity="' + q + '"' + idx + ">" +
       '<a class="jd-citem__img" href="product.html?id=' + encodeURIComponent(i.product_id || p.id) + '"><img src="' + JD.esc(img) + '" alt="" loading="lazy"></a>' +
       "<div><a class=\"jd-citem__title\" href=\"product.html?id=" + encodeURIComponent(i.product_id || p.id) + '">' + JD.esc(p.title || "Product") + "</a>" +
       '<div style="margin-top:4px;font-weight:700">' + JD.esc(JD.money(p.price, p.currency)) + '</div><div style="margin-top:8px">' + stockLine + "</div>" +
@@ -158,31 +158,59 @@
       JD.toast("We could not update that quantity.", "error");
     }
   }
-  async function removeItem(item) {
+  let clearing = false;
+  async function animateExit(rows, target) {
+    try {
+      const fx = JD.cartFx || window.JD && window.JD.cartFx;
+      if (fx && typeof fx.exitItems === "function") {
+        await fx.exitItems(rows, { target: target || null });
+      }
+    } catch (e) {
+      console.warn("[JulaDirect] cart exit animation", e && e.message);
+    }
+  }
+  async function removeItem(item, row, trigger) {
+    if (!item || clearing || (row && row.dataset.removing === "true")) return;
+    if (row) { row.dataset.removing = "true"; row.style.pointerEvents = "none"; }
+    if (trigger) trigger.disabled = true;
     const A = JD.auth();
     try {
       if (state.auth) await A.removeCartItem(item.product_id || item.product.id);
       else { const arr = localCart(); arr.splice(item.__index, 1); saveLocal(arr); }
+      await animateExit(row ? [row] : [], trigger);
       state.items = state.auth ? state.items.filter(i => i !== item) : localItems();
       render();
       JD.refreshCartCount();
       JD.toast("Removed from your cart", "ok");
     } catch (e) {
+      if (row) { delete row.dataset.removing; row.style.pointerEvents = ""; }
+      if (trigger && trigger.isConnected) trigger.disabled = false;
       console.warn("[JulaDirect] cart remove", e && e.message);
       JD.toast("We could not remove that item.", "error");
     }
   }
   async function clearAll() {
+    if (clearing) return;
+    clearing = true;
     const A = JD.auth();
+    const rows = Array.from(root.querySelectorAll(".jd-citem"));
+    const trigger = root.querySelector("[data-clear]");
+    if (trigger) trigger.disabled = true;
+    rows.forEach(row => { row.dataset.removing = "true"; row.style.pointerEvents = "none"; });
     try {
       if (state.auth) await A.clearCart(); else saveLocal([]);
+      await animateExit(rows, trigger);
       state.items = [];
       render();
       JD.refreshCartCount();
       JD.toast("Cart cleared", "ok");
     } catch (e) {
+      rows.forEach(row => { delete row.dataset.removing; row.style.pointerEvents = ""; });
+      if (trigger && trigger.isConnected) trigger.disabled = false;
       console.warn("[JulaDirect] cart clear", e && e.message);
       JD.toast("We could not clear your cart.", "error");
+    } finally {
+      clearing = false;
     }
   }
   const findItem = el => {
@@ -198,7 +226,7 @@
     const clr = e.target.closest("[data-clear]");
     const co = e.target.closest("[data-checkout]");
     if (step) { const it = findItem(step); if (it) updateQty(it, Number(it.quantity || 1) + Number(step.getAttribute("data-step"))); }
-    else if (rm) { const it = findItem(rm); if (it) removeItem(it); }
+    else if (rm) { const it = findItem(rm); if (it) removeItem(it, rm.closest(".jd-citem"), rm); }
     else if (clr) { const dlg = document.getElementById("jd-clear-dialog"); dlg.returnValue = ""; dlg.showModal(); }
     else if (co) { location.href = state.auth ? "checkout.html" : "login.html?redirect=" + encodeURIComponent("checkout.html"); }
     else if (e.target.closest("#jd-retry")) { load(); }

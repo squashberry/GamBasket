@@ -666,3 +666,15 @@
     if (JD.router && JD.router.init) JD.router.init();
   };
 })();
+
+/* Rubber add-to-cart effect (js/jd-cartfx.js): optional, loaded after the shell. */
+(function () {
+  try {
+    var cs = document.currentScript;
+    if (!cs || !cs.src) return;
+    var s = document.createElement("script");
+    s.src = cs.src.replace(/jd-core\.js(\?.*)?$/, "jd-cartfx.js$1");
+    s.async = true;
+    document.head.appendChild(s);
+  } catch (e) {}
+})();

@@ -1,0 +1,39 @@
+/* Worker application page. Builds on css/fw.css. */
+.ap-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; padding: 10px max(16px, calc((100% - 960px) / 2)); background: color-mix(in srgb, var(--fw-bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--fw-line); min-height: 60px; }
+.ap-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--fw-ink) !important; text-decoration: none; letter-spacing: -.01em; }
+.ap-brand i { width: 30px; height: 30px; border-radius: 10px; background: var(--fw-accent); color: var(--fw-accent-ink); display: grid; place-items: center; font-style: normal; font-weight: 900; }
+.ap-brand span { font-weight: 600; color: var(--fw-ink-3); }
+.ap-main { max-width: 960px; margin: 0 auto; padding: 28px 16px 64px; display: grid; gap: 20px; }
+.ap-hero { padding: 8px 0 4px; display: grid; gap: 10px; }
+.ap-hero h1 { font-size: clamp(28px, 5vw, 42px); letter-spacing: -.03em; line-height: 1.1; }
+.ap-hero p { color: var(--fw-ink-2); font-size: 17px; max-width: 60ch; }
+.ap-perks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.ap-perk { padding: 14px 16px; border-radius: 14px; background: var(--fw-surface); border: 1px solid var(--fw-line); }
+.ap-perk b { display: block; margin-bottom: 2px; }
+.ap-perk span { color: var(--fw-ink-2); font-size: 14px; }
+.ap-wizard { padding: 0; overflow: hidden; }
+.ap-wizard__head { padding: 18px 22px 14px; border-bottom: 1px solid var(--fw-line); display: grid; gap: 12px; }
+.ap-wizard__head h2 { font-size: 20px; }
+.ap-wizard__body { padding: 22px; display: grid; gap: 18px; }
+.ap-wizard__foot { padding: 16px 22px; border-top: 1px solid var(--fw-line); display: flex; justify-content: space-between; gap: 12px; background: var(--fw-surface-2); }
+.ap-roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.ap-role { text-align: left; padding: 16px; border-radius: 16px; border: 2px solid var(--fw-line); background: var(--fw-surface); cursor: pointer; display: grid; gap: 6px; }
+.ap-role:hover { border-color: var(--fw-line-2); }
+.ap-role[aria-pressed="true"] { border-color: var(--fw-accent); background: var(--fw-accent-soft); }
+.ap-role[disabled] { opacity: .55; cursor: not-allowed; }
+.ap-role svg { width: 28px; height: 28px; fill: none; stroke: var(--fw-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ap-role b { font-size: 17px; } .ap-role span { color: var(--fw-ink-2); font-size: 14px; }
+.ap-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) { .ap-cols { grid-template-columns: 1fr; } .ap-wizard__body, .ap-wizard__head, .ap-wizard__foot { padding-left: 16px; padding-right: 16px; } }
+.ap-drop { display: grid; place-items: center; gap: 6px; padding: 20px; border: 2px dashed var(--fw-line-2); border-radius: 16px; text-align: center; cursor: pointer; background: var(--fw-surface-2); color: var(--fw-ink-2); }
+.ap-drop:hover, .ap-drop:focus-within { border-color: var(--fw-accent); }
+.ap-drop svg { width: 28px; height: 28px; fill: none; stroke: var(--fw-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ap-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.ap-drop img { max-height: 160px; max-width: 100%; border-radius: 12px; }
+.ap-drop--ok { border-style: solid; border-color: var(--fw-good); }
+.ap-summary { display: grid; gap: 14px; }
+.ap-check { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; cursor: pointer; }
+.ap-check input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--fw-accent); flex: none; }
+.ap-app { padding: 18px 20px; display: grid; gap: 14px; }
+.ap-done { text-align: center; padding: 36px 20px; display: grid; gap: 10px; justify-items: center; }
+.ap-done .ap-ref { font: 800 26px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; padding: 8px 16px; border-radius: 12px; background: var(--fw-accent-soft); color: var(--fw-accent); }

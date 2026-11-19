@@ -1,0 +1,43 @@
+/* Operations Center: inbox master/detail and inspector. Builds on css/fw.css. */
+.ops-inbox { display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.ops-list { position: sticky; top: 80px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; overflow: hidden; }
+.ops-list__head { padding: 14px; display: grid; gap: 10px; border-bottom: 1px solid var(--fw-line); }
+.ops-list__scroll { overflow-y: auto; }
+.ops-item { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; padding: 12px 14px; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--fw-line); cursor: pointer; }
+.ops-item:hover { background: var(--fw-surface-2); }
+.ops-item[aria-current="true"] { background: var(--fw-accent-soft); box-shadow: inset 3px 0 0 var(--fw-accent); }
+.ops-item__ic { width: 44px; height: 44px; border-radius: 12px; background: var(--fw-surface-2); border: 1px solid var(--fw-line); display: grid; place-items: center; background-size: cover; background-position: center; color: var(--fw-ink-2); }
+.ops-item__ic svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ops-item b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ops-item small { display: block; color: var(--fw-ink-3); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ops-item__tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.ops-detail { min-height: 320px; }
+.ops-detail__bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 18px; border-bottom: 1px solid var(--fw-line); }
+.ops-detail__body { padding: 18px; display: grid; gap: 18px; }
+.ops-sec { display: grid; gap: 10px; }
+.ops-sec > h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--fw-ink-3); }
+.ops-gallery { display: grid; gap: 8px; }
+.ops-gallery__main { aspect-ratio: 4/3; border-radius: 14px; background: var(--fw-surface-2) center/contain no-repeat; border: 1px solid var(--fw-line); }
+.ops-gallery__thumbs { display: flex; gap: 8px; overflow-x: auto; }
+.ops-gallery__thumbs button { flex: none; width: 56px; height: 56px; border-radius: 10px; border: 2px solid transparent; background: var(--fw-surface-2) center/cover; cursor: pointer; }
+.ops-gallery__thumbs button[aria-pressed="true"] { border-color: var(--fw-accent); }
+.ops-doc { border-radius: 14px; border: 1px solid var(--fw-line); background: var(--fw-surface-2); overflow: hidden; }
+.ops-doc img { display: block; width: 100%; max-height: 360px; object-fit: contain; }
+.ops-doc figcaption { padding: 8px 12px; font-size: 12.5px; color: var(--fw-ink-3); }
+.ops-docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0; }
+.ops-decide { display: grid; gap: 12px; padding: 16px; border-radius: 14px; background: var(--fw-surface-2); border: 1px solid var(--fw-line); }
+.ops-decide__row { display: flex; gap: 10px; flex-wrap: wrap; }
+.ops-decide__row > * { flex: 1 1 140px; }
+.ops-note { padding: 10px 12px; border-radius: 12px; background: var(--fw-surface-2); border: 1px solid var(--fw-line); font-size: 14px; }
+.ops-note small { display: block; color: var(--fw-ink-3); font-size: 12px; margin-bottom: 2px; }
+.ops-flag { color: var(--fw-bad); font-weight: 700; }
+.ops-late { color: var(--fw-bad); } .ops-warm { color: var(--fw-warn); }
+.ops-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ops-table th { text-align: left; font-size: 12px; color: var(--fw-ink-3); text-transform: uppercase; letter-spacing: .05em; padding: 8px 10px; border-bottom: 1px solid var(--fw-line); }
+.ops-table td { padding: 11px 10px; border-bottom: 1px solid var(--fw-line); vertical-align: middle; }
+.ops-table-wrap { overflow-x: auto; }
+@media (max-width: 900px) {
+  .ops-inbox { grid-template-columns: 1fr; }
+  .ops-list { position: static; max-height: none; }
+  .ops-detail-wrap { display: none; }
+}

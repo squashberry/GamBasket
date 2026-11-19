@@ -860,3 +860,19 @@ body.jd a, body.jd button { -webkit-tap-highlight-color: transparent; touch-acti
   .jd-toolbar__right { flex-wrap: wrap; min-width: 0; width: 100%; }
   .jd-toolbar .jd-select { flex: 1 1 100%; min-width: 0; width: 100%; }
 }
+
+/* Keep floating navigation icons readable even when global link/SVG rules
+   or a nested page stylesheet tries to apply the default navy icon colour. */
+#jd-fnav .jd-fnav__pill > .jd-fnav__tab,
+#jd-fnav .jd-fnav__pill > .jd-fnav__tab:not([aria-current="page"]),
+#jd-fnav .jd-fnav__pill > .jd-fnav__tab[aria-current="page"] {
+  color: #fff !important;
+}
+#jd-fnav .jd-fnav__pill > .jd-fnav__tab > svg.jd-i {
+  color: #fff !important;
+  stroke: #fff !important;
+  fill: none !important;
+}
+#jd-fnav .jd-fnav__pill > .jd-fnav__tab > span {
+  color: #fff !important;
+}

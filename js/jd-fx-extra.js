@@ -15,6 +15,8 @@
 (function () {
   "use strict";
   var JD = window.JD, F = JD && JD.cartFx;
+  /* Keep shared animation listeners active across persistent route panes. */
+  var rawAdd = (JD && JD.rawAddEventListener) || EventTarget.prototype.addEventListener;
   if (!F || !(F.version >= 2) || F.extra) return;
   F.extra = true;
   var rm = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
@@ -238,7 +240,7 @@
     };
   }
 
-  window.addEventListener("jd:wishlist", function (e) {
+  rawAdd.call(window, "jd:wishlist", function (e) {
     var d = e.detail || {};
     wishCtx.slice().forEach(function (c) { if (String(c.id) === String(d.id)) wishDone(c, !!d.on); });
   });
@@ -272,7 +274,7 @@
     c.to = setTimeout(function () { dropCmp(rec); F.done(c, false); }, 800);
   }
 
-  window.addEventListener("gambasket:compare:change", function (e) {
+  rawAdd.call(window, "gambasket:compare:change", function (e) {
     var ids = (e.detail && e.detail.ids) || [];
     cmpCtx.slice().forEach(function (rec) {
       if (ids.indexOf(rec.id) > -1) { clearTimeout(rec.c.to); dropCmp(rec); F.done(rec.c, true); }
@@ -290,7 +292,7 @@
     ], { duration: 380, easing: "ease-out", composite: "add" });
   }
 
-  document.addEventListener("click", function (e) {
+  rawAdd.call(document, "click", function (e) {
     try {
       var t = e.target && e.target.closest ? e.target : null;
       if (!t || rm.matches) return;

@@ -251,7 +251,7 @@
     }
     const ctaLabel = (b.cta_label || "Shop now");
     const external = /^https:/.test(href);
-    sec.setAttribute("data-theme", b.theme || "light");
+    sec.setAttribute("data-theme", effectiveTheme);
     sec.innerHTML = '<div class="jd-to__inner">' +
       '<h1 class="jd-to__head"><span class="jd-to__l">' + lines(b.headline_left, 0.15) + "</span>" + (b.headline_right ? '<span class="jd-to__r">' + lines(b.headline_right, 0.4) + "</span>" : "") + "</h1>" +
       (img ? '<div class="jd-to__figure" data-style="' + JD.esc(b.image_style || "cutout") + '"><div class="jd-to__par"><img class="jd-to__img" src="' + JD.esc(img) + '" alt="" decoding="async"></div></div>' : "") +

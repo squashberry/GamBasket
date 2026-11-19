@@ -470,14 +470,18 @@
         }
       }
 
-      var exitX = clamp(tx - (imageRect.left + imageRect.width / 2), -90, 90) * .18;
-      var exitY = clamp(ty - (imageRect.top + imageRect.height / 2), -90, 90) * .18;
+      var rowRect = row.getBoundingClientRect();
+      var rowCx = rowRect.left + rowRect.width / 2;
+      var rowCy = rowRect.top + rowRect.height / 2;
+      var exitX = clamp(tx - rowCx, -520, 520) * .62;
+      var exitY = clamp(ty - rowCy, -420, 420) * .62;
+      var rotation = rowIndex % 2 ? 5 : -5;
       try {
         row.animate([
-          { opacity: 1, transform: "translate3d(0,0,0) scale(1)", filter: "blur(0px)" },
-          { opacity: .82, transform: "translate3d(" + exitX + "px," + exitY + "px,0) scale(.97)", filter: "blur(0px)", offset: .35 },
-          { opacity: 0, transform: "translate3d(" + (exitX * 2) + "px," + (exitY * 2) + "px,0) scale(.88)", filter: "blur(2px)" }
-        ], { duration: 480, delay: rowDelay, easing: "ease-in", fill: "forwards" });
+          { opacity: 1, transform: "translate3d(0,0,0) scale(1) rotate(0deg)", filter: "blur(0px)" },
+          { opacity: .72, transform: "translate3d(" + (exitX * .5) + "px," + (exitY * .5 - 18) + "px,0) scale(.94) rotate(" + (rotation * .5) + "deg)", filter: "blur(0px)", offset: .35 },
+          { opacity: 0, transform: "translate3d(" + exitX + "px," + exitY + "px,0) scale(.78) rotate(" + rotation + "deg)", filter: "blur(3px)" }
+        ], { duration: 560, delay: rowDelay, easing: "cubic-bezier(.18,.72,.22,1)", fill: "forwards" });
       } catch (e) {}
       sequence += copies;
       maxEnd = Math.max(maxEnd, rowDelay + 480);

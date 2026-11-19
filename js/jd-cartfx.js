@@ -12,20 +12,9 @@
    ========================================================= */
 (function () {
   "use strict";
-  var bootStarted = Date.now();
-
-  function boot() {
-    var JD = window.JD;
-    if (!JD || typeof JD.addToCart !== "function") {
-      if (Date.now() - bootStarted < 10000) {
-        window.setTimeout(boot, 60);
-      } else {
-        console.warn("[JulaDirect] add-to-cart animation could not find JD.addToCart.");
-      }
-      return;
-    }
-    if (JD.cartFx) return;
-    if (typeof Element === "undefined" || typeof Element.prototype.animate !== "function") return;
+  var JD = window.JD = window.JD || {};
+  if (JD.cartFx) return;
+  if (typeof Element === "undefined" || typeof Element.prototype.animate !== "function") return;
 
   var rm = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
 
@@ -50,8 +39,42 @@
     '<path d="M11 18.5v5.5M16 18.5v5.5M21 18.5v5.5" style="stroke:var(--fxbg,#2563eb)" stroke-width="1.6" stroke-linecap="round"/>' +
     "</svg>";
 
-  var SEL = "[data-add],[data-pdp-add]";
+  var SEL = [
+    "[data-add]",
+    "[data-pdp-add]",
+    "[data-add-to-cart]",
+    "[data-cart-add]",
+    '[data-action="add-to-cart"]',
+    '[data-action="cart-add"]',
+    ".add-to-cart",
+    ".add-to-cart-btn",
+    ".add-to-cart-button",
+    ".btn-add-to-cart",
+    '[onclick*="addToCart"]',
+    '[onclick*="add_to_cart"]'
+  ].join(",");
   var cur = null;
+
+  function findAddButton(target) {
+    if (!target || !target.closest) return null;
+    var button = target.closest(SEL);
+    if (!button) {
+      var candidate = target.closest('button,a,[role="button"],input[type="button"],input[type="submit"]');
+      if (candidate) {
+        var label = [
+          candidate.textContent || "",
+          candidate.getAttribute("aria-label") || "",
+          candidate.getAttribute("title") || "",
+          candidate.value || ""
+        ].join(" ");
+        if (/\badd\b[\s\S]{0,50}\b(?:to\s+)?(?:cart|basket|bag)\b/i.test(label)) {
+          button = candidate;
+        }
+      }
+    }
+    if (!button || button.disabled || button.getAttribute("aria-disabled") === "true") return null;
+    return button;
+  }
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -302,19 +325,54 @@
 
   document.addEventListener("click", function (e) {
     try {
-      var b = e.target && e.target.closest ? e.target.closest(SEL) : null;
-      if (!b || b.disabled || b.getAttribute("aria-disabled") === "true" || b.classList.contains("jd-fx-hide")) return;
-      if (rm.matches) return;
+      var b = findAddButton(e.target);
+      if (!b || b.classList.contains("jd-fx-hide") || rm.matches) return;
       var c = run(b);
       if (!c) return;
+      if (cur) cleanup(cur);
       cur = c;
-      /* If the original handler never calls JD.addToCart, put the button back. */
-      c.to = setTimeout(function () { if (!c.called) done(c, false); }, 700);
+      /* A matching cart API call or cart-change event will confirm success. */
+      c.to = setTimeout(function () { if (!c.called) done(c, false); }, 1800);
     } catch (err) { if (cur) cleanup(cur); }
   }, true);
 
-  JD.cartFx = { version: 2 };
+  function watchResult(c, result) {
+    if (!c || c.called) return;
+    c.called = true;
+    clearTimeout(c.to);
+    c.to = setTimeout(function () { done(c, false); }, 8000);
+    Promise.resolve(result).then(
+      function (res) { done(c, !!(res && res.success)); },
+      function () { done(c, false); }
+    );
   }
 
-  boot();
+  function wrapAddMethod(owner, name) {
+    if (!owner || typeof owner[name] !== "function" || owner[name].__jdCartFxWrapped) return;
+    var original = owner[name];
+    var wrapped = function () {
+      var active = cur;
+      var result = original.apply(this, arguments);
+      if (active) watchResult(active, result);
+      return result;
+    };
+    wrapped.__jdCartFxWrapped = true;
+    owner[name] = wrapped;
+  }
+
+  /* Support both the new JD shell and older pages calling the auth adapter directly. */
+  function installHooks() {
+    wrapAddMethod(window.GamBasketAuth, "addToCart");
+    wrapAddMethod(window.JD, "addToCart");
+    if (Date.now() - startedAt < 15000) window.setTimeout(installHooks, 120);
+  }
+  var startedAt = Date.now();
+  installHooks();
+
+  /* The legacy adapter emits this only after a cart write succeeds. */
+  window.addEventListener("gambasket:cart:change", function () {
+    if (cur && cur.ok === null) done(cur, true);
+  });
+
+  JD.cartFx = { version: 3 };
 })();

@@ -115,7 +115,7 @@
   }
 
   /* Phase 1 + 2: rubber squash, then contract into a basket. */
-  function run(btn) {
+  function run(btn, opt) {
     var r = btn.getBoundingClientRect();
     if (r.width < 10 || r.height < 10) return null;
     var cs = getComputedStyle(btn);
@@ -142,7 +142,7 @@
     lab.style.gap = cs.columnGap && cs.columnGap !== "normal" ? cs.columnGap : "8px";
     var bk = document.createElement("span");
     bk.className = "jd-fx__bk";
-    bk.innerHTML = BASKET;
+    bk.innerHTML = (opt && opt.icon) || BASKET;
     g.appendChild(lab);
     g.appendChild(bk);
     document.body.appendChild(g);
@@ -173,7 +173,7 @@
     ], { duration: 600, fill: "forwards" });
 
     var c = { btn: btn, g: g, lab: lab, bk: bk, sq: sq, cx: cx, cy: cy, B: B, W: W, H: H, R: R,
-      state: "squash", ok: null, called: false, idle: null, to: 0, t: performance.now() };
+      opt: opt || {}, state: "squash", ok: null, called: false, idle: null, to: 0, t: performance.now() };
     sq.finished.then(function () {
       c.state = "wait";
       try {
@@ -219,7 +219,7 @@
       { transform: "scale(1)", opacity: 1, offset: 1 }
     ], { duration: 560, easing: "ease-out" });
 
-    var tg = pickTarget(S.x, S.y);
+    var tg = c.opt.target ? c.opt.target(S.x, S.y) : pickTarget(S.x, S.y);
     function T() {
       if (tg && document.contains(tg)) {
         var r = tg.getBoundingClientRect();
@@ -255,7 +255,7 @@
     ], { duration: 150, easing: "ease-in", fill: "forwards" });
     a.onfinish = function () { cleanup(c); };
     setTimeout(function () { cleanup(c); }, 600);
-    catchFx(tg);
+    (c.opt.catchFx || catchFx)(tg);
   }
 
   function catchFx(tg) {
@@ -267,7 +267,7 @@
       { transform: "scale(1.14,.9)", offset: 0.56 },
       { transform: "scale(.96,1.05)", offset: 0.76 },
       { transform: "scale(1,1)", offset: 1 }
-    ], { duration: 680, easing: "ease-out" });
+    ], { duration: 680, easing: "ease-out", composite: "add" });
     var r = tg.getBoundingClientRect();
     var ring = document.createElement("div");
     ring.className = "jd-fx-ring";
@@ -283,7 +283,7 @@
         { transform: "scale(1.7)", offset: 0.35 },
         { transform: "scale(.88)", offset: 0.65 },
         { transform: "scale(1)", offset: 1 }
-      ], { duration: 560, delay: 90, easing: "ease-out" });
+      ], { duration: 560, delay: 90, easing: "ease-out", composite: "add" });
     }
   }
 
@@ -504,5 +504,26 @@
     });
   }
 
-  JD.cartFx = { version: 4, exitItems: exitItems };
+  JD.cartFx = { version: 5, exitItems: exitItems, run: run, done: done, catchFx: catchFx, pickTarget: pickTarget, clamp: clamp, lerp: lerp, ease: ease, visible: visible };
+})();
+ 
+/* Wishlist, compare and button rubber effects. Loaded after the shared cart FX. */
+(function () {
+  try {
+    if (document.querySelector("script[data-jd-fxextra-loader]")) return;
+    var current = document.currentScript;
+    var src = current && current.src
+      ? new URL("jd-fx-extra.js", current.src).href
+      : new URL("/js/jd-fx-extra.js", window.location.origin).href;
+    var script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.setAttribute("data-jd-fxextra-loader", "true");
+    script.onerror = function () {
+      console.warn("[JulaDirect] extra rubber effects failed to load:", src);
+    };
+    document.head.appendChild(script);
+  } catch (e) {
+    console.warn("[JulaDirect] extra rubber effects loader:", e && e.message);
+  }
 })();

@@ -13,6 +13,8 @@
 (function () {
   "use strict";
   var JD = window.JD = window.JD || {};
+  /* These are app-wide effects, not handlers owned by the page pane. */
+  var rawAdd = JD.rawAddEventListener || EventTarget.prototype.addEventListener;
   if (JD.cartFx) return;
   if (typeof Element === "undefined" || typeof Element.prototype.animate !== "function") return;
 
@@ -323,7 +325,7 @@
     return p;
   };
 
-  document.addEventListener("click", function (e) {
+  rawAdd.call(document, "click", function (e) {
     try {
       var b = findAddButton(e.target);
       if (!b || b.classList.contains("jd-fx-hide") || rm.matches) return;
@@ -370,7 +372,7 @@
   installHooks();
 
   /* The legacy adapter emits this only after a cart write succeeds. */
-  window.addEventListener("gambasket:cart:change", function () {
+  rawAdd.call(window, "gambasket:cart:change", function () {
     if (cur && cur.ok === null) done(cur, true);
   });
 

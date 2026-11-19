@@ -188,7 +188,7 @@ body.jd {
 /* ---------- floating expanding tab navigation ---------- */
 .jd-fnav { position: fixed; z-index: 170; left: 50%; transform: translateX(-50%); bottom: calc(var(--jd-fnav-bottom) + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); }
 .jd-fnav__pill { display: flex; align-items: center; gap: 2px; padding: 6px; background: rgba(10, 26, 63, .97); border-radius: 999px; box-shadow: 0 14px 34px rgba(7, 17, 43, .38); }
-.jd-fnav__tab { position: relative; display: inline-flex; align-items: center; height: 46px; padding: 0 13px; border-radius: 999px; color: #cfd9f5; font-size: 14px; font-weight: 650; white-space: nowrap; transition: background .2s, color .2s; }
+.jd-fnav__tab { position: relative; display: inline-flex; align-items: center; height: 46px; padding: 0 13px; border-radius: 999px; color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; transition: background .2s, color .2s; }
 .jd-fnav__tab span { display: inline-block; max-width: 0; opacity: 0; overflow: hidden; margin-left: 0; transition: max-width .25s ease, opacity .2s ease, margin .25s ease; }
 .jd-fnav__tab[aria-current="page"] { background: var(--jd-blue-600); color: #fff; }
 .jd-fnav__tab[aria-current="page"] span, .jd-fnav__tab:focus-visible span { max-width: 90px; opacity: 1; margin-left: 8px; }

@@ -1,78 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
-  <title>Saved searches & price alerts — JulaDirect</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/business-trust-growth.css">
-  <link rel="stylesheet" href="css/marketplace-enhancements.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>Saved searches &amp; price alerts — JulaDirect</title>
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#1451e6">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/jd.css">
-    <link rel="stylesheet" href="css/jd-legacy.css">
-  <style>
-    .saved-page{max-width:1040px;margin:28px auto 110px;padding:0 20px}
-    .saved-hero{margin:18px 0 25px}
-    .saved-eyebrow{font-size:10px;font-weight:850;letter-spacing:.16em;color:#2563eb}
-    .saved-hero h1{font-size:clamp(27px,4vw,40px);letter-spacing:-.04em;margin:7px 0;color:var(--text)}
-    .saved-hero p{margin:0;color:var(--text-secondary);line-height:1.65;font-size:14px;max-width:700px}
-    .saved-section{margin:26px 0}
-    .saved-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:13px}
-    .saved-section-head h2{font-size:20px;color:var(--text);margin:0}
-    .saved-section-head a{font-size:12px;font-weight:800;color:#2563eb;text-decoration:none}
-    #savedSearchStatus{min-height:20px;color:var(--text-secondary);font-size:12px;line-height:1.5}
-    #savedSearchStatus.error{color:#b91c1c}
-    .saved-empty{padding:24px;border:1px dashed var(--border);border-radius:15px;color:var(--text-secondary);font-size:13px;line-height:1.6}
-    @media(max-width:650px){.saved-page{padding:0 12px}.saved-hero h1{font-size:28px}.saved-section-head{align-items:flex-start;flex-direction:column}}
-  </style>
-  <script>try{if(localStorage.getItem("gambasket-theme")==="dark")document.documentElement.classList.add("dark")}catch(_){}</script>
+    <link rel="stylesheet" href="css/jd-account.css">
 </head>
-<body class="jd-legacy">
-<div class="jd jd-wrap"><div id="jd-header"></div></div>
-  <header class="desktop-app-header">
-    <a href="index.html" class="desktop-app-brand"><span>JulaDirect</span><span class="brand-bag-icon">🛍️</span></a>
-    <div class="desktop-app-search"><a href="explore.html" class="desktop-search-fake-input"><span>Search Gambian products, electronics, fashion...</span></a></div>
-    <nav class="desktop-app-nav">
-      <a href="index.html" class="desktop-app-nav-link"><span>Home</span></a>
-      <a href="explore.html" class="desktop-app-nav-link"><span>Explore</span></a>
-      <a href="compare.html" class="desktop-app-nav-link"><span>Compare</span></a>
-    </nav>
-    <div class="desktop-app-actions"><a class="icon-button" href="cart.html">Cart</a><a class="icon-button" href="me.html">Me</a></div>
-  </header>
-  <header class="mobile-header"><div class="header-top"><a href="index.html" class="brand"><span>JulaDirect</span><span class="brand-bag-icon">🛍️</span></a><a href="explore.html" class="icon-button">Explore</a></div></header>
-  <main class="saved-page">
-    <section class="saved-hero"><span class="saved-eyebrow">YOUR MARKETPLACE SHORTLIST</span><h1>Saved searches & price alerts</h1><p>Return to the searches you care about. Turn new-listing alerts on or off, and review eligible price changes on products in your wishlist.</p></section>
-    <p id="savedSearchStatus" role="status" aria-live="polite">Loading your saved searches…</p>
-    <section class="saved-section">
-      <div class="saved-section-head"><h2>Saved searches</h2><a href="explore.html">Explore products →</a></div>
-      <div id="savedSearchList" class="gambasket-saved-search-list"><p class="saved-empty">Loading…</p></div>
-    </section>
-    <section class="saved-section">
-      <div class="saved-section-head"><h2>Price-drop alerts</h2><a href="wishlist.html">Manage wishlist →</a></div>
-      <div id="priceDropAlerts" class="saved-empty">Loading price alerts…</div>
-    </section>
-  </main>
-  <nav class="bottom-navigation">
-    <a class="nav-item" href="index.html"><span class="nav-label">Home</span></a>
-    <a class="nav-item" href="explore.html"><span class="nav-label">Explore</span></a>
-    <a class="nav-item" href="orders.html"><span class="nav-label">Orders</span></a>
-    <a class="nav-item" href="wishlist.html"><span class="nav-label">Wishlist</span></a>
-    <a class="nav-item" href="me.html"><span class="nav-label">Me</span></a>
-  </nav>
-  <script src="js/jd-router.js"></script>
-    <script src="js/config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/auth-errors.js"></script>
-  <script src="js/auth-guard.js"></script>
-  <script src="js/notifications.js"></script>
-  <script src="js/product-attributes.js"></script>
-  <script src="js/saved-searches.js"></script>
+<body class="jd">
+    <div id="jd-header"></div>
 
-<div class="jd jd-wrap"><div id="jd-footer"></div></div>
-<div class="jd jd-wrap"><div id="jd-bottomnav"></div></div>
-<script src="js/jd-core.js"></script>
-<script src="js/jd-data.js"></script>
-<script src="js/jd-legacy.js"></script>
+    <main id="jd-main" class="jd-container">
+        <nav class="jd-breadcrumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><a href="me.html">Account</a><span aria-hidden="true">/</span><span aria-current="page">Saved searches</span></nav>
+        <div id="jd-acctnav"></div>
+        <div class="ac-pagehead">
+            <h1>Saved searches &amp; price alerts</h1>
+            <p>Come back to the searches you care about, choose which ones alert you to new listings, and see price drops on products in your wishlist.</p>
+        </div>
+
+        <div id="ss-state" aria-live="polite"></div>
+        <div class="ac-wide" id="ss-body" hidden>
+            <section class="ac-card" aria-labelledby="h-searches">
+                <div class="ac-card__head"><h2 id="h-searches">Saved searches <span class="jd-muted" id="ss-count" style="font-weight:600"></span></h2><a class="ac-link" href="explore.html">Explore products &rarr;</a></div>
+                <div id="ss-list"></div>
+            </section>
+            <section class="ac-card" aria-labelledby="h-alerts">
+                <div class="ac-card__head"><h2 id="h-alerts">Price-drop alerts</h2><span class="ac-card__act"><button class="ac-link" type="button" id="ss-read" hidden>Mark all read</button><a class="ac-link" href="wishlist.html">Manage wishlist &rarr;</a></span></div>
+                <div id="ss-alerts"></div>
+            </section>
+        </div>
+    </main>
+
+    <dialog class="jd-dialog" id="ss-confirm" aria-labelledby="ss-confirm-title">
+        <div><h2 id="ss-confirm-title" style="font-size:1.3rem">Delete this saved search?</h2><p class="jd-muted" id="ss-confirm-text" style="margin-top:6px"></p></div>
+        <div class="jd-dialog__actions" style="margin-top:18px">
+            <button type="button" class="jd-btn jd-btn--secondary" id="ss-confirm-cancel">Keep it</button>
+            <button type="button" class="jd-btn jd-btn--primary" id="ss-confirm-ok">Delete</button>
+        </div>
+    </dialog>
+
+    <div id="jd-footer"></div>
+    <div id="jd-bottomnav"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/jd-core.js"></script>
+    <script src="js/jd-data.js"></script>
+    <script src="js/account-searches.js"></script>
 </body>
 </html>

@@ -1569,3 +1569,26 @@
     // Start auto-initialization immediately
     GamBasketAuth.ready().then(syncGlobalHeaders);
 })();
+
+/* Load the cart animation on legacy pages too. The effect observes the shared
+   GamBasketAuth.addToCart method, so these pages do not need jd-core.js. */
+(function () {
+    try {
+        if (document.querySelector("script[data-jd-cartfx-loader]")) return;
+        var current = document.currentScript;
+        var src = current && current.src
+            ? new URL("jd-cartfx.js", current.src).href
+            : new URL("/js/jd-cartfx.js", window.location.origin).href;
+        var script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.setAttribute("data-jd-cartfx-loader", "true");
+        script.onerror = function () {
+            console.warn("[JulaDirect] add-to-cart animation failed to load:", src);
+        };
+        document.head.appendChild(script);
+    } catch (error) {
+        console.warn("[JulaDirect] add-to-cart animation loader:", error && error.message);
+    }
+})();
+

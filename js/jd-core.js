@@ -670,11 +670,20 @@
 /* Rubber add-to-cart effect (js/jd-cartfx.js): optional, loaded after the shell. */
 (function () {
   try {
-    var cs = document.currentScript;
-    if (!cs || !cs.src) return;
+    var current = document.currentScript;
+    var src = current && current.src
+      ? new URL("jd-cartfx.js", current.src).href
+      : new URL("/js/jd-cartfx.js", window.location.origin).href;
+    if (document.querySelector("script[data-jd-cartfx-loader]")) return;
     var s = document.createElement("script");
-    s.src = cs.src.replace(/jd-core\.js(\?.*)?$/, "jd-cartfx.js$1");
-    s.async = true;
+    s.src = src;
+    s.async = false;
+    s.setAttribute("data-jd-cartfx-loader", "true");
+    s.onerror = function () {
+      console.warn("[JulaDirect] add-to-cart animation failed to load:", src);
+    };
     document.head.appendChild(s);
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[JulaDirect] add-to-cart animation loader:", e && e.message);
+  }
 })();

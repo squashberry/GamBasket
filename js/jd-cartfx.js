@@ -374,5 +374,131 @@
     if (cur && cur.ok === null) done(cur, true);
   });
 
-  JD.cartFx = { version: 3 };
+
+  /* Reverse of add-to-cart: cart thumbnails fly out to the remove / clear action.
+     Quantity controls the number of outgoing copies (capped for performance);
+     large quantities carry a visible multiplier on the first copy. */
+  function exitItems(rows, options) {
+    options = options || {};
+    rows = Array.prototype.slice.call(rows || []).filter(function (row) {
+      return row && row.isConnected && row.getBoundingClientRect().width > 0;
+    });
+    if (!rows.length) return Promise.resolve();
+    if (rm.matches) return Promise.resolve();
+
+    var target = options.target || null;
+    var tr = target && target.getBoundingClientRect ? target.getBoundingClientRect() : null;
+    var targetVisible = tr && tr.width > 0 && tr.height > 0 &&
+      tr.bottom > 0 && tr.top < window.innerHeight && tr.right > 0 && tr.left < window.innerWidth;
+    var tx = targetVisible ? tr.left + tr.width / 2 : window.innerWidth - 24;
+    var ty = targetVisible ? tr.top + tr.height / 2 : 20;
+    var sequence = 0;
+    var maxEnd = 0;
+
+    rows.forEach(function (row, rowIndex) {
+      var image = row.querySelector(".jd-citem__img img,.cart-image img,img");
+      var imageRect = image ? image.getBoundingClientRect() : row.getBoundingClientRect();
+      var qtyNode = row.querySelector(".jd-qty output,.qty-value,[data-quantity]");
+      var rawQty = row.getAttribute("data-quantity") ||
+        (qtyNode && (qtyNode.textContent || qtyNode.getAttribute("data-quantity"))) || "1";
+      var quantity = clamp(parseInt(rawQty, 10) || 1, 1, 99);
+      var copies = Math.min(quantity, 5);
+      var rowDelay = Math.min(sequence * 22, 1200);
+
+      if (imageRect.width > 0 && imageRect.height > 0) {
+        for (var n = 0; n < copies; n++) {
+          var size = clamp(Math.min(imageRect.width, imageRect.height) * 0.72, 34, 58);
+          var ghost = document.createElement("div");
+          ghost.setAttribute("aria-hidden", "true");
+          ghost.style.cssText = [
+            "position:fixed",
+            "z-index:2100",
+            "pointer-events:none",
+            "left:" + (imageRect.left + imageRect.width / 2 - size / 2) + "px",
+            "top:" + (imageRect.top + imageRect.height / 2 - size / 2) + "px",
+            "width:" + size + "px",
+            "height:" + size + "px",
+            "display:grid",
+            "place-items:center",
+            "padding:4px",
+            "overflow:visible",
+            "border-radius:14px",
+            "background:#fff",
+            "box-shadow:0 10px 26px rgba(7,17,43,.22)",
+            "will-change:transform,opacity"
+          ].join(";");
+
+          if (image && (image.currentSrc || image.src)) {
+            var clone = document.createElement("img");
+            clone.src = image.currentSrc || image.src;
+            clone.alt = "";
+            clone.draggable = false;
+            clone.style.cssText = "display:block;width:100%;height:100%;object-fit:contain;border-radius:10px";
+            ghost.appendChild(clone);
+          } else {
+            ghost.textContent = "×";
+            ghost.style.fontSize = "28px";
+            ghost.style.fontWeight = "800";
+            ghost.style.color = "var(--jd-blue-600,#1451e6)";
+          }
+
+          if (n === 0 && quantity > copies) {
+            var badge = document.createElement("span");
+            badge.textContent = "×" + quantity;
+            badge.style.cssText = "position:absolute;right:-8px;top:-8px;padding:2px 5px;border-radius:999px;background:#1451e6;color:#fff;font:700 10px/1.3 system-ui;box-shadow:0 2px 6px rgba(0,0,0,.2)";
+            ghost.appendChild(badge);
+          }
+
+          document.body.appendChild(ghost);
+          var startX = imageRect.left + imageRect.width / 2 +
+            (n - (copies - 1) / 2) * 7;
+          var startY = imageRect.top + imageRect.height / 2 +
+            (n % 2 ? -5 : 5);
+          var endX = tx - startX + (n - (copies - 1) / 2) * 9;
+          var endY = ty - startY + (n % 2 ? -8 : 8);
+          var delay = Math.min((sequence + n) * 22, 1200);
+          var turn = (n % 2 ? 1 : -1) * (12 + n * 4);
+          var lift = -Math.min(90 + Math.abs(endX) * 0.08, 150);
+          var animation = ghost.animate([
+            { transform: "translate3d(0,0,0) scale(1) rotate(0deg)", opacity: 1, offset: 0 },
+            { transform: "translate3d(" + (endX * 0.48) + "px," + (endY * 0.48 + lift) + "px,0) scale(.78) rotate(" + (turn * 0.6) + "deg)", opacity: .9, offset: .62 },
+            { transform: "translate3d(" + endX + "px," + endY + "px,0) scale(.12) rotate(" + turn + "deg)", opacity: 0, offset: 1 }
+          ], { duration: 620, delay: delay, easing: "cubic-bezier(.18,.72,.22,1)", fill: "forwards" });
+          animation.onfinish = function () { if (ghost.parentNode) ghost.parentNode.removeChild(ghost); };
+          animation.oncancel = function () { if (ghost.parentNode) ghost.parentNode.removeChild(ghost); };
+          maxEnd = Math.max(maxEnd, delay + 620);
+        }
+      }
+
+      var exitX = clamp(tx - (imageRect.left + imageRect.width / 2), -90, 90) * .18;
+      var exitY = clamp(ty - (imageRect.top + imageRect.height / 2), -90, 90) * .18;
+      try {
+        row.animate([
+          { opacity: 1, transform: "translate3d(0,0,0) scale(1)", filter: "blur(0px)" },
+          { opacity: .82, transform: "translate3d(" + exitX + "px," + exitY + "px,0) scale(.97)", filter: "blur(0px)", offset: .35 },
+          { opacity: 0, transform: "translate3d(" + (exitX * 2) + "px," + (exitY * 2) + "px,0) scale(.88)", filter: "blur(2px)" }
+        ], { duration: 480, delay: rowDelay, easing: "ease-in", fill: "forwards" });
+      } catch (e) {}
+      sequence += copies;
+      maxEnd = Math.max(maxEnd, rowDelay + 480);
+    });
+
+    return new Promise(function (resolve) {
+      window.setTimeout(function () {
+        if (target && target.isConnected && typeof target.animate === "function") {
+          try {
+            target.animate([
+              { transform: "scale(1)" },
+              { transform: "scale(1.12,.86)", offset: .3 },
+              { transform: "scale(.96,1.06)", offset: .62 },
+              { transform: "scale(1)" }
+            ], { duration: 420, easing: "ease-out" });
+          } catch (e) {}
+        }
+        resolve();
+      }, maxEnd + 40);
+    });
+  }
+
+  JD.cartFx = { version: 4, exitItems: exitItems };
 })();

@@ -98,7 +98,7 @@
             const sellerLabel = product.seller_name || product.seller ||
                 (state.authenticated ? "Seller details unavailable" : "Seller confirmed after sign-in");
             const productId = String(item.product_id || product.id);
-            return `<article class="cart-item" data-index="${index}" data-id="${escapeHTML(productId)}">
+            return `<article class="cart-item" data-index="${index}" data-id="${escapeHTML(productId)}" data-quantity="${quantity}">
                 <div class="cart-image"><img src="${escapeHTML(product.main_image || product.image || "")}" alt="${escapeHTML(product.title || product.name || "Product")}" loading="lazy"></div>
                 <div class="cart-info"><h3 class="cart-name">${escapeHTML(product.title || product.name || "Product")}</h3><p class="cart-seller">${escapeHTML(sellerLabel)}</p><strong class="cart-price">${money(product.price)}</strong><p class="stock-text ${stockKnown && stock < 1 ? "out-of-stock" : ""}">${stockLabel}</p><div class="cart-controls"><button class="qty-btn" data-action="decrease" type="button" aria-label="Decrease quantity" ${quantity <= 1 ? "disabled" : ""}>-</button><span class="qty-value">${quantity}</span><button class="qty-btn" data-action="increase" type="button" aria-label="Increase quantity" ${stockKnown ? (quantity >= stock || stock < 1 ? "disabled" : "") : (quantity >= 99 ? "disabled" : "")}>+</button></div><button class="remove-btn" data-action="remove" type="button">Remove</button></div>
                 <strong class="cart-line-total">${money(Number(product.price || 0) * quantity)}</strong>
@@ -127,12 +127,29 @@
         await loadCart();
     }
 
-    async function removeItem(item) {
-        const product = productFor(item);
-        if (!state.authenticated) {
-            const cart = localCart(); cart.splice(Number(item.__index), 1); localStorage.setItem("gambasket_cart", JSON.stringify(cart));
-        } else await window.GamBasketAuth.removeCartItem(item.product_id || product.id);
-        await loadCart();
+    async function animateExit(rows, target) {
+        try {
+            const fx = window.JD && window.JD.cartFx;
+            if (fx && typeof fx.exitItems === "function") await fx.exitItems(rows, { target: target || null });
+        } catch (error) { console.warn("[JulaDirect Cart Exit Animation]", error); }
+    }
+
+    async function removeItem(item, row, trigger) {
+        if (row && row.dataset.removing === "true") return;
+        if (row) { row.dataset.removing = "true"; row.style.pointerEvents = "none"; }
+        if (trigger) trigger.disabled = true;
+        try {
+            const product = productFor(item);
+            if (!state.authenticated) {
+                const cart = localCart(); cart.splice(Number(item.__index), 1); localStorage.setItem("gambasket_cart", JSON.stringify(cart));
+            } else await window.GamBasketAuth.removeCartItem(item.product_id || product.id);
+            await animateExit(row ? [row] : [], trigger);
+            await loadCart();
+        } catch (error) {
+            if (row) { delete row.dataset.removing; row.style.pointerEvents = ""; }
+            if (trigger && trigger.isConnected) trigger.disabled = false;
+            throw error;
+        }
     }
 
     $("cartItems")?.addEventListener("click", async event => {
@@ -145,19 +162,30 @@
         item.__index = index;
         const quantity = Number(item.quantity || 1);
         try {
-            if (button.dataset.action === "remove") await removeItem(item);
+            if (button.dataset.action === "remove") await removeItem(item, row, button);
             if (button.dataset.action === "increase") await updateItem(item, quantity + 1);
             if (button.dataset.action === "decrease") await updateItem(item, quantity - 1);
         } catch (error) { console.error("[JulaDirect Cart Update]", error); $("cartError").hidden = false; }
     });
 
-    $("clearCartBtn")?.addEventListener("click", async () => {
+    $("clearCartBtn")?.addEventListener("click", async event => {
         if (!window.confirm("Remove all items from your cart?")) return;
+        const button = event.currentTarget;
+        if (button.disabled) return;
+        button.disabled = true;
+        const rows = Array.from($("cartItems")?.querySelectorAll(".cart-item") || []);
+        rows.forEach(row => { row.dataset.removing = "true"; row.style.pointerEvents = "none"; });
         try {
             if (state.authenticated) await window.GamBasketAuth.clearCart();
             else localStorage.removeItem("gambasket_cart");
+            await animateExit(rows, button);
             await loadCart();
-        } catch (error) { console.error("[JulaDirect Cart Clear]", error); }
+        } catch (error) {
+            rows.forEach(row => { delete row.dataset.removing; row.style.pointerEvents = ""; });
+            console.error("[JulaDirect Cart Clear]", error);
+        } finally {
+            if (button.isConnected) button.disabled = false;
+        }
     });
 
     $("checkoutBtn")?.addEventListener("click", async () => {

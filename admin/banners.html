@@ -39,9 +39,18 @@
                 <div class="jd-field"><label class="jd-label" for="f-stat_label">Highlight label</label><input class="jd-input" id="f-stat_label" maxlength="40" placeholder="People we inspire"></div>
                 <div class="jd-field"><label class="jd-label" for="f-cta_label">Button label</label><input class="jd-input" id="f-cta_label" maxlength="30" placeholder="Shop now"></div>
                 <div class="jd-field jd-span2"><label class="jd-label" for="f-cta_url">Button link</label><input class="jd-input" id="f-cta_url" maxlength="300" placeholder="explore.html?category=Fashion"><span class="jd-hint">A page on this site (for example explore.html?sort=newest) or a full https:// link. Leave empty for no button.</span></div>
-                <div class="jd-field jd-span2"><label class="jd-label" for="f-image_url">Image link (https)</label><input class="jd-input" id="f-image_url" maxlength="600" inputmode="url" placeholder="https://"><span class="jd-hint">A transparent PNG cut-out works best. It is centred between the two headlines.</span><img class="jd-imgprev" id="f-img-prev" alt="" hidden></div>
-                <div class="jd-field"><label class="jd-label" for="f-image_style">Image style</label><select class="jd-select" id="f-image_style"><option value="cutout">Cut-out (headline behind)</option><option value="framed">Framed photo</option></select></div>
-                <div class="jd-field"><label class="jd-label" for="f-theme">Colour theme</label><select class="jd-select" id="f-theme"><option value="light">Light</option><option value="dark">Dark navy</option><option value="blue">JulaDirect blue</option></select></div>
+                <div class="jd-field jd-span2">
+                    <label class="jd-label" for="f-image-file">Upload banner image</label>
+                    <input class="jd-input" id="f-image-file" type="file" accept="image/png,image/jpeg,image/webp">
+                    <span class="jd-hint">Upload PNG, JPG or WebP (maximum 8 MB). A transparent PNG cut-out works best; the image is stored for you, so no image link is needed.</span>
+                    <div class="jd-image-upload__preview"><img class="jd-imgprev" id="f-img-prev" alt="Banner image preview" hidden><button type="button" class="jd-btn jd-btn--ghost jd-btn--sm" id="f-image-remove" hidden>Remove image</button></div>
+                </div>
+                <div class="jd-field"><label class="jd-label" for="f-image_style">Image style</label><select class="jd-select" id="f-image_style"><option value="cutout">Transparent cut-out</option><option value="framed">Framed photo</option></select></div>
+                <div class="jd-field"><label class="jd-label" for="f-theme">Base theme</label><select class="jd-select" id="f-theme"><option value="light">Light</option><option value="dark">Dark navy</option><option value="blue">JulaDirect blue</option></select></div>
+                <div class="jd-field jd-span2">
+                    <label class="jd-label" for="f-background_color">Custom background colour</label>
+                    <div class="jd-color-control"><input class="jd-color-input" id="f-background_color" type="color" value="#F2EFE8"><code class="jd-color-value" id="f-background_color-value">#F2EFE8</code><span class="jd-hint">Choose any colour. Text automatically switches between dark and light for contrast.</span></div>
+                </div>
                 <div class="jd-field"><label class="jd-label" for="f-starts_at">Show from (optional)</label><input class="jd-input" id="f-starts_at" type="datetime-local"></div>
                 <div class="jd-field"><label class="jd-label" for="f-ends_at">Show until (optional)</label><input class="jd-input" id="f-ends_at" type="datetime-local"></div>
             </div>

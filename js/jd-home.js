@@ -224,10 +224,31 @@
     });
     section.addEventListener("pointerleave", () => { par.style.setProperty("--px", "0px"); par.style.setProperty("--py", "0px"); });
   }
+  function hexLuminance(hex) {
+    const match = /^#([0-9a-f]{6})$/i.exec(String(hex || ""));
+    if (!match) return null;
+    const channels = [0, 2, 4].map(i => parseInt(match[1].slice(i, i + 2), 16) / 255).map(v => v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2));
+    return .2126 * channels[0] + .7152 * channels[1] + .0722 * channels[2];
+  }
   function renderTakeover(b, preview) {
     const sec = $("jd-takeover");
     const img = JD.safeUrl(b.image_url);
     const href = safeHref(b.cta_url);
+    const customColor = /^#[0-9a-f]{6}$/i.test(b.background_color || "") ? b.background_color : "";
+    const luminance = customColor ? hexLuminance(customColor) : null;
+    const darkBackground = customColor ? luminance < .38 : false;
+    const effectiveTheme = customColor ? (darkBackground ? "dark" : "light") : (b.theme || "light");
+    JD.takeover.set(effectiveTheme);
+    if (customColor) {
+      sec.style.setProperty("--to-bg", customColor);
+      sec.style.setProperty("--to-ink", darkBackground ? "#ffffff" : "#172033");
+      sec.style.setProperty("--to-muted", darkBackground ? "rgba(255,255,255,.78)" : "#536071");
+      sec.style.setProperty("--to-line", darkBackground ? "rgba(255,255,255,.12)" : "rgba(23,32,51,.08)");
+      sec.style.setProperty("--to-accent", darkBackground ? "#b7ec78" : "#1451e6");
+      sec.style.setProperty("--to-cta-ink", darkBackground ? "#172033" : "#ffffff");
+    } else {
+      ["--to-bg","--to-ink","--to-muted","--to-line","--to-accent","--to-cta-ink"].forEach(name => sec.style.removeProperty(name));
+    }
     const ctaLabel = (b.cta_label || "Shop now");
     const external = /^https:/.test(href);
     sec.setAttribute("data-theme", b.theme || "light");
@@ -258,7 +279,6 @@
     const preview = !!banner;
     if (!banner) banner = await JD.data.activeBanner();
     if (!banner) { JD.takeover.set(null); $("jd-takeover").innerHTML = ""; return; }
-    JD.takeover.set(banner.theme || "light");
     if (preview) { try { sessionStorage.setItem("jd_to_hint", "0"); } catch (e) { /* ignore */ } }
     renderTakeover(banner, preview);
   }

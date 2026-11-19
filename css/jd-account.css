@@ -55,3 +55,23 @@
   .ac-stat { padding: 14px; gap: 10px; }
   .ac-stat b { font-size: 22px; }
 }
+
+/* ---------- list items with actions (saved searches, alerts, orders) ---------- */
+.ac-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 16px 22px; border-top: 1px solid var(--jd-line); }
+.ac-card__head + .ac-item { border-top: 0; }
+.ac-item__t { min-width: 0; flex: 1 1 260px; }
+.ac-item__t b { display: block; font-size: 15px; font-weight: 700; }
+.ac-item__t small { display: block; margin-top: 3px; color: var(--jd-ink-3); font-size: 12.5px; line-height: 1.5; }
+.ac-item__act { display: flex; flex-wrap: wrap; gap: 8px; }
+.ac-alert { display: flex; align-items: center; gap: 14px; padding: 14px 22px; border-top: 1px solid var(--jd-line); }
+.ac-card__head + .ac-alert { border-top: 0; }
+.ac-alert img { flex: none; width: 54px; height: 54px; border-radius: 14px; object-fit: cover; background: var(--jd-soft); }
+.ac-alert__t { flex: 1; min-width: 0; }
+.ac-alert__t b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; }
+.ac-alert__t small { display: block; margin-top: 3px; color: var(--jd-ink-3); font-size: 12.5px; }
+.ac-alert__t .ac-drop { color: var(--jd-ok); font-weight: 750; }
+.ac-alert.is-new .ac-alert__t b::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; background: var(--jd-blue-600); }
+.ac-pagehead { padding: 6px 0 18px; }
+.ac-pagehead h1 { font-size: clamp(1.6rem, 3vw, 2.3rem); }
+.ac-pagehead p { max-width: 620px; margin-top: 6px; color: var(--jd-ink-2); }
+.ac-wide { display: grid; gap: 16px; }

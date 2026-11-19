@@ -1092,7 +1092,7 @@ html.dark .skeleton {
 
     gap: 3px;
 
-    color: var(--text-muted);
+    color: var(--text-secondary, #667085);
 
     border-radius: 12px;
 

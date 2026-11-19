@@ -5,130 +5,140 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>My account — JulaDirect</title>
     <meta name="robots" content="noindex">
-    <meta name="theme-color" content="#f6f5f1">
+    <meta name="theme-color" content="#1451e6">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="css/ledger.css">
+    <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-account.css">
 </head>
-<body class="lg">
-    <div id="lg-strip"></div>
-    <div id="lg-header"></div>
+<body class="jd">
+    <div id="jd-header"></div>
 
-    <main id="main" class="lg-wrap" aria-live="polite">
+    <main id="jd-main" class="jd-container">
+        <nav class="jd-breadcrumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Account</span></nav>
+        <div id="jd-acctnav"></div>
+
         <section id="me-loading" aria-label="Loading your account">
-            <div class="lg-hero"><div class="lg-skel" style="height:120px;max-width:720px"></div></div>
-            <div class="lg-skel" style="height:140px"></div>
+            <div class="jd-skel" style="height:150px;border-radius:28px"></div>
+            <div class="ac-stats"><div class="jd-skel" style="height:84px;border-radius:22px"></div><div class="jd-skel" style="height:84px;border-radius:22px"></div><div class="jd-skel" style="height:84px;border-radius:22px"></div><div class="jd-skel" style="height:84px;border-radius:22px"></div></div>
         </section>
 
         <section id="me-guest" hidden>
-            <div class="lg-hero">
-                <p class="lg-eyebrow">Your account</p>
-                <h1 class="lg-h1" style="margin-top:18px">Everything,<br><em>in one place.</em></h1>
-                <p class="lg-lede">Sign in to follow your orders, keep a wishlist, message sellers and save searches you care about.</p>
-                <p style="display:flex;flex-wrap:wrap;gap:12px;margin-top:30px">
-                    <a class="lg-btn lg-btn--accent" id="me-login" href="login.html?redirect=me.html">Sign in</a>
-                    <a class="lg-btn lg-btn--line" href="signup.html?redirect=me.html">Create an account</a>
-                </p>
+            <div class="ac-hero">
+                <div>
+                    <p class="ac-hero__hi">Your account</p>
+                    <h1>Sign in to JulaDirect</h1>
+                    <p class="ac-hero__mail" style="max-width:520px">Follow your orders, keep a wishlist, message sellers and save searches you care about.</p>
+                </div>
+                <div class="ac-hero__act">
+                    <a class="jd-btn jd-btn--onblue" href="login.html?redirect=me.html">Log in</a>
+                    <a class="jd-btn jd-btn--outline-onblue" href="signup.html?redirect=me.html">Create account</a>
+                </div>
             </div>
-            <div class="lg-sec"><div class="lg-sec__head"><span class="lg-sec__n">&mdash;</span><h2 class="lg-sec__t">Without an account</h2></div>
-                <a class="lg-row" href="explore.html"><span><span class="lg-row__t">Browse the marketplace</span><span class="lg-row__d" style="display:block">Search and compare products from sellers across The Gambia.</span></span></a>
-                <a class="lg-row" href="how-it-works.html"><span><span class="lg-row__t">How JulaDirect works</span><span class="lg-row__d" style="display:block">Pay on delivery, verified sellers and delivery codes.</span></span></a>
+            <div class="ac-card" style="margin-top:16px">
+                <div class="ac-card__head"><h2>Without an account</h2></div>
+                <a class="ac-row" href="explore.html"><span class="ac-ico" data-ico="grid"></span><span class="ac-row__t"><b>Browse the marketplace</b><small>Search and compare products from sellers across The Gambia.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                <a class="ac-row" href="how-it-works.html"><span class="ac-ico" data-ico="help"></span><span class="ac-row__t"><b>How JulaDirect works</b><small>Pay on delivery, verified sellers and delivery codes.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
             </div>
         </section>
 
         <section id="me-auth" hidden>
-            <header class="lg-hero">
-                <p class="lg-eyebrow" id="me-date"></p>
-                <h1 class="lg-h1" style="margin-top:18px"><span id="me-greet">Hello</span>,<br><em id="me-name">&nbsp;</em>.</h1>
-            </header>
+            <div class="ac-hero">
+                <div class="ac-hero__who">
+                    <span class="ac-av" id="me-initial" aria-hidden="true">U</span>
+                    <div>
+                        <p class="ac-hero__hi" id="me-greet">Hello</p>
+                        <h1 id="me-name">&nbsp;</h1>
+                        <p class="ac-hero__mail" id="me-email"></p>
+                    </div>
+                </div>
+                <div class="ac-hero__side">
+                    <span class="jd-badge" id="me-role">Buyer</span>
+                    <div class="ac-hero__act">
+                        <a class="jd-btn jd-btn--onblue jd-btn--sm" href="settings.html">Edit profile</a>
+                        <button class="jd-btn jd-btn--outline-onblue jd-btn--sm" type="button" id="me-signout-btn">Sign out</button>
+                    </div>
+                </div>
+            </div>
 
-            <nav class="lg-stats" aria-label="Your activity at a glance">
-                <a class="lg-stat" href="orders.html"><b id="st-orders">&mdash;</b><span>Orders</span></a>
-                <a class="lg-stat" href="wishlist.html"><b id="st-wishlist">&mdash;</b><span>Wishlist</span></a>
-                <a class="lg-stat" href="cart.html"><b id="st-bag">&mdash;</b><span>In your bag</span></a>
-                <a class="lg-stat" href="saved-searches.html"><b id="st-searches">&mdash;</b><span>Saved searches</span></a>
+            <nav class="ac-stats" aria-label="Your activity at a glance">
+                <a class="ac-stat" href="orders.html"><span class="ac-ico" data-ico="package"></span><span><b id="st-orders">&mdash;</b><small>Orders</small></span></a>
+                <a class="ac-stat" href="wishlist.html"><span class="ac-ico" data-ico="heart"></span><span><b id="st-wishlist">&mdash;</b><small>Wishlist</small></span></a>
+                <a class="ac-stat" href="cart.html"><span class="ac-ico" data-ico="cart"></span><span><b id="st-bag">&mdash;</b><small>In your cart</small></span></a>
+                <a class="ac-stat" href="saved-searches.html"><span class="ac-ico" data-ico="bookmark"></span><span><b id="st-searches">&mdash;</b><small>Saved searches</small></span></a>
             </nav>
 
-            <div class="lg-split">
-                <aside class="lg-side" aria-label="Profile">
-                    <div class="lg-avatar" id="me-initial" aria-hidden="true">U</div>
-                    <h2 id="me-fullname">&nbsp;</h2>
-                    <p id="me-email"></p>
-                    <span class="lg-tag lg-tag--accent" id="me-role">Buyer</span>
-                    <div class="lg-side__actions">
-                        <a class="lg-btn lg-btn--line" href="settings.html">Edit profile</a>
-                        <button class="lg-btn" type="button" id="me-signout-btn">Sign out</button>
-                    </div>
-                </aside>
-
-                <div class="lg-body">
-                    <section class="lg-sec" data-sec>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Activity</h2></div>
-                        <a class="lg-row" href="orders.html"><span><span class="lg-row__t">Orders</span><span class="lg-row__d" style="display:block">Track deliveries, confirm receipt, review and request refunds.</span></span></a>
-                        <a class="lg-row" href="wishlist.html"><span><span class="lg-row__t">Wishlist</span><span class="lg-row__d" style="display:block">Products you saved for later.</span></span></a>
-                        <a class="lg-row" href="messages.html"><span><span class="lg-row__t">Messages</span><span class="lg-row__d" style="display:block">Your conversations with sellers.</span></span></a>
-                        <a class="lg-row" href="saved-searches.html"><span><span class="lg-row__t">Saved searches &amp; price alerts</span><span class="lg-row__d" style="display:block">Be told when new matches are listed or prices drop.</span></span></a>
-                        <a class="lg-row" href="compare.html"><span><span class="lg-row__t">Compare</span><span class="lg-row__d" style="display:block">Products side by side.</span></span></a>
+            <div class="ac-grid">
+                <div class="ac-col">
+                    <section class="ac-card" aria-labelledby="h-activity">
+                        <div class="ac-card__head"><h2 id="h-activity">Activity</h2></div>
+                        <a class="ac-row" href="orders.html"><span class="ac-ico" data-ico="package"></span><span class="ac-row__t"><b>Orders</b><small>Track deliveries, confirm receipt, review and request refunds.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="wishlist.html"><span class="ac-ico" data-ico="heart"></span><span class="ac-row__t"><b>Wishlist</b><small>Products you saved for later.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="messages.html"><span class="ac-ico" data-ico="message"></span><span class="ac-row__t"><b>Messages</b><small>Your conversations with sellers.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="saved-searches.html"><span class="ac-ico" data-ico="bookmark"></span><span class="ac-row__t"><b>Saved searches &amp; price alerts</b><small>Be told when new matches are listed or prices drop.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="compare.html"><span class="ac-ico" data-ico="scale"></span><span class="ac-row__t"><b>Compare</b><small>Products side by side.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
                     </section>
 
-                    <section class="lg-sec" data-sec id="sec-recent" hidden>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Recently viewed</h2><button class="lg-linkbtn lg-sec__act" type="button" id="me-recent-clear">Clear</button></div>
-                        <div class="lg-prods" id="me-recent"></div>
+                    <section class="ac-card" id="sec-recent" aria-labelledby="h-recent" hidden>
+                        <div class="ac-card__head"><h2 id="h-recent">Recently viewed</h2><button class="ac-link" type="button" id="me-recent-clear">Clear</button></div>
+                        <div class="ac-recent jd-grid" id="me-recent"></div>
                     </section>
 
-                    <section class="lg-sec" data-sec>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Notifications</h2><span class="lg-sec__act" id="me-note-actions" hidden><button class="lg-linkbtn" type="button" id="me-note-read">Mark all read</button> &nbsp;&middot;&nbsp; <button class="lg-linkbtn" type="button" id="me-note-clear">Clear</button></span></div>
-                        <ul class="lg-notes" id="me-notes"></ul>
+                    <section class="ac-card" aria-labelledby="h-notes">
+                        <div class="ac-card__head"><h2 id="h-notes">Notifications</h2><span class="ac-card__act" id="me-note-actions" hidden><button class="ac-link" type="button" id="me-note-read">Mark all read</button><button class="ac-link" type="button" id="me-note-clear">Clear</button></span></div>
+                        <div class="ac-notes" id="me-notes"></div>
+                    </section>
+                </div>
+
+                <div class="ac-col">
+                    <section class="ac-card" aria-labelledby="h-account">
+                        <div class="ac-card__head"><h2 id="h-account">Account</h2></div>
+                        <a class="ac-row" href="settings.html"><span class="ac-ico" data-ico="user"></span><span class="ac-row__t"><b>Profile &amp; preferences</b><small>Name, phone, location, language and notification choices.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="security.html"><span class="ac-ico" data-ico="shield"></span><span class="ac-row__t"><b>Security</b><small>Password and how you sign in.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
                     </section>
 
-                    <section class="lg-sec" data-sec>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Account</h2></div>
-                        <a class="lg-row" href="settings.html"><span><span class="lg-row__t">Profile &amp; preferences</span><span class="lg-row__d" style="display:block">Name, phone, marketplace location, language and notification choices.</span></span></a>
-                        <a class="lg-row" href="security.html"><span><span class="lg-row__t">Security</span><span class="lg-row__d" style="display:block">Password and how you sign in.</span></span></a>
+                    <section class="ac-card" id="sec-work" aria-labelledby="h-work" hidden>
+                        <div class="ac-card__head"><h2 id="h-work">Workspaces</h2></div>
+                        <a class="ac-row" id="ws-seller" href="supplier/index.html" hidden><span class="ac-ico" data-ico="store"></span><span class="ac-row__t"><b>Seller Centre</b><small>Products, orders, earnings and your store.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" id="ws-delivery" href="delivery/index.html" hidden><span class="ac-ico" data-ico="truck"></span><span class="ac-row__t"><b>Courier workspace</b><small>Delivery requests, active jobs and earnings.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" id="ws-worker" href="worker/index.html" hidden><span class="ac-ico" data-ico="shield"></span><span class="ac-row__t"><b>Operations centre</b><small>Review listings and handle reports.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" id="ws-admin" href="admin/index.html" hidden><span class="ac-ico" data-ico="settings"></span><span class="ac-row__t"><b>Administration</b><small>Control the marketplace.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" id="ws-banners" href="admin/banners.html" hidden><span class="ac-ico" data-ico="tag"></span><span class="ac-row__t"><b>Homepage banners</b><small>Create the full-screen homepage banner and switch it on or off.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
                     </section>
 
-                    <section class="lg-sec" data-sec id="sec-work" hidden>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Workspaces</h2></div>
-                        <a class="lg-row" id="ws-seller" href="supplier/index.html" hidden><span><span class="lg-row__t">Seller Centre</span><span class="lg-row__d" style="display:block">Products, orders, earnings and your store.</span></span></a>
-                        <a class="lg-row" id="ws-delivery" href="delivery/index.html" hidden><span><span class="lg-row__t">Courier workspace</span><span class="lg-row__d" style="display:block">Delivery requests, active jobs and earnings.</span></span></a>
-                        <a class="lg-row" id="ws-worker" href="worker/index.html" hidden><span><span class="lg-row__t">Operations centre</span><span class="lg-row__d" style="display:block">Review listings and handle reports.</span></span></a>
-                        <a class="lg-row" id="ws-admin" href="admin/index.html" hidden><span><span class="lg-row__t">Administration</span><span class="lg-row__d" style="display:block">Control the marketplace.</span></span></a>
-                        <a class="lg-row" id="ws-banners" href="admin/banners.html" hidden><span><span class="lg-row__t">Homepage banners</span><span class="lg-row__d" style="display:block">Create the full-screen homepage banner and switch it on or off.</span></span></a>
+                    <section class="ac-card" aria-labelledby="h-grow">
+                        <div class="ac-card__head"><h2 id="h-grow">Work with JulaDirect</h2></div>
+                        <a class="ac-row" href="supplier/index.html"><span class="ac-ico" data-ico="store"></span><span class="ac-row__t"><b>Sell your products</b><small>Open a Seller Centre and reach buyers across The Gambia.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="dropshipping.html"><span class="ac-ico" data-ico="package"></span><span class="ac-row__t"><b>Dropshipping</b><small>Sell without holding stock.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="worker-apply.html"><span class="ac-ico" data-ico="truck"></span><span class="ac-row__t"><b>Become a courier or worker</b><small>Apply to deliver orders or help review the marketplace.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="affiliate/index.html"><span class="ac-ico" data-ico="wallet"></span><span class="ac-row__t"><b>Affiliate programme</b><small>Earn by sharing JulaDirect.</small></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
                     </section>
 
-                    <section class="lg-sec" data-sec>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Work with JulaDirect</h2></div>
-                        <a class="lg-row" href="supplier/index.html"><span><span class="lg-row__t">Sell your products</span><span class="lg-row__d" style="display:block">Open a Seller Centre and reach buyers across The Gambia.</span></span></a>
-                        <a class="lg-row" href="dropshipping.html"><span><span class="lg-row__t">Dropshipping</span><span class="lg-row__d" style="display:block">Sell without holding stock.</span></span></a>
-                        <a class="lg-row" href="worker-apply.html"><span><span class="lg-row__t">Become a courier or worker</span><span class="lg-row__d" style="display:block">Apply to deliver orders or help review the marketplace.</span></span></a>
-                        <a class="lg-row" href="affiliate/index.html"><span><span class="lg-row__t">Affiliate programme</span><span class="lg-row__d" style="display:block">Earn by sharing JulaDirect.</span></span></a>
-                    </section>
-
-                    <section class="lg-sec" data-sec>
-                        <div class="lg-sec__head"><span class="lg-sec__n"></span><h2 class="lg-sec__t">Help</h2></div>
-                        <a class="lg-row" href="how-it-works.html"><span><span class="lg-row__t">How it works</span></span></a>
-                        <a class="lg-row" href="customer-care.html"><span><span class="lg-row__t">Customer care</span></span></a>
-                        <a class="lg-row" href="privacy.html"><span><span class="lg-row__t">Privacy</span></span></a>
+                    <section class="ac-card" aria-labelledby="h-help">
+                        <div class="ac-card__head"><h2 id="h-help">Help</h2></div>
+                        <a class="ac-row" href="how-it-works.html"><span class="ac-ico" data-ico="help"></span><span class="ac-row__t"><b>How it works</b></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="customer-care.html"><span class="ac-ico" data-ico="message"></span><span class="ac-row__t"><b>Customer care</b></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
+                        <a class="ac-row" href="privacy.html"><span class="ac-ico" data-ico="shield"></span><span class="ac-row__t"><b>Privacy</b></span><span class="ac-chev" data-ico="chevronRight" data-size="18"></span></a>
                     </section>
                 </div>
             </div>
         </section>
     </main>
 
-    <dialog class="lg-dialog" id="me-signout" aria-labelledby="me-signout-title">
-        <h2 id="me-signout-title">Sign out?</h2>
-        <p>You can sign back in at any time. Your bag and wishlist stay with your account.</p>
-        <div class="lg-dialog__act">
-            <button class="lg-btn lg-btn--line" type="button" id="me-signout-cancel">Stay signed in</button>
-            <button class="lg-btn lg-btn--accent" type="button" id="me-signout-ok">Sign out</button>
+    <dialog class="jd-dialog" id="me-signout" aria-labelledby="me-signout-title">
+        <div><h2 id="me-signout-title" style="font-size:1.3rem">Sign out?</h2><p class="jd-muted" style="margin-top:6px">You can sign back in at any time. Your cart and wishlist stay with your account.</p></div>
+        <div class="jd-dialog__actions" style="margin-top:18px">
+            <button type="button" class="jd-btn jd-btn--secondary" id="me-signout-cancel">Stay signed in</button>
+            <button type="button" class="jd-btn jd-btn--primary" id="me-signout-ok">Sign out</button>
         </div>
     </dialog>
 
-    <div id="lg-footer"></div>
-    <div id="lg-tabs"></div>
+    <div id="jd-footer"></div>
+    <div id="jd-bottomnav"></div>
 
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/ledger.js"></script>
+    <script src="js/jd-core.js"></script>
+    <script src="js/jd-data.js"></script>
     <script src="js/me.js"></script>
 </body>
 </html>

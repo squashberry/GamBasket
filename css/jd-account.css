@@ -1,0 +1,57 @@
+/* =====================================================================
+   JulaDirect account pages (v2 design). Components shared by me, orders,
+   settings, messages and saved searches. Loaded after css/jd.css, so these
+   pages use exactly the same header, category rail, floating nav, footer,
+   buttons, dialogs and cards as the homepage.
+   ===================================================================== */
+.ac-hero { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: 6px; padding: 32px; overflow: hidden; border-radius: 28px; background: var(--jd-blue-600); color: #fff; }
+.ac-hero::after { content: ""; position: absolute; right: -70px; bottom: -110px; width: 300px; height: 300px; border-radius: 50%; background: rgba(255, 255, 255, .1); pointer-events: none; }
+.ac-hero > * { position: relative; z-index: 1; }
+.ac-hero__who { display: flex; align-items: center; gap: 18px; min-width: 0; }
+.ac-av { flex: none; width: 72px; height: 72px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--jd-blue-700); font-size: 30px; font-weight: 800; }
+.ac-hero__hi { margin: 0 0 4px; color: #dbe7ff; font-size: 14px; font-weight: 600; }
+.ac-hero h1 { margin: 0; color: #fff; font-size: clamp(1.6rem, 3vw, 2.3rem); overflow-wrap: anywhere; }
+.ac-hero__mail { margin: 4px 0 0; color: #dbe7ff; font-size: 14px; overflow-wrap: anywhere; }
+.ac-hero__side { display: grid; justify-items: end; gap: 14px; }
+.ac-hero .jd-badge { background: rgba(255, 255, 255, .18); color: #fff; }
+.ac-hero__act { display: flex; flex-wrap: wrap; gap: 10px; }
+.ac-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 16px 0; }
+.ac-stat { display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: 22px; background: #fff; box-shadow: 0 2px 14px rgba(10, 26, 63, .05); transition: box-shadow .2s, transform .2s; }
+.ac-stat:hover { transform: translateY(-2px); box-shadow: var(--jd-shadow-2); }
+.ac-stat b { display: block; font-size: 28px; font-weight: 800; letter-spacing: -.04em; line-height: 1.1; }
+.ac-stat small { display: block; margin-top: 2px; color: var(--jd-ink-3); font-size: 12.5px; font-weight: 600; }
+.ac-ico { flex: none; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: var(--jd-blue-50); color: var(--jd-blue-600); }
+.ac-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 16px; align-items: start; }
+.ac-col { display: grid; gap: 16px; }
+.ac-card { padding: 6px 0 8px; border-radius: 24px; background: #fff; box-shadow: 0 2px 14px rgba(10, 26, 63, .05); }
+.ac-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px 8px; }
+.ac-card__head h2 { margin: 0; font-size: 17px; font-weight: 750; letter-spacing: -.02em; }
+.ac-card__act { display: flex; gap: 14px; }
+.ac-row { display: flex; align-items: center; gap: 14px; padding: 14px 22px; border-top: 1px solid var(--jd-line); transition: background .15s; }
+.ac-card__head + .ac-row { border-top: 0; }
+.ac-row:hover { background: #f6f9ff; }
+.ac-row__t { flex: 1; min-width: 0; }
+.ac-row__t b { display: block; font-size: 14.5px; font-weight: 650; }
+.ac-row__t small { display: block; margin-top: 2px; color: var(--jd-ink-3); font-size: 12.5px; line-height: 1.45; }
+.ac-chev { flex: none; color: var(--jd-ink-3); }
+.ac-recent { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 8px 18px 14px; }
+.ac-notes { padding: 0 22px 8px; }
+.ac-note { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 12px; padding: 14px 0; border-top: 1px solid var(--jd-line); }
+.ac-note:first-child { border-top: 0; }
+.ac-note i { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: var(--jd-line-2); }
+.ac-note.is-new i { background: var(--jd-blue-600); }
+.ac-note b { display: block; font-size: 14px; }
+.ac-note p { margin: 2px 0 0; color: var(--jd-ink-2); font-size: 13px; }
+.ac-note time { color: var(--jd-ink-3); font-size: 12px; white-space: nowrap; }
+.ac-empty { padding: 18px 22px; color: var(--jd-ink-3); font-size: 14px; }
+.ac-link { border: 0; background: none; padding: 0; color: var(--jd-blue-700); font-size: 13px; font-weight: 700; cursor: pointer; }
+.ac-link:hover { text-decoration: underline; }
+@media (max-width: 960px) { .ac-grid { grid-template-columns: 1fr; } .ac-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 820px) {
+  .ac-hero { padding: 22px; border-radius: 24px; }
+  .ac-hero__side { justify-items: start; width: 100%; }
+  .ac-av { width: 58px; height: 58px; font-size: 24px; }
+  .ac-card, .ac-stat { border-radius: 20px; }
+  .ac-stat { padding: 14px; gap: 10px; }
+  .ac-stat b { font-size: 22px; }
+}

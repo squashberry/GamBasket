@@ -206,20 +206,23 @@
       const { data: product, error } = await c.from("products").select("*").eq("id", id).eq("status", "approved").maybeSingle();
       if (error) throw error;
       if (!product) return { product: null };
-      const [imgs, seller, reviews, related] = await Promise.all([
+      const [imgs, seller, reviews, related, more] = await Promise.all([
         c.from("product_images").select("image_url,sort_order").eq("product_id", id).order("sort_order", { ascending: true }),
         c.from("public_profiles").select("id,business_name,first_name,last_name,avatar_url,region,seller_type,is_seller_verified").eq("id", product.seller_id).maybeSingle(),
         c.from("marketplace_reviews").select("rating,title,body,created_at,seller_reply").eq("product_id", id).eq("status", "published").order("created_at", { ascending: false }).limit(50),
-        c.from("products").select("*").eq("status", "approved").eq("category_id", product.category_id).neq("id", id).gt("stock", 0).order("created_at", { ascending: false }).limit(6)
+        c.from("products").select("*").eq("status", "approved").eq("category_id", product.category_id).neq("id", id).gt("stock", 0).order("created_at", { ascending: false }).limit(6),
+        c.from("products").select("*").eq("status", "approved").eq("seller_id", product.seller_id).neq("id", id).gt("stock", 0).order("created_at", { ascending: false }).limit(6)
       ]);
       const gallery = [product.main_image, ...((imgs.data || []).map(r => r.image_url))].map(JD.safeUrl).filter(Boolean);
       const relatedRows = await attachSellers(related.data || []);
+      const moreRows = await attachSellers(more.error ? [] : (more.data || []));
       return {
         product,
         images: [...new Set(gallery)],
         seller: seller.data || null,
         reviews: reviews.error ? [] : (reviews.data || []),
-        related: relatedRows
+        related: relatedRows,
+        moreFromSeller: moreRows
       };
     }
   };

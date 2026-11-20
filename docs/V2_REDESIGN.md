@@ -148,3 +148,10 @@ One migration: `supabase/migrations/20261119100000_field_workforce_v2.sql`. All 
 - **Quick view** (`js/jd-quickview.js`, loaded on first use by `js/jd-core.js`): bottom sheet on phones (drag handle to dismiss), side drawer on larger screens. Photos, price, stock, rating, seller, quantity, add to cart, buy now, save, compare, share and "View full details". Focus is trapped, Esc closes, and it prefetches on hover.
 - **Logo:** "Jula" is black and "Direct" is blue in the header, mobile menu and takeover bar. In the dark footer "Jula" stays white.
 - The router smoke test now goes card, quick view, "View full details".
+
+## Home and Explore (v3)
+
+Both pages were rebuilt from scratch (`index.html`, `css/jd-home2.css`, `js/jd-home.js`; `explore.html`, `css/jd-explore2.css`, `js/jd-explore.js`). The data layer, URL contract and admin banner are unchanged.
+
+- **Home:** dark hero with live search, popular searches, live stats and a four-tile deck of fresh listings; trust strip; category tiles with real photos; shop by budget and by place shortcuts; "Picked for you" tabs (just listed, delivery ready, under D1,000, like new and refurbished); ranked best-sellers rail; how buying works; verified sellers; recently visited; seller and courier calls to action; FAQ. The admin-managed takeover banner (`#jd-takeover`) and the `is-homepage` body class are kept.
+- **Explore:** search with recent searches and category suggestions; category photo rail; quick-filter pills; collapsible filter groups (price histogram and dual slider, condition, location, availability, brand); grid or list view (remembered on the device); sort; active filter chips; seller strip; save search; recently viewed; suggestions on empty results. Filters apply live on desktop and from a bottom sheet with "Show results" on phones. URL parameters (`q, category, location, min, max, condition, stock, delivery, sort, brandModel, seller, page`) are unchanged, so saved searches keep working. `#productGrid` is kept for the router smoke test.

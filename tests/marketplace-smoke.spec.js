@@ -447,7 +447,10 @@ test("Product details and account pages stay inside the persistent app shell", a
   await page.evaluate(() => {
     window.__jdPersistentDocumentProbe = { document, marker: "same-document" };
   });
+  /* A card tap opens the quick-view sheet; "View full details" goes to the product page. */
   await page.locator(`#productGrid a[href*="${IPHONE_ID}"]`).first().click();
+  await expect(page.locator(".qv [data-qv-details]")).toBeVisible();
+  await page.locator(".qv [data-qv-details]").click();
   await expect(page).toHaveURL(new RegExp(`/product\\.html\\?id=${IPHONE_ID}`));
   await expect(page.locator("#jd-pdp")).toContainText("iPhone 13 128GB");
   expect(await page.evaluate(() => window.__jdPersistentDocumentProbe?.document === document)).toBe(true);

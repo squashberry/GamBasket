@@ -140,3 +140,11 @@ One migration: `supabase/migrations/20261119100000_field_workforce_v2.sql`. All 
 - It was tested on a local Postgres 16 with stubbed Supabase pieces, **never applied to the live project**. Apply it to a Supabase branch first.
 - Payout availability is the sum of `earning_transactions` with status `available`, minus payout requests that are pending, approved or processing. This assumes completed payouts flip earnings to `paid_out`.
 - Until the migration is applied, the apply page shows a notice and the courier and ops pages show friendly errors.
+
+## Product page, quick view and whole-card taps
+
+- **Product page** (`product.html`, `js/jd-product.js`, `css/jd-pdp.css`) rebuilt from scratch: swipeable gallery with thumbnails, hover zoom and full-screen lightbox; buy box (price, stock, key facts, quantity, add to cart, buy now, save, compare, share, report); delivery and payment assurances; seller panel; section navigation with scroll-spy; read-more description; specifications; rating summary with a star breakdown and verified-purchase reviews; "Buy with confidence" tips; more from this seller; similar items; recently viewed; sticky mobile buy bar. Listing reports use the existing `create_trust_report` RPC. `JD.data.product()` now also returns `moreFromSeller`.
+- **Whole product card is tappable.** Tapping anywhere on a card (not its save, compare or add-to-cart buttons) opens the quick-view sheet. Links keep their `href`, so open-in-new-tab, copy-link and crawlers still reach the product page.
+- **Quick view** (`js/jd-quickview.js`, loaded on first use by `js/jd-core.js`): bottom sheet on phones (drag handle to dismiss), side drawer on larger screens. Photos, price, stock, rating, seller, quantity, add to cart, buy now, save, compare, share and "View full details". Focus is trapped, Esc closes, and it prefetches on hover.
+- **Logo:** "Jula" is black and "Direct" is blue in the header, mobile menu and takeover bar. In the dark footer "Jula" stays white.
+- The router smoke test now goes card, quick view, "View full details".

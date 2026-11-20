@@ -84,6 +84,9 @@
   };
   PATHS.menu = '<path d="M4 7h16M4 12h16M4 17h10"/>';
   PATHS.arrowUpRight = '<path d="M7 17 17 7M8 7h9v9"/>';
+  PATHS.flag = '<path d="M5.5 21V4M5.5 4.5h12l-2.2 4 2.2 4h-12"/>';
+  PATHS.expand = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
+  PATHS.lock = '<rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>';
   JD.icon = (name, size) => {
     const s = size || 20;
     return '<svg class="jd-i" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (PATHS[name] || "") + "</svg>";
@@ -249,6 +252,51 @@
       '<div class="jd-pcard__seller">' + (s.verified ? JD.icon("shield", 14) : "") + "<span>" + JD.esc(s.name || "JulaDirect member") + "</span></div>" +
       "</div></article>";
   };
+
+  /* ---------- whole-card tap target + quick view ---------- */
+  /* The entire product card opens the quick-view sheet, except its own buttons (save, compare,
+     add to cart) which keep their own action. Links keep their href, so a modified click
+     (new tab, copy link, crawler) still goes straight to the product page. */
+  const QV_SRC = (document.currentScript && document.currentScript.src || "").replace(/jd-core\.js.*$/, "") + "jd-quickview.js";
+  let qvPromise = null;
+  JD.loadQuickView = () => {
+    if (JD.quickView) return Promise.resolve(JD.quickView);
+    if (!qvPromise) qvPromise = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = QV_SRC; s.async = true;
+      s.onload = () => resolve(JD.quickView);
+      s.onerror = () => { qvPromise = null; reject(new Error("quick view unavailable")); };
+      document.head.appendChild(s);
+    });
+    return qvPromise;
+  };
+  const CARD = ".jd-pcard, .jd-rrow";
+  const cardId = card => {
+    const el = card.querySelector("[data-wish],[data-add]");
+    if (el) return el.getAttribute("data-wish") || el.getAttribute("data-add");
+    const a = card.querySelector('a[href*="product.html"]');
+    try { return a ? new URL(a.href, location.href).searchParams.get("id") : null; } catch (e) { return null; }
+  };
+  if (!JD._cardBound) {
+    JD._cardBound = true;
+    rawOn(document, "click", e => {
+      const card = e.target.closest && e.target.closest(CARD);
+      if (!card || e.defaultPrevented) return;
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (e.target.closest("button, input, select, textarea, label, [data-wish], [data-add], [data-compare]")) return;
+      const id = cardId(card);
+      if (!JD.isUuid(id)) return;
+      e.preventDefault();
+      JD.loadQuickView().then(q => q.open(id, card.querySelector(".jd-pcard__title, .jd-rrow__title") || card)).catch(() => { location.href = JD.root + "product.html?id=" + encodeURIComponent(id); });
+    }, true);
+    let hoverT = 0; const warmed = new Set();
+    rawOn(document, "mouseover", e => {
+      const card = e.target.closest && e.target.closest(CARD);
+      if (!card) return;
+      clearTimeout(hoverT);
+      hoverT = setTimeout(() => { const id = cardId(card); if (JD.isUuid(id) && !warmed.has(id)) { warmed.add(id); JD.loadQuickView().then(q => q.warm(id)).catch(() => {}); } }, 220);
+    });
+  }
 
   JD.bindProductActions = root => {
     const el = root || document;

@@ -441,7 +441,8 @@ RETURNS numeric LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO ''
 AS $fn$
   SELECT GREATEST(
     COALESCE((SELECT sum(amount) FROM public.earning_transactions WHERE user_id=p_user AND role_name=p_role AND status='available'),0)
-    - COALESCE((SELECT sum(amount) FROM public.payout_requests WHERE user_id=p_user AND role_name=p_role AND status IN ('pending','approved','processing')),0), 0)
+    -- Completed requests remain paid out even though the legacy earnings ledger is immutable.
+    - COALESCE((SELECT sum(amount) FROM public.payout_requests WHERE user_id=p_user AND role_name=p_role AND status IN ('pending','approved','processing','completed')),0), 0)
 $fn$;
 
 CREATE OR REPLACE FUNCTION public.worker_wallet(p_role text)
@@ -453,7 +454,8 @@ BEGIN
   RETURN jsonb_build_object(
     'available',public.jd_worker_available(v_user,p_role),
     'pending_payout',COALESCE((SELECT sum(amount) FROM public.payout_requests WHERE user_id=v_user AND role_name=p_role AND status IN ('pending','approved','processing')),0),
-    'paid_out',COALESCE((SELECT sum(amount) FROM public.earning_transactions WHERE user_id=v_user AND role_name=p_role AND status='paid_out'),0),
+    -- This schema records disbursement state on payout_requests.status='completed'.
+    'paid_out',COALESCE((SELECT sum(amount) FROM public.payout_requests WHERE user_id=v_user AND role_name=p_role AND status='completed'),0),
     'lifetime',COALESCE((SELECT sum(amount) FROM public.earning_transactions WHERE user_id=v_user AND role_name=p_role AND status<>'cancelled'),0),
     'min_payout',public.jd_setting('min_payout',100),
     'recent',COALESCE((SELECT jsonb_agg(row_to_json(t)::jsonb ORDER BY t.created_at DESC) FROM (

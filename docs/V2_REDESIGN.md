@@ -125,3 +125,18 @@ New capabilities: period comparison and zero-filled sales chart, "needs your att
 **Before deploying:** apply `supabase/migrations/20261119000000_seller_studio_v2.sql`. Without it the Studio still loads: analytics are computed in the browser from the seller's own orders, but goals, order notes and review replies show an "update needed" message. The migration was written but not run against a live database from this environment, so test it on a branch first.
 
 Notes: a price change on a live listing sends it back to `pending_review` (existing `guard_product_write` trigger); stock changes are instant. Money uses merchandise value (subtotal minus discount, cancelled excluded) and the 5% fee estimate; the wallet remains the source of truth. Legacy seller pages (messages, store, website, pickup-delivery, settings, add/edit product) are still linked from the Studio and keep their old design.
+
+## Courier Workspace, Operations Center and Worker Apply
+
+`/delivery/`, `/worker/` and `/worker-apply.html` were rebuilt from scratch on a shared "Field Workforce" kit (`css/fw.css`, `js/fw-core.js`) with a per-surface script and stylesheet (`fw-courier`, `fw-ops`, `fw-apply`). The admin dashboard is untouched. The old `js/delivery.js` and `js/worker.js` are no longer loaded by these pages; `js/delivery.js` stays because `tests/modempay-integration-contract.mjs` still reads it.
+
+- **Courier Workspace:** online/offline with location pings and a shift timer, job board (best fit, pay, nearest, oldest) with polling alerts, claim, a step-by-step run view (item checklist, navigate/call/WhatsApp, OTP proof of delivery, report a problem), earnings with payout requests, history and profile.
+- **Operations Center:** a unified inbox (products, applications, reports, delivery issues) with claim locks, decision templates, internal notes, document previews through signed URLs and keyboard shortcuts, plus overview, dispatch board, earnings and activity. Approving a marketplace-worker application is admin-only.
+- **Worker Apply:** a guided form with private ID and selfie upload, draft autosave, and an application tracker with a reference code, a timeline, "needs info" replies and withdraw. Sellers still use `submit_verification_request`.
+
+### Database
+One migration: `supabase/migrations/20261119100000_field_workforce_v2.sql`. All new functions are `SECURITY DEFINER`, check the caller's role themselves, and are granted to `authenticated` only; the new tables are read-only to clients.
+
+- It was tested on a local Postgres 16 with stubbed Supabase pieces, **never applied to the live project**. Apply it to a Supabase branch first.
+- Payout availability is the sum of `earning_transactions` with status `available`, minus payout requests that are pending, approved or processing. This assumes completed payouts flip earnings to `paid_out`.
+- Until the migration is applied, the apply page shows a notice and the courier and ops pages show friendly errors.

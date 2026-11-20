@@ -1,184 +1,127 @@
-/* JulaDirect v2 homepage. Every figure and listing shown here comes from
-   live Supabase data or this device's own history; sections hide or show an
-   honest empty state when there is nothing to display. */
+/* JulaDirect home (v3). Every figure and listing comes from live Supabase data or this
+   device's own history; sections hide, or show an honest empty state, when there is nothing
+   to display. The admin-managed takeover banner is kept as it was. */
 (function () {
   "use strict";
   const JD = window.JD;
   const $ = id => document.getElementById(id);
+  const NF = n => Number(n).toLocaleString("en-GB");
+  const href = p => "product.html?id=" + encodeURIComponent(p.id);
+  const img = p => JD.safeUrl(p.main_image) || JD.placeholder;
 
-  function errorState(msg, retryKey) {
-    return JD.empty({
-      icon: "bag",
-      title: "We could not load this section",
-      text: msg || "Please check your connection and try again.",
-      actions: '<button type="button" class="jd-btn jd-btn--secondary" data-retry="' + retryKey + '">Try again</button>'
-    });
-  }
-  /* Show cards in the grid layout, or a state block full-width, without replacing the element. */
-  function setGrid(el, html, asGrid) { el.classList.toggle("jd-grid", asGrid); el.innerHTML = html; }
+  const errorState = (msg, key) => JD.empty({ icon: "bag", title: "We could not load this section", text: msg || "Please check your connection and try again.", actions: '<button type="button" class="jd-btn jd-btn--secondary" data-retry="' + key + '">Try again</button>' });
+  const setGrid = (el, html, asGrid) => { el.classList.toggle("jd-grid", asGrid); el.innerHTML = html; };
 
-  function renderTrust() {
-    $("jd-trust").innerHTML =
-      "<span>" + JD.icon("shield", 20) + "Verified seller badges</span>" +
-      "<span>" + JD.icon("wallet", 20) + "Cash on delivery</span>" +
-      "<span>" + JD.icon("truck", 20) + "Delivery across Greater Banjul</span>";
-    JD.$$(".jd-ico-arrow").forEach(el => { el.innerHTML = JD.icon("arrowRight", 16); });
-  }
-
-  /* The newest listings feed the hero mosaic, the mobile banner and the New arrivals grid. */
-  let newestPromise = null;
-  const newest = () => (newestPromise = newestPromise || JD.data.list("newest", 8));
-
-  function renderMosaic(rows) {
-    const box = $("jd-mosaic");
+  /* ---------- hero deck: four real, fresh listings ---------- */
+  let newestP = null;
+  const newest = () => (newestP = newestP || JD.data.list("newest", 8));
+  function deck(rows) {
+    const box = $("hm-deck");
     const withImg = rows.filter(r => JD.safeUrl(r.main_image)).slice(0, 4);
-    if (!withImg.length) {
-      box.innerHTML = '<div class="jd-mosaic--empty"><div class="jd-empty" style="border:0;background:transparent"><div class="jd-empty__icon">' + JD.icon("bag", 32) + "</div><h3>Fresh listings appear here</h3><p>As sellers publish products, the newest arrivals show up on this page.</p></div></div>";
-      return;
-    }
-    box.innerHTML = '<div class="jd-mosaic">' + withImg.map(p =>
-      '<a href="product.html?id=' + encodeURIComponent(p.id) + '" aria-label="' + JD.esc(p.title) + '"><img src="' + JD.esc(JD.safeUrl(p.main_image)) + '" alt="" loading="eager" decoding="async"><span class="jd-mosaic__price">' + JD.esc(JD.money(p.price, p.currency)) + "</span></a>"
-    ).join("") + "</div>";
+    if (!withImg.length) { box.className = "hm-deck hm-deck--empty"; box.innerHTML = "<div><strong>Fresh listings appear here</strong><br>Sellers add new products every day.</div>"; return; }
+    box.className = "hm-deck";
+    box.innerHTML = withImg.map((p, i) => '<a class="hm-tile" href="' + href(p) + '"><img src="' + JD.esc(img(p)) + '" alt="" ' + (i ? 'loading="lazy"' : 'fetchpriority="high"') + ' decoding="async"><span class="hm-tile__tag">' + (i === 0 ? "Just listed" : JD.esc(p.category_id || "New")) + '</span><span class="hm-tile__t"><b>' + JD.esc(JD.money(p.price, p.currency)) + "</b><span>" + JD.esc(p.title) + "</span></span></a>").join("");
   }
-  function renderBanner(rows) {
-    const img = (rows.find(r => JD.safeUrl(r.main_image)) || {}).main_image;
-    $("jd-mbanner-img").outerHTML = img
-      ? '<img class="jd-mbanner__img" id="jd-mbanner-img" src="' + JD.esc(JD.safeUrl(img)) + '" alt="" decoding="async">'
-      : '<div class="jd-mbanner__ph" id="jd-mbanner-img">' + JD.icon("bag", 48) + "</div>";
+  async function loadDeck() {
+    try { deck(await JD.swr("home:deck", newest, rows => deck(rows))); } catch (e) { console.warn("[JulaDirect] home deck", e && e.message); deck([]); }
   }
 
-  async function loadNew() {
-    const grid = $("jd-new");
-    setGrid(grid, JD.skeletonCards(4), true);
-    const paint = rows => {
-      renderMosaic(rows);
-      renderBanner(rows);
-      if (!rows.length) {
-        setGrid(grid, JD.empty({ icon: "bag", title: "No listings yet", text: "Be the first to list a product on JulaDirect.", actions: '<a class="jd-btn jd-btn--primary" href="supplier/index.html">Start selling</a>' }), false);
-        return;
-      }
-      setGrid(grid, rows.map(JD.productCard).join(""), true);
-      JD.syncWishlist(grid);
-      JD.syncCompare();
-    };
-    try {
-      await JD.swr("home:new", () => JD.data.list("newest", 8), paint);
-    } catch (e) {
-      console.warn("[JulaDirect] home new", e && e.message);
-      renderMosaic([]);
-      renderBanner([]);
-      setGrid(grid, errorState(e && e.message, "new"), false);
-    }
-  }
-
-  /* Best sellers: a swipeable row on mobile (with a real sold-vs-remaining bar) and a grid on desktop. */
-  function flashCard(p) {
-    const sold = Number(p.sales_count || 0);
-    const left = Math.max(0, Number(p.stock || 0));
-    const pct = sold + left > 0 ? Math.round((sold / (sold + left)) * 100) : 0;
-    return '<a class="jd-fcard" href="product.html?id=' + encodeURIComponent(p.id) + '"><span class="jd-fcard__img"><img src="' + JD.esc(JD.safeUrl(p.main_image) || JD.placeholder) + '" alt="" loading="lazy"></span>' +
-      '<span class="jd-fcard__body"><span class="jd-fcard__title">' + JD.esc(p.title) + '</span><span class="jd-fcard__price">' + JD.esc(JD.money(p.price, p.currency)) + "</span>" +
-      '<span class="jd-bar" role="img" aria-label="' + pct + ' percent sold"><i style="width:' + pct + '%"></i></span>' +
-      '<span class="jd-fcard__meta"><span>' + sold.toLocaleString("en-GB") + " sold</span><span>" + left.toLocaleString("en-GB") + " left</span></span></span></a>";
-  }
-  async function loadPopular() {
-    const state = $("jd-pop-state");
-    const flash = $("jd-flash");
-    const grid = $("jd-pop");
-    state.innerHTML = "";
-    flash.innerHTML = '<div class="jd-skel" style="flex:none;width:268px;height:108px;border-radius:18px"></div><div class="jd-skel" style="flex:none;width:268px;height:108px;border-radius:18px"></div>';
-    setGrid(grid, JD.skeletonCards(4), true);
-    const paint = rows => {
-      if (!rows.length) { $("jd-pop-sec").hidden = true; return; }
-      $("jd-pop-sec").hidden = false;
-      flash.innerHTML = rows.map(flashCard).join("");
-      setGrid(grid, rows.map(JD.productCard).join(""), true);
-      JD.syncWishlist(grid);
-      JD.syncCompare();
-    };
-    try {
-      await JD.swr("home:popular", async () => (await JD.data.list("popular", 8)).filter(r => Number(r.sales_count || 0) > 0), paint);
-    } catch (e) {
-      console.warn("[JulaDirect] home popular", e && e.message);
-      flash.innerHTML = "";
-      grid.innerHTML = "";
-      state.innerHTML = errorState(e && e.message, "pop");
-    }
-  }
-
+  /* ---------- stats + categories ---------- */
   async function loadStats() {
-    const stats = $("jd-stats");
-    const cats = $("jd-cats");
-    cats.innerHTML = Array.from({ length: 8 }, () => '<div class="jd-skel" style="aspect-ratio:1/1;border-radius:16px" aria-hidden="true"></div>').join("");
+    const cats = $("hm-cats");
+    cats.innerHTML = Array.from({ length: 8 }, () => '<div class="jd-skel" style="aspect-ratio:4/5;border-radius:22px" aria-hidden="true"></div>').join("");
     try {
       const s = await JD.data.categoryStats();
       if (s.total > 0) {
-        stats.hidden = false;
-        stats.innerHTML =
-          "<div><strong>" + s.total.toLocaleString("en-GB") + "</strong><span>Live listings</span></div>" +
-          "<div><strong>" + s.sellers.toLocaleString("en-GB") + "</strong><span>Sellers with live listings</span></div>" +
-          "<div><strong>" + s.categories.length.toLocaleString("en-GB") + "</strong><span>Categories with products</span></div>";
+        const st = $("hm-stats"); st.hidden = false;
+        st.innerHTML = "<div><strong>" + NF(s.total) + "</strong><span>Live listings</span></div><div><strong>" + NF(s.sellers) + "</strong><span>Active sellers</span></div><div><strong>" + NF(s.categories.length) + "</strong><span>Categories</span></div>";
       }
-      if (!s.categories.length) { $("jd-cats-sec").hidden = true; return; }
-      let images = {};
-      try { images = await JD.data.categoryImages(); } catch (e) { images = {}; }
-      cats.innerHTML = s.categories.slice(0, 12).map(c => {
-        const img = images[c.id];
-        return '<a class="jd-cat" href="explore.html?category=' + encodeURIComponent(c.id) + '"><span class="jd-cat__icon">' + JD.icon(JD.data.categoryIcon(c.id), 22) + "</span>" +
-          '<span class="jd-cat__img">' + (img ? '<img src="' + JD.esc(img) + '" alt="" loading="lazy">' : JD.icon(JD.data.categoryIcon(c.id), 28)) + "</span>" +
-          "<span><strong>" + JD.esc(c.id) + "</strong><small>" + c.count.toLocaleString("en-GB") + (c.count === 1 ? " listing" : " listings") + "</small></span></a>";
-      }).join("");
+      if (!s.categories.length) { $("hm-cats-sec").hidden = true; return; }
+      let images = {}; try { images = await JD.data.categoryImages(); } catch (e) { images = {}; }
+      cats.innerHTML = s.categories.slice(0, 11).map(c => '<a class="hm-cat" href="explore.html?category=' + encodeURIComponent(c.id) + '">' + (images[c.id] ? '<img src="' + JD.esc(images[c.id]) + '" alt="" loading="lazy">' : "") + '<span class="hm-cat__ico">' + JD.icon(JD.data.categoryIcon(c.id), 22) + "</span><strong>" + JD.esc(c.id) + "</strong><small>" + NF(c.count) + (c.count === 1 ? " listing" : " listings") + "</small></a>").join("") +
+        '<a class="hm-cat hm-cat--all" href="explore.html"><span class="hm-cat__ico">' + JD.icon("grid", 22) + "</span><strong>All products</strong><small>" + NF(s.total) + " listings</small></a>";
     } catch (e) {
       console.warn("[JulaDirect] home stats", e && e.message);
       cats.innerHTML = '<div style="grid-column:1/-1">' + errorState(e && e.message, "stats") + "</div>";
     }
   }
 
-  /* Recently visited: ids live on this device only; products are re-read live. */
+  /* ---------- picks with tabs ---------- */
+  const TABS = {
+    new: { all: "explore.html?sort=newest", load: () => newest() },
+    delivery: { all: "explore.html?delivery=1&stock=1", load: async () => (await JD.data.search({ delivery: true, stock: true, sort: "newest", page: 1 })).rows.slice(0, 8) },
+    value: { all: "explore.html?max=1000&stock=1&sort=price_asc", load: async () => (await JD.data.search({ max: "1000", stock: true, sort: "popular", page: 1 })).rows.slice(0, 8) },
+    like: { all: "explore.html?condition=Like%20New", load: async () => { const [a, b] = await Promise.all([JD.data.search({ condition: "Like New", stock: true, sort: "newest", page: 1 }), JD.data.search({ condition: "Refurbished", stock: true, sort: "newest", page: 1 })]); return a.rows.concat(b.rows).slice(0, 8); } }
+  };
+  let tab = "new", tabReq = 0;
+  async function loadPicks() {
+    const my = ++tabReq, grid = $("hm-picks"), t = TABS[tab];
+    $("hm-picks-all").setAttribute("href", t.all);
+    grid.setAttribute("aria-labelledby", "tab-" + (tab === "like" ? "new2" : tab));
+    setGrid(grid, JD.skeletonCards(4), true);
+    const paint = rows => {
+      if (my !== tabReq) return;
+      if (!rows.length) { setGrid(grid, JD.empty({ icon: "bag", title: "Nothing here yet", text: "Check another tab or browse everything.", actions: '<a class="jd-btn jd-btn--primary" href="explore.html">Browse the marketplace</a>' }), false); return; }
+      setGrid(grid, rows.map(JD.productCard).join(""), true);
+      JD.syncWishlist(grid); JD.syncCompare();
+    };
+    try { await JD.swr("home:picks:" + tab, t.load, paint); }
+    catch (e) { if (my !== tabReq) return; console.warn("[JulaDirect] home picks", e && e.message); setGrid(grid, errorState(e && e.message, "picks"), false); }
+  }
+  function selectTab(btn) {
+    tab = btn.getAttribute("data-tab");
+    JD.$$("#hm-picks-sec [role=tab], .hm-tabs [role=tab]").forEach(b => { const on = b === btn; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
+    loadPicks();
+  }
+
+  /* ---------- best sellers rail ---------- */
+  function rank(p, i) {
+    const sold = Number(p.sales_count || 0), left = Math.max(0, Number(p.stock || 0)), pct = sold + left > 0 ? Math.round(sold / (sold + left) * 100) : 0;
+    return '<a class="hm-rank" href="' + href(p) + '"><span class="hm-rank__n">#' + (i + 1) + '</span><img src="' + JD.esc(img(p)) + '" alt="" loading="lazy" decoding="async"><span class="hm-rank__b"><strong>' + JD.esc(JD.money(p.price, p.currency)) + '</strong><span class="t">' + JD.esc(p.title) + '</span><span class="hm-bar" role="img" aria-label="' + pct + ' percent sold"><i style="width:' + pct + '%"></i></span><span class="hm-rank__m"><span>' + NF(sold) + " sold</span><span>" + NF(left) + " left</span></span></span></a>";
+  }
+  async function loadBest() {
+    const sec = $("hm-best-sec"), rail = $("hm-best");
+    const paint = rows => { if (!rows.length) { sec.hidden = true; return; } sec.hidden = false; rail.innerHTML = rows.map(rank).join(""); };
+    try { await JD.swr("home:best", async () => (await JD.data.list("popular", 10)).filter(r => Number(r.sales_count || 0) > 0), paint); }
+    catch (e) { console.warn("[JulaDirect] home best", e && e.message); sec.hidden = true; }
+  }
+  const scrollRail = dir => { const r = $("hm-best"); r.scrollBy({ left: dir * Math.max(260, r.clientWidth * .8), behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); };
+
+  /* ---------- recent + sellers ---------- */
   function recentRow(p) {
     const sold = Number(p.sales_count || 0);
-    return '<article class="jd-rrow"><a class="jd-rrow__img" href="product.html?id=' + encodeURIComponent(p.id) + '" tabindex="-1" aria-hidden="true"><img src="' + JD.esc(JD.safeUrl(p.main_image) || JD.placeholder) + '" alt="" loading="lazy"></a>' +
-      '<div class="jd-rrow__body"><a class="jd-rrow__title" href="product.html?id=' + encodeURIComponent(p.id) + '">' + JD.esc(p.title) + '</a><span class="jd-rrow__price">' + JD.esc(JD.money(p.price, p.currency)) + "</span>" +
-      '<span class="jd-rrow__sold">' + (sold > 0 ? sold.toLocaleString("en-GB") + " sold" : JD.esc(p.condition || "")) + "</span></div>" +
-      '<button class="jd-pcard__fav" type="button" data-wish="' + JD.esc(p.id) + '" aria-pressed="false" aria-label="Save to wishlist">' + JD.icon("heart", 18) + "</button></article>";
+    return '<article class="jd-rrow"><a class="jd-rrow__img" href="' + href(p) + '" tabindex="-1" aria-hidden="true"><img src="' + JD.esc(img(p)) + '" alt="" loading="lazy"></a><div class="jd-rrow__body"><a class="jd-rrow__title" href="' + href(p) + '">' + JD.esc(p.title) + '</a><span class="jd-rrow__price">' + JD.esc(JD.money(p.price, p.currency)) + '</span><span class="jd-rrow__sold">' + (sold > 0 ? NF(sold) + " sold" : JD.esc(p.condition || "")) + '</span></div><button class="jd-pcard__fav" type="button" data-wish="' + JD.esc(p.id) + '" aria-pressed="false" aria-label="Save to wishlist">' + JD.icon("heart", 18) + "</button></article>";
   }
   async function loadRecent() {
-    const ids = JD.recent.ids();
-    const sec = $("jd-recent-sec");
+    const ids = JD.recent.ids(), sec = $("hm-recent-sec");
     if (!ids.length) { sec.hidden = true; return; }
     try {
       const rows = (await JD.data.byIds(ids)).slice(0, 6);
       if (!rows.length) { sec.hidden = true; return; }
-      sec.hidden = false;
-      $("jd-recent").innerHTML = rows.map(recentRow).join("");
-      JD.syncWishlist($("jd-recent"));
-    } catch (e) {
-      console.warn("[JulaDirect] home recent", e && e.message);
-      sec.hidden = true;
-    }
+      sec.hidden = false; $("hm-recent").innerHTML = rows.map(recentRow).join(""); JD.syncWishlist($("hm-recent"));
+    } catch (e) { console.warn("[JulaDirect] home recent", e && e.message); sec.hidden = true; }
   }
-
   async function loadSellers() {
     try {
       const rows = await JD.data.verifiedSellers(8);
       if (!rows.length) return;
-      $("jd-sellers-sec").hidden = false;
-      $("jd-sellers").innerHTML = rows.map(s => {
-        const name = s.business_name || "JulaDirect seller";
-        const av = JD.safeUrl(s.avatar_url);
-        return '<a class="jd-seller" href="explore.html?seller=' + encodeURIComponent(s.id) + '"><span class="jd-seller__av">' +
-          (av ? '<img src="' + JD.esc(av) + '" alt="" loading="lazy">' : JD.esc(name.charAt(0).toUpperCase())) + "</span><span><strong>" + JD.esc(name) + JD.icon("shield", 16) + "</strong><small>" + JD.esc(s.region || "The Gambia") + "</small></span></a>";
-      }).join("");
-    } catch (e) {
-      console.warn("[JulaDirect] home sellers", e && e.message);
-    }
+      $("hm-sellers-sec").hidden = false;
+      $("hm-sellers").innerHTML = rows.map(s => { const n = s.business_name || "JulaDirect seller", av = JD.safeUrl(s.avatar_url); return '<a class="hm-seller" href="explore.html?seller=' + encodeURIComponent(s.id) + '"><span class="hm-seller__av">' + (av ? '<img src="' + JD.esc(av) + '" alt="" loading="lazy">' : JD.esc(n.charAt(0).toUpperCase())) + '</span><div><strong><span>' + JD.esc(n) + "</span>" + JD.icon("shield", 16) + "</strong><small>" + JD.esc(s.region || "The Gambia") + "</small></div></a>"; }).join("");
+    } catch (e) { console.warn("[JulaDirect] home sellers", e && e.message); }
   }
 
-  const loaders = { new: () => { newestPromise = null; return loadNew(); }, pop: loadPopular, stats: loadStats };
+  const loaders = { stats: loadStats, picks: loadPicks };
   document.addEventListener("click", e => {
-    const b = e.target.closest("[data-retry]");
-    if (b && loaders[b.getAttribute("data-retry")]) loaders[b.getAttribute("data-retry")]();
-    if (e.target.closest("#jd-recent-clear")) { JD.recent.clear(); $("jd-recent-sec").hidden = true; JD.toast("Recently visited cleared", "ok"); }
+    const r = e.target.closest("[data-retry]"); if (r && loaders[r.getAttribute("data-retry")]) return loaders[r.getAttribute("data-retry")]();
+    const t = e.target.closest(".hm-tabs [role=tab]"); if (t) return selectTab(t);
+    if (e.target.closest("#hm-prev")) return scrollRail(-1);
+    if (e.target.closest("#hm-next")) return scrollRail(1);
+    if (e.target.closest("#hm-recent-clear")) { JD.recent.clear(); $("hm-recent-sec").hidden = true; JD.toast("Recently visited cleared", "ok"); }
+  });
+  document.addEventListener("keydown", e => {
+    const t = e.target.closest && e.target.closest(".hm-tabs [role=tab]"); if (!t || (e.key !== "ArrowRight" && e.key !== "ArrowLeft")) return;
+    const tabs = JD.$$(".hm-tabs [role=tab]"), i = tabs.indexOf(t), n = tabs[(i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length];
+    n.focus(); selectTab(n); e.preventDefault();
   });
 
   /* ---------- takeover banner (admin-managed, one live at a time) ---------- */
@@ -283,16 +226,16 @@
     renderTakeover(banner, preview);
   }
 
+
   /* Back on the Home tab: only the device-local "recently visited" row can have changed. */
   window.addEventListener("jd:pane:show", e => { if (e.detail.route === "index" && !e.detail.first) loadRecent(); });
 
   JD.mountShell({ active: "home" });
   JD.bindProductActions(document);
+  $("hm-ico-search").innerHTML = JD.icon("search", 22);
+  [["hm-t1", "wallet"], ["hm-t2", "shield"], ["hm-t3", "truck"], ["hm-t4", "message"], ["hm-ico-work", "truck"]].forEach(p => { const el = $(p[0]); if (el) el.innerHTML = JD.icon(p[1], 24); });
+  $("hm-prev").innerHTML = JD.icon("arrowRight", 20); $("hm-next").innerHTML = JD.icon("arrowRight", 20);
+  JD.$$(".hm-arrow").forEach(el => { el.innerHTML = JD.icon("arrowRight", 16); });
   bootBanner();
-  renderTrust();
-  loadStats();
-  loadNew();
-  loadPopular();
-  loadRecent();
-  loadSellers();
+  loadDeck(); loadStats(); loadPicks(); loadBest(); loadRecent(); loadSellers();
 })();

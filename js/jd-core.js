@@ -84,6 +84,7 @@
   };
   PATHS.menu = '<path d="M4 7h16M4 12h16M4 17h10"/>';
   PATHS.arrowUpRight = '<path d="M7 17 17 7M8 7h9v9"/>';
+  PATHS.list = '<path d="M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/>';
   PATHS.flag = '<path d="M5.5 21V4M5.5 4.5h12l-2.2 4 2.2 4h-12"/>';
   PATHS.expand = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
   PATHS.lock = '<rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>';

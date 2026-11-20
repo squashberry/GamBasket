@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>JulaDirect — Trade. Shop. Connect.</title>
-    <meta name="description" content="JulaDirect is the digital marketplace of The Gambia. Shop from local sellers, pay on delivery and message businesses directly.">
-    <meta name="theme-color" content="#1451e6">
+    <meta name="description" content="JulaDirect is the digital marketplace of The Gambia. Shop from verified local sellers, pay on delivery and message businesses directly.">
+    <meta name="theme-color" content="#0a1a3f">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-home2.css">
 </head>
 <body class="jd is-homepage">
     <div id="jd-header"></div>
@@ -15,95 +16,134 @@
     <main id="jd-main">
         <section class="jd-takeover" id="jd-takeover" aria-label="Featured campaign"></section>
 
-        <section class="jd-hero" aria-labelledby="jd-hero-title">
-            <div class="jd-container jd-hero__grid">
-                <div>
-                    <p class="jd-eyebrow">The digital marketplace of The Gambia</p>
-                    <h1 id="jd-hero-title" style="margin-top:12px">Trade. Shop. <em>Connect.</em></h1>
-                    <p class="jd-hero__lead">Discover products from local sellers, pay when your order arrives, and message businesses directly. Everything you need to buy and sell, in one place.</p>
-                    <div class="jd-hero__cta">
-                        <a class="jd-btn jd-btn--primary jd-btn--lg" href="explore.html">Start shopping</a>
-                        <a class="jd-btn jd-btn--secondary jd-btn--lg" href="supplier/index.html">Sell on JulaDirect</a>
+        <!-- Hero: search first, live product deck beside it -->
+        <section class="hm-hero" aria-labelledby="hm-title">
+            <div class="jd-container hm-hero__grid">
+                <div class="hm-hero__copy">
+                    <p class="hm-eyebrow"><span></span>The digital marketplace of The Gambia</p>
+                    <h1 id="hm-title">Find it. Order it.<br><em>Pay when it arrives.</em></h1>
+                    <p class="hm-lead">Thousands of products from sellers across the country, delivered to your door with cash on delivery. Message sellers directly before you buy.</p>
+                    <form class="hm-search" role="search" action="explore.html" method="get">
+                        <label class="jd-sr" for="hm-q">What are you looking for?</label>
+                        <span class="hm-search__ico" id="hm-ico-search"></span>
+                        <input id="hm-q" name="q" type="search" placeholder="Search phones, fashion, solar, cars&hellip;" autocomplete="off" maxlength="100">
+                        <button type="submit" class="jd-btn jd-btn--primary">Search</button>
+                    </form>
+                    <div class="hm-trending" aria-label="Popular searches"><span>Popular:</span>
+                        <a href="explore.html?q=iPhone">iPhone</a><a href="explore.html?q=Samsung">Samsung</a><a href="explore.html?q=Solar">Solar</a><a href="explore.html?q=Toyota">Toyota</a><a href="explore.html?q=Sneakers">Sneakers</a>
                     </div>
-                    <div class="jd-hero__trust" id="jd-trust"></div>
+                    <div class="hm-stats" id="hm-stats" aria-live="polite" hidden></div>
                 </div>
-                <div id="jd-mosaic" aria-label="Fresh on JulaDirect"></div>
+                <div class="hm-deck" id="hm-deck" aria-label="Fresh on JulaDirect"></div>
             </div>
         </section>
 
+        <!-- Trust strip -->
         <div class="jd-container">
-            <section class="jd-mbanner" aria-label="New arrivals">
+            <ul class="hm-trust" aria-label="Why shop on JulaDirect">
+                <li><span id="hm-t1"></span><div><b>Cash on delivery</b><small>Pay when your order arrives</small></div></li>
+                <li><span id="hm-t2"></span><div><b>Verified sellers</b><small>Identity checked by our team</small></div></li>
+                <li><span id="hm-t3"></span><div><b>Delivery across Greater Banjul</b><small>Track it, confirm with a code</small></div></li>
+                <li><span id="hm-t4"></span><div><b>Message before you buy</b><small>Ask sellers anything first</small></div></li>
+            </ul>
+
+            <!-- Categories -->
+            <section class="hm-sec" id="hm-cats-sec" aria-labelledby="hm-cats-h">
+                <div class="hm-head"><div><h2 id="hm-cats-h">Shop by category</h2><p>Browse what sellers are listing right now.</p></div><a class="jd-link" href="explore.html">All products <span class="hm-arrow"></span></a></div>
+                <div class="hm-cats" id="hm-cats"></div>
+            </section>
+
+            <!-- Shortcuts: budget + places -->
+            <section class="hm-sec hm-short" aria-label="Shortcuts">
                 <div>
-                    <small>New arrivals</small>
-                    <h2>Fresh from local sellers</h2>
-                    <p>The latest listings across The Gambia.</p>
-                    <a class="jd-btn jd-btn--onblue jd-btn--sm" href="explore.html?sort=newest">Shop now</a>
-                </div>
-                <div id="jd-mbanner-img"></div>
-            </section>
-
-            <div class="jd-stats" id="jd-stats" aria-live="polite" hidden></div>
-
-            <section class="jd-section" id="jd-cats-sec" aria-labelledby="jd-cats-title">
-                <div class="jd-section__head">
-                    <div><h2 id="jd-cats-title">Popular categories</h2><p>Browse what sellers are listing right now.</p></div>
-                    <a class="jd-link" href="explore.html">See all <span class="jd-ico-arrow"></span></a>
-                </div>
-                <div class="jd-cats" id="jd-cats"></div>
-            </section>
-
-            <section class="jd-section" id="jd-pop-sec" aria-labelledby="jd-pop-title">
-                <div class="jd-section__head">
-                    <div><h2 id="jd-pop-title">Best sellers</h2><p>Ranked by completed sales.</p></div>
-                    <a class="jd-link" href="explore.html?sort=popular">See all <span class="jd-ico-arrow"></span></a>
-                </div>
-                <div id="jd-pop-state"></div>
-                <div class="jd-flash" id="jd-flash"></div>
-                <div class="jd-grid jd-only-d" id="jd-pop"></div>
-            </section>
-
-            <section class="jd-section" aria-labelledby="jd-new-title">
-                <div class="jd-section__head">
-                    <div><h2 id="jd-new-title">New arrivals</h2><p>The latest listings from sellers across The Gambia.</p></div>
-                    <a class="jd-link" href="explore.html?sort=newest">See all <span class="jd-ico-arrow"></span></a>
-                </div>
-                <div class="jd-grid" id="jd-new"></div>
-            </section>
-
-            <section class="jd-section" id="jd-recent-sec" aria-labelledby="jd-recent-title" hidden>
-                <div class="jd-section__head">
-                    <div><h2 id="jd-recent-title">Recently visited</h2><p>Pick up where you left off.</p></div>
-                    <button type="button" class="jd-link" id="jd-recent-clear">Clear</button>
-                </div>
-                <div class="jd-recent" id="jd-recent"></div>
-            </section>
-
-            <section class="jd-section" id="jd-sellers-sec" aria-labelledby="jd-sellers-title" hidden>
-                <div class="jd-section__head">
-                    <div><h2 id="jd-sellers-title">Verified sellers</h2><p>Businesses that have completed JulaDirect verification.</p></div>
-                </div>
-                <div class="jd-sellers" id="jd-sellers"></div>
-            </section>
-
-            <section class="jd-band" aria-labelledby="jd-sell-title">
-                <div class="jd-band__in">
-                    <div>
-                        <h2 id="jd-sell-title">Run your business on JulaDirect</h2>
-                        <p>List products, manage orders and deliveries, message customers and track your earnings from one Seller Centre.</p>
+                    <h2 class="hm-mini">Shop by budget</h2>
+                    <div class="hm-pills">
+                        <a href="explore.html?max=500&amp;sort=price_asc"><b>Under</b> D500</a>
+                        <a href="explore.html?min=500&amp;max=2000"><b>D500</b> to D2,000</a>
+                        <a href="explore.html?min=2000&amp;max=10000"><b>D2,000</b> to D10,000</a>
+                        <a href="explore.html?min=10000&amp;sort=price_desc"><b>Over</b> D10,000</a>
                     </div>
-                    <div class="jd-band__cta">
-                        <a class="jd-btn jd-btn--onblue jd-btn--lg" href="supplier/index.html">Open Seller Centre</a>
-                        <a class="jd-btn jd-btn--outline-onblue jd-btn--lg" href="quick-sell.html">Quick sell</a>
+                </div>
+                <div>
+                    <h2 class="hm-mini">Shop near you</h2>
+                    <div class="hm-pills hm-pills--places">
+                        <a href="explore.html?location=Serrekunda">Serrekunda</a><a href="explore.html?location=Banjul">Banjul</a><a href="explore.html?location=Bakau">Bakau</a><a href="explore.html?location=Brikama">Brikama</a><a href="explore.html?location=Kololi">Kololi</a><a href="explore.html?location=Fajara">Fajara</a>
                     </div>
                 </div>
             </section>
 
-            <section class="jd-section jd-only-d" aria-labelledby="jd-how-title">
-                <div class="jd-section__head"><h2 id="jd-how-title">How JulaDirect works</h2><a class="jd-link" href="how-it-works.html">Learn more <span class="jd-ico-arrow"></span></a></div>
-                <div class="jd-steps">
-                    <div class="jd-step"><div class="jd-step__n">1</div><h3>Find what you need</h3><p>Search or browse categories, filter by price and location, compare listings and save favourites to your wishlist.</p></div>
-                    <div class="jd-step"><div class="jd-step__n">2</div><h3>Order with confidence</h3><p>Check seller badges, message the seller with questions, then choose cash on delivery at checkout.</p></div>
-                    <div class="jd-step"><div class="jd-step__n">3</div><h3>Get it delivered</h3><p>Couriers deliver across Greater Banjul. Share your delivery code when your order arrives to confirm it.</p></div>
+            <!-- Picks with tabs -->
+            <section class="hm-sec" aria-labelledby="hm-picks-h">
+                <div class="hm-head">
+                    <div><h2 id="hm-picks-h">Picked for you</h2><p>Fresh, ready to deliver and easy on the wallet.</p></div>
+                    <a class="jd-link" id="hm-picks-all" href="explore.html?sort=newest">See all <span class="hm-arrow"></span></a>
+                </div>
+                <div class="hm-tabs" role="tablist" aria-label="Product picks">
+                    <button role="tab" id="tab-new" aria-controls="hm-picks" aria-selected="true" data-tab="new">Just listed</button>
+                    <button role="tab" id="tab-delivery" aria-controls="hm-picks" aria-selected="false" tabindex="-1" data-tab="delivery">Delivery ready</button>
+                    <button role="tab" id="tab-value" aria-controls="hm-picks" aria-selected="false" tabindex="-1" data-tab="value">Under D1,000</button>
+                    <button role="tab" id="tab-new2" aria-controls="hm-picks" aria-selected="false" tabindex="-1" data-tab="like">Like new &amp; refurbished</button>
+                </div>
+                <div class="jd-grid" id="hm-picks" role="tabpanel" aria-labelledby="tab-new" aria-live="polite"></div>
+            </section>
+
+            <!-- Best sellers rail -->
+            <section class="hm-sec" id="hm-best-sec" aria-labelledby="hm-best-h" hidden>
+                <div class="hm-head">
+                    <div><h2 id="hm-best-h">Best sellers</h2><p>Ranked by completed sales.</p></div>
+                    <div class="hm-railbtns"><button type="button" id="hm-prev" aria-label="Scroll left"></button><button type="button" id="hm-next" aria-label="Scroll right"></button></div>
+                </div>
+                <div class="hm-rail" id="hm-best" tabindex="0" aria-label="Best selling products"></div>
+            </section>
+
+            <!-- How it works -->
+            <section class="hm-sec hm-how" aria-labelledby="hm-how-h">
+                <div class="hm-head"><div><h2 id="hm-how-h">How buying works</h2><p>Three steps from search to doorstep.</p></div><a class="jd-link" href="how-it-works.html">Learn more <span class="hm-arrow"></span></a></div>
+                <ol class="hm-steps">
+                    <li><b>1</b><h3>Find it</h3><p>Search or filter by price, place and condition. Compare listings side by side and save favourites.</p></li>
+                    <li><b>2</b><h3>Order it</h3><p>Check the seller badge, message them with questions, then place your order with cash on delivery.</p></li>
+                    <li><b>3</b><h3>Get it</h3><p>A courier brings it to you. Share your delivery code once you have your item to complete the order.</p></li>
+                </ol>
+            </section>
+
+            <!-- Sellers -->
+            <section class="hm-sec" id="hm-sellers-sec" aria-labelledby="hm-sellers-h" hidden>
+                <div class="hm-head"><div><h2 id="hm-sellers-h">Verified sellers</h2><p>Businesses that completed JulaDirect verification.</p></div></div>
+                <div class="hm-sellers" id="hm-sellers"></div>
+            </section>
+
+            <!-- Recently visited -->
+            <section class="hm-sec" id="hm-recent-sec" aria-labelledby="hm-recent-h" hidden>
+                <div class="hm-head"><div><h2 id="hm-recent-h">Recently visited</h2><p>Pick up where you left off.</p></div><button type="button" class="jd-link" id="hm-recent-clear">Clear</button></div>
+                <div class="jd-recent" id="hm-recent"></div>
+            </section>
+
+            <!-- Sell + work CTAs -->
+            <section class="hm-cta" aria-label="Sell or work with JulaDirect">
+                <article class="hm-cta__main">
+                    <p class="hm-eyebrow hm-eyebrow--light"><span></span>For sellers</p>
+                    <h2>Turn your stock into sales</h2>
+                    <p>List products in minutes, get orders and deliveries managed for you, message customers and track earnings in one Seller Centre.</p>
+                    <ul><li>Free to list</li><li>Cash on delivery customers</li><li>Verified badge builds trust</li></ul>
+                    <div class="hm-cta__btns"><a class="jd-btn jd-btn--onblue jd-btn--lg" href="supplier/index.html">Open Seller Centre</a><a class="jd-btn jd-btn--outline-onblue jd-btn--lg" href="quick-sell.html">Quick sell</a></div>
+                </article>
+                <article class="hm-cta__side">
+                    <span class="hm-cta__ico" id="hm-ico-work"></span>
+                    <h3>Earn as a courier or operations worker</h3>
+                    <p>Deliver orders on your own schedule or help review listings. Apply in minutes and track your application.</p>
+                    <a class="jd-btn jd-btn--primary" href="worker-apply.html">Apply to work with us</a>
+                </article>
+            </section>
+
+            <!-- FAQ -->
+            <section class="hm-sec hm-faq" aria-labelledby="hm-faq-h">
+                <div class="hm-head"><div><h2 id="hm-faq-h">Questions, answered</h2></div><a class="jd-link" href="help.html">Visit the help centre <span class="hm-arrow"></span></a></div>
+                <div class="hm-faq__list">
+                    <details><summary>How do I pay?</summary><p>Choose cash on delivery at checkout and pay the courier when your order arrives. Other payment methods appear at checkout when a seller offers them.</p></details>
+                    <details><summary>How does delivery work?</summary><p>Couriers deliver across Greater Banjul. You get a delivery code; share it with the courier only when you have your item, and the order is marked complete.</p></details>
+                    <details><summary>What does the verified badge mean?</summary><p>The seller's identity and business details were checked by the JulaDirect team before the badge was given.</p></details>
+                    <details><summary>What if something goes wrong?</summary><p>Open the order in your account and raise a dispute. Our team reviews every case and can arrange a refund.</p></details>
+                    <details><summary>How do I start selling?</summary><p>Create an account, open the Seller Centre and add your first product. Listings go live once reviewed.</p></details>
                 </div>
             </section>
         </div>

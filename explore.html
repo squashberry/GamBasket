@@ -4,90 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Explore the marketplace — JulaDirect</title>
-    <meta name="description" content="Search and filter products from sellers across The Gambia. Compare listings, save searches and shop with cash on delivery.">
+    <meta name="description" content="Search and filter products from verified sellers across The Gambia. Compare listings, save searches and shop with cash on delivery.">
     <meta name="theme-color" content="#1451e6">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="css/jd.css">
+    <link rel="stylesheet" href="css/jd-explore2.css">
 </head>
 <body class="jd">
     <div id="jd-header"></div>
 
-    <main id="jd-main" class="jd-container">
-        <nav class="jd-breadcrumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Explore</span></nav>
-        <div class="jd-page-head">
-            <h1 id="jd-title" style="font-size:clamp(1.6rem,3vw,2.3rem)">Explore the marketplace</h1>
-            <p id="jd-subtitle">Search, filter and compare products from sellers across The Gambia.</p>
-        </div>
+    <main id="jd-main" class="jd-container ex">
+        <header class="ex-head">
+            <div class="ex-head__t">
+                <h1 id="jd-title">Explore the marketplace</h1>
+                <p id="jd-subtitle">Search, filter and compare products from sellers across The Gambia.</p>
+            </div>
+            <form class="ex-search" id="ex-search" role="search" autocomplete="off">
+                <span class="ex-search__ico" id="ex-ico-search"></span>
+                <label class="jd-sr" for="ex-q">Search products</label>
+                <input id="ex-q" type="search" maxlength="100" placeholder="Search products, brands, sellers&hellip;" aria-controls="ex-suggest" aria-expanded="false">
+                <button type="button" class="ex-search__clear" id="ex-q-clear" aria-label="Clear search" hidden></button>
+                <button type="submit" class="jd-btn jd-btn--primary">Search</button>
+                <div class="ex-suggest" id="ex-suggest" role="listbox" hidden></div>
+            </form>
+        </header>
 
-        <div class="jd-explore">
-            <aside class="jd-filters" id="jd-filters" aria-label="Filters">
-                <div class="jd-filters__head">
-                    <h2 style="font-size:1.15rem">Filters</h2>
-                    <button class="jd-btn jd-btn--ghost jd-btn--sm" type="button" id="jd-filters-close" aria-label="Close filters">&times;</button>
+        <div class="ex-rail" id="ex-cats" role="group" aria-label="Categories"></div>
+        <div class="ex-quick" id="ex-quick" role="group" aria-label="Quick filters"></div>
+
+        <div class="ex-layout">
+            <aside class="ex-filters" id="ex-filters" aria-label="Filters" aria-hidden="false">
+                <div class="ex-filters__head">
+                    <span class="ex-grab" aria-hidden="true"></span>
+                    <h2>Filters</h2>
+                    <button type="button" class="ex-link" id="ex-clear-top">Clear all</button>
+                    <button type="button" class="ex-x" id="ex-filters-close" aria-label="Close filters"></button>
                 </div>
-                <form class="jd-filters__body" id="jd-filter-form" autocomplete="off" onsubmit="return false">
-                    <div class="jd-fgroup"><h3>Category</h3><div id="jd-f-cats"><div class="jd-skel" style="height:120px" aria-hidden="true"></div></div></div>
-                    <div class="jd-fgroup" id="jd-price-group">
-                        <div class="jd-fgroup__head"><h3>Price range</h3><button type="button" class="jd-reset" id="jd-price-reset">Reset</button></div>
-                        <p class="jd-fgroup__sub" id="jd-price-avg" hidden></p>
-                        <div class="jd-hist" id="jd-hist" aria-hidden="true" hidden></div>
-                        <div class="jd-range" id="jd-range" hidden><span class="jd-range__track"></span><span class="jd-range__fill" id="jd-range-fill"></span><input type="range" id="jd-rmin" aria-label="Minimum price" min="0" max="100" value="0"><input type="range" id="jd-rmax" aria-label="Maximum price" min="0" max="100" value="100"></div>
-                        <div class="jd-pricebox">
-                            <div class="jd-field"><label class="jd-sr" for="jd-min">Minimum price</label><input class="jd-input" id="jd-min" type="number" min="0" inputmode="numeric" placeholder="Min"></div>
-                            <div class="jd-field"><label class="jd-sr" for="jd-max">Maximum price</label><input class="jd-input" id="jd-max" type="number" min="0" inputmode="numeric" placeholder="Max"></div>
+                <form class="ex-filters__body" id="ex-form" onsubmit="return false">
+                    <details class="ex-fg" open>
+                        <summary>Price</summary>
+                        <div class="ex-fg__in">
+                            <p class="ex-note" id="ex-avg" hidden></p>
+                            <div class="ex-hist" id="ex-hist" aria-hidden="true" hidden></div>
+                            <div class="ex-range" id="ex-range" hidden><span class="ex-range__fill" id="ex-fill"></span><input type="range" id="ex-rmin" aria-label="Minimum price"><input type="range" id="ex-rmax" aria-label="Maximum price"></div>
+                            <div class="ex-price">
+                                <label><span>Min (D)</span><input class="jd-input" id="ex-min" type="number" min="0" inputmode="numeric" placeholder="0"></label>
+                                <i aria-hidden="true">&ndash;</i>
+                                <label><span>Max (D)</span><input class="jd-input" id="ex-max" type="number" min="0" inputmode="numeric" placeholder="Any"></label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="jd-fgroup">
-                        <h3>Condition</h3>
-                        <label class="jd-radio"><span><input type="radio" name="condition" value="" checked>Any condition</span></label>
-                        <label class="jd-radio"><span><input type="radio" name="condition" value="New">New</span></label>
-                        <label class="jd-radio"><span><input type="radio" name="condition" value="Like New">Like new</span></label>
-                        <label class="jd-radio"><span><input type="radio" name="condition" value="Refurbished">Refurbished</span></label>
-                        <label class="jd-radio"><span><input type="radio" name="condition" value="Used - Good">Used &ndash; good</span></label>
-                        <label class="jd-radio"><span><input type="radio" name="condition" value="Used - Fair">Used &ndash; fair</span></label>
-                    </div>
-                    <div class="jd-fgroup">
-                        <h3>Location</h3>
-                        <label class="jd-sr" for="jd-location">Location</label>
-                        <select class="jd-select" id="jd-location">
-                            <option value="all">All Gambia</option><option>Banjul</option><option>Serrekunda</option><option>Kanifing</option><option>Bakau</option><option>Fajara</option><option>Kotu</option><option>Kololi</option><option>Brufut</option><option>Brikama</option>
-                        </select>
-                    </div>
-                    <div class="jd-fgroup">
-                        <h3>Brand or model</h3>
-                        <label class="jd-sr" for="jd-brand">Brand or model</label>
-                        <input class="jd-input" id="jd-brand" type="search" maxlength="80" placeholder="e.g. Samsung, iPhone, Toyota">
-                    </div>
-                    <div class="jd-fgroup">
-                        <h3>Availability</h3>
-                        <label class="jd-switch"><span>In stock only</span><input type="checkbox" id="jd-stock"><span class="jd-switch__track" aria-hidden="true"></span></label>
-                        <div class="jd-field" style="margin-top:6px"><span class="jd-label" id="jd-seg-label">Delivery options</span><div class="jd-seg" role="group" aria-labelledby="jd-seg-label"><button type="button" data-seg="0" aria-pressed="true">Any</button><button type="button" data-seg="1" aria-pressed="false">Delivery</button></div></div><input type="checkbox" id="jd-delivery" class="jd-sr" tabindex="-1" aria-hidden="true">
-                    </div>
+                    </details>
+                    <details class="ex-fg" open>
+                        <summary>Condition</summary>
+                        <div class="ex-fg__in ex-opts" id="ex-cond"></div>
+                    </details>
+                    <details class="ex-fg" open>
+                        <summary>Location</summary>
+                        <div class="ex-fg__in ex-opts" id="ex-loc"></div>
+                    </details>
+                    <details class="ex-fg" open>
+                        <summary>Availability</summary>
+                        <div class="ex-fg__in">
+                            <label class="jd-switch"><span>In stock only</span><input type="checkbox" id="ex-stock"><span class="jd-switch__track" aria-hidden="true"></span></label>
+                            <label class="jd-switch"><span>Delivery available</span><input type="checkbox" id="ex-delivery"><span class="jd-switch__track" aria-hidden="true"></span></label>
+                        </div>
+                    </details>
+                    <details class="ex-fg">
+                        <summary>Brand or model</summary>
+                        <div class="ex-fg__in"><label class="jd-sr" for="ex-brand">Brand or model</label><input class="jd-input" id="ex-brand" type="search" maxlength="80" placeholder="e.g. Samsung, iPhone, Toyota"></div>
+                    </details>
                 </form>
-                <div class="jd-filters__foot">
-                    <button type="button" class="jd-btn jd-btn--secondary" id="jd-filters-clear">Clear all</button>
-                    <button type="button" class="jd-btn jd-btn--primary" id="jd-filters-apply">Show results</button>
+                <div class="ex-filters__foot">
+                    <button type="button" class="jd-btn jd-btn--secondary" id="ex-clear">Clear all</button>
+                    <button type="button" class="jd-btn jd-btn--primary" id="ex-apply">Show results</button>
                 </div>
             </aside>
 
-            <section aria-label="Search results">
-                <div class="jd-toolbar">
-                    <div class="jd-toolbar__count" id="jd-count" aria-live="polite">Loading&hellip;</div>
-                    <div class="jd-toolbar__right">
-                        <button class="jd-btn jd-btn--secondary jd-btn--sm jd-filter-open" type="button" id="jd-filters-open"><span id="jd-ico-filter"></span>Filters</button>
-                        <button class="jd-btn jd-btn--secondary jd-btn--sm" type="button" id="jd-save-search"><span id="jd-ico-save"></span>Save search</button>
-                        <label class="jd-sr" for="jd-sort">Sort by</label>
-                        <select class="jd-select" id="jd-sort">
-                            <option value="newest">Newest first</option>
+            <section class="ex-results" aria-label="Search results">
+                <div class="ex-bar">
+                    <div class="ex-count" id="jd-count" aria-live="polite">Loading&hellip;</div>
+                    <div class="ex-bar__r">
+                        <button type="button" class="jd-btn jd-btn--secondary jd-btn--sm ex-open" id="ex-filters-open"><span id="ex-ico-filter"></span>Filters<b id="ex-fcount" hidden></b></button>
+                        <button type="button" class="jd-btn jd-btn--secondary jd-btn--sm" id="jd-save-search"><span id="ex-ico-save"></span><span class="ex-hide-sm">Save search</span></button>
+                        <div class="ex-view" role="group" aria-label="Layout">
+                            <button type="button" data-view="grid" aria-pressed="true" aria-label="Grid view"></button>
+                            <button type="button" data-view="list" aria-pressed="false" aria-label="List view"></button>
+                        </div>
+                        <label class="jd-sr" for="ex-sort">Sort by</label>
+                        <select class="jd-select ex-sort" id="ex-sort">
+                            <option value="newest">Newest</option>
+                            <option value="popular">Most popular</option>
                             <option value="price_asc">Price: low to high</option>
                             <option value="price_desc">Price: high to low</option>
-                            <option value="popular">Most popular</option>
                         </select>
                     </div>
                 </div>
-                <div class="jd-active" id="jd-active"></div>
-                <div class="jd-grid" id="productGrid" aria-live="polite"></div>
+                <div class="ex-active" id="jd-active"></div>
+                <div id="ex-seller" hidden></div>
+                <div class="jd-grid ex-grid" id="productGrid" aria-live="polite"></div>
                 <nav class="jd-pagination" id="jd-pagination" aria-label="Pagination"></nav>
+                <section class="ex-recent" id="ex-recent-sec" aria-labelledby="ex-recent-h" hidden>
+                    <h2 id="ex-recent-h">Recently viewed</h2>
+                    <div class="jd-grid" id="ex-recent"></div>
+                </section>
             </section>
         </div>
     </main>

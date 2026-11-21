@@ -131,7 +131,15 @@
     for (let i = 1; i <= 5; i++) out += '<span class="' + (i <= n ? "" : "is-off") + '">' + JD.icon("star", 16) + "</span>";
     return out + "</span>";
   };
-  JD.sellerName = s => (s && (s.business_name || [s.first_name, s.last_name && s.last_name.charAt(0) + "."].filter(Boolean).join(" "))) || "JulaDirect member";
+  JD.sellerName = s => {
+    if (!s) return "JulaDirect member";
+    const personName = [s.first_name, s.last_name && s.last_name.charAt(0) + "."].filter(Boolean).join(" ");
+    const businessName = String(s.business_name || "").trim();
+    // A business account is represented by its registered storefront/company
+    // name; an individual account is represented by the person's profile name.
+    if (s.seller_type === "business" && businessName) return businessName;
+    return personName || businessName || "JulaDirect member";
+  };
 
   /* Account area tabs shared by buyer pages. */
   JD.accountNav = active => {

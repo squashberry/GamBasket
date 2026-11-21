@@ -85,11 +85,37 @@
       var ids = Array.from(new Set([].concat.apply([], orders.map(function (o) { return (o.items || []).map(function (i) { return i.id; }); })).filter(JD.isUuid)));
       if (ids.length) { try { var c = await JD.client(); var pr = await c.from("products").select("id,main_image").in("id", ids); (pr.data || []).forEach(function (p) { var u = JD.safeUrl(p.main_image); if (u) thumbs[p.id] = u; }); } catch (e) { /* thumbnails are optional */ } }
       render();
+      journey();
     } catch (e) {
       console.warn("[JulaDirect] orders", e && e.message);
       $("od-filters").hidden = true;
       $("od-state").innerHTML = JD.empty({ icon: "package", title: "We could not load your orders", text: "Please check your connection and try again.", actions: '<button type="button" class="jd-btn jd-btn--secondary" id="od-retry">Try again</button>' });
     }
+  }
+
+  /* Journey: arriving from checkout (?order=&placed=1) or from ModemPay (?payment_return=1&order=) */
+  var qp = new URLSearchParams(location.search), focusId = qp.get("order") || qp.get("orderId"), returned = qp.get("payment_return") === "1", placedNow = qp.get("placed") === "1", polls = 0;
+  function findFocus() { return orders.filter(function (o) { return focusId && (o.order_id === focusId || String(o.id) === focusId); })[0]; }
+  function banner(kind, html) { var b = $("od-banner"); b.className = "od-banner od-banner--" + kind; b.innerHTML = html; b.hidden = false; }
+  function journey() {
+    var o = findFocus();
+    if (!o) return;
+    filter = "all";
+    render();
+    var el = document.querySelector('.od[data-order="' + (window.CSS && CSS.escape ? CSS.escape(o.order_id) : o.order_id) + '"]');
+    if (el) { el.classList.add("is-focus"); el.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+    var f = $("od-flow"); f.innerHTML = JD.flowSteps(4); f.hidden = false;
+    if (returned && o.payment_status !== "paid" && o.payment_method !== "cash_on_delivery") {
+      banner("wait", JD.icon("clock", 18) + "<span><b>Confirming your payment with ModemPay…</b> This usually takes a few seconds. You can stay on this page.</span>");
+      if (polls++ < 8) setTimeout(refreshOne, 3000);
+    } else if (returned && o.payment_status === "paid") {
+      banner("ok", JD.icon("check", 18) + "<span><b>Payment received.</b> Order #" + esc(o.id) + " is with the seller.</span>");
+    } else if (placedNow) {
+      banner("ok", JD.icon("check", 18) + "<span><b>Order #" + esc(o.id) + " placed.</b> We will update the status below as the seller confirms it.</span>");
+    }
+  }
+  async function refreshOne() {
+    try { var r = await JD.auth().getOrders(); if (r && !r.error && r.data) { orders = r.data; journey(); } } catch (e) { /* try again next tick */ }
   }
 
   function fn(name, body) {

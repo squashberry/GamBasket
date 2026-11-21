@@ -517,6 +517,16 @@
   }
 
   /* ---------- homepage takeover mode ---------- */
+  /* The buying journey, shared by cart, checkout, confirmation and orders. current: 1 Cart, 2 Checkout, 3 Confirmed, 4 Track */
+  JD.flowSteps = (current) => {
+    const defs = [["Cart", "cart.html"], ["Checkout", "checkout.html"], ["Confirmed", ""], ["Track", "orders.html"]];
+    return '<ol class="jd-flow" aria-label="Your order journey">' + defs.map((d, i) => {
+      const n = i + 1, cls = n < current ? "is-done" : n === current ? "is-now" : "";
+      const inner = '<i>' + (n < current ? JD.icon("check", 13) : n) + "</i><span>" + d[0] + "</span>";
+      const link = n < current && d[1] && n !== 3;
+      return '<li class="' + cls + '"' + (n === current ? ' aria-current="step"' : "") + ">" + (link ? '<a href="' + d[1] + '">' + inner + "</a>" : inner) + "</li>";
+    }).join("") + "</ol>";
+  };
   JD.isPhone = () => !!(window.matchMedia && window.matchMedia("(max-width: 820px)").matches);
   JD.takeover = {
     theme: undefined,

@@ -1047,3 +1047,28 @@ form:has(input[name="q"]:not(:placeholder-shown)) .sx-clear { width: 30px; heigh
   #jd-cart .jd-summary__row--total { font-size: 18px; }
   #jd-cart .jd-callout { padding: 12px 14px; border-radius: 16px; }
 }
+
+/* ---------- buying journey stepper (cart > checkout > confirmed > track) ---------- */
+.jd-flow { display: flex; align-items: center; gap: 0; list-style: none; margin: 0; padding: 0; font-size: 13px; font-weight: 650; color: var(--jd-ink-3); }
+.jd-flow li { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.jd-flow li + li::before { content: ""; width: clamp(14px, 4vw, 44px); height: 2px; margin: 0 8px; border-radius: 2px; background: var(--jd-line-2); }
+.jd-flow li.is-done + li::before, .jd-flow li.is-now::before { background: var(--jd-blue-600); }
+.jd-flow li a { display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
+.jd-flow i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 2px var(--jd-line-2); font-style: normal; font-size: 12px; font-weight: 800; }
+.jd-flow .is-done { color: var(--jd-blue-700); }
+.jd-flow .is-done i { background: var(--jd-blue-600); box-shadow: none; color: #fff; }
+.jd-flow .is-now { color: var(--jd-ink); }
+.jd-flow .is-now i { background: var(--jd-blue-600); box-shadow: 0 0 0 4px var(--jd-blue-100); color: #fff; }
+@media (max-width: 560px) { .jd-flow { font-size: 12px; } .jd-flow li:not(.is-now) span { display: none; } .jd-flow li + li::before { width: 18px; margin: 0 6px; } .jd-flow li.is-now span { display: inline; } }
+
+/* Order journey: banners + focus on orders page */
+.od-flow { margin: 0 0 14px; overflow-x: auto; }
+.od-banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--jd-r); margin: 0 0 14px; font-size: 14px; line-height: 1.4; }
+.od-banner[hidden] { display: none; }
+.od-banner--ok { background: var(--jd-ok-bg); color: var(--jd-ok); }
+.od-banner--wait { background: var(--jd-blue-50); color: var(--jd-blue-700); }
+.od-banner svg { flex: none; margin-top: 1px; }
+.od.is-focus { box-shadow: 0 0 0 3px rgba(20,81,230,.35), var(--jd-shadow-2); animation: odFocus 1.6s ease 1; }
+@keyframes odFocus { 0% { box-shadow: 0 0 0 0 rgba(20,81,230,.5); } 100% { box-shadow: 0 0 0 3px rgba(20,81,230,.35), var(--jd-shadow-2); } }
+.jd-flow li > a { display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
+.jd-cartflow{margin:0 0 14px;overflow-x:auto}@media(max-width:520px){.jd-flow span{display:none}.jd-flow li.is-now span{display:inline}}

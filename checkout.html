@@ -10,40 +10,138 @@
     <link rel="stylesheet" href="css/jd-checkout.css">
 </head>
 <body class="jd checkout-page">
-    <header class="ck-bar">
-        <button class="ck-back" id="backButton" type="button" aria-label="Go back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6 6-6-6 6-6"/></svg></button>
-        <strong class="ck-bar__title">Checkout</strong>
-        <a class="ck-bar__brand" href="index.html" aria-label="JulaDirect home"><span class="jd-logo__word"><b>Jula</b>Direct</span></a>
+    <header class="ck-top">
+        <div class="ck-top__in">
+            <button class="ck-back" id="backButton" type="button" aria-label="Back to cart"></button>
+            <a class="ck-brand" href="index.html" aria-label="JulaDirect home"><span class="jd-logo__word"><b>Jula</b>Direct</span></a>
+            <div class="ck-flow" id="ck-flow"></div>
+            <span class="ck-secure" id="ck-secure"></span>
+        </div>
     </header>
-    <main class="checkout-shell"><div class="checkout-head"><p class="section-eyebrow">FINAL STEP</p><h1>Complete your order</h1><p>Secure checkout through JulaDirect.</p></div><div id="checkoutError" class="checkout-error" role="alert" hidden></div><form id="checkoutForm"><div class="checkout-grid"><div>
-        <section class="checkout-section"><h2>Contact information</h2><div class="field-grid"><div class="field"><label for="fullName">Full name</label><input id="fullName" required autocomplete="name"></div><div class="field"><label for="email">Email</label><input id="email" type="email" required autocomplete="email"></div><div class="field full"><label for="phone">Gambian phone number</label><input id="phone" type="tel" placeholder="+220 000 0000" required autocomplete="tel"></div></div></section>
-        <section class="checkout-section"><h2>Fulfillment</h2><div class="choice-grid"><div class="choice"><input type="radio" name="fulfillment" id="delivery" value="delivery" checked><label for="delivery"><strong>Delivery</strong><span>Bring it to your address.</span></label></div><div class="choice"><input type="radio" name="fulfillment" id="pickup" value="pickup"><label for="pickup"><strong>Store pickup</strong><span>Collect from the seller.</span></label></div></div><div id="deliveryFields"><div class="field-grid"><div class="field"><label for="region">Region</label><select id="region" required><option value="">Select region</option><option>Greater Banjul Area</option><option>West Coast Region</option><option>North Bank Region</option><option>Lower River Region</option><option>Central River Region</option><option>Upper River Region</option></select></div><div class="field"><label for="area">Area / town</label><input id="area" required></div><div class="field full"><label for="address">Street / address</label><input id="address" required></div><div class="field full"><label for="landmark">Nearest landmark</label><input id="landmark"></div><div class="field full"><label for="instructions">Delivery instructions</label><textarea id="instructions"></textarea></div></div></div><p class="checkout-note">For store pickup, the seller location will be confirmed after the order is accepted.</p></section>
-        <section class="checkout-section"><h2>Coupon</h2><div class="coupon-row"><input id="couponInput" placeholder="Enter coupon code"><button id="applyCouponBtn" type="button">Apply</button></div><p id="couponMessage" class="checkout-note" aria-live="polite"></p></section>
-        <section class="checkout-section">
-            <h2>Payment method</h2>
-            <p id="paymentAvailabilityNote" class="checkout-note">Cash on Delivery depends on the seller reserve. Online methods are enabled only when ModemPay is configured.</p>
-            <div class="choice-grid payment-grid">
-                <div class="choice">
-                    <input type="radio" name="payment" id="cod" value="cash_on_delivery" checked>
-                    <label for="cod"><strong>Cash on Delivery <span class="payment-availability-badge">Checking</span></strong><span>Pay when your order arrives.</span><small id="codAvailabilityNote" class="checkout-note">Checking seller eligibility…</small></label>
-                </div>
-                <div class="choice">
-                    <input type="radio" name="payment" id="wave" value="wave" disabled aria-describedby="waveComingSoon">
-                    <label for="wave"><strong>Wave <span class="payment-coming-soon-badge">Coming soon</span></strong><span id="waveComingSoon">Online payment is not available yet.</span></label>
-                </div>
-                <div class="choice">
-                    <input type="radio" name="payment" id="qmoney" value="qmoney" disabled aria-describedby="qmoneyComingSoon">
-                    <label for="qmoney"><strong>QMoney <span class="payment-coming-soon-badge">Coming soon</span></strong><span id="qmoneyComingSoon">Online payment is not available yet.</span></label>
-                </div>
-                <div class="choice">
-                    <input type="radio" name="payment" id="afrimoney" value="afrimoney" disabled aria-describedby="afrimoneyComingSoon">
-                    <label for="afrimoney"><strong>Afrimoney <span class="payment-coming-soon-badge">Coming soon</span></strong><span id="afrimoneyComingSoon">Online payment is not available yet.</span></label>
+
+    <main class="ck" id="ck-main">
+        <div id="checkoutError" class="checkout-error" role="alert" hidden></div>
+
+        <div class="ck-layout" id="ck-layout">
+            <form id="checkoutForm" class="ck-steps" novalidate autocomplete="on">
+
+                <!-- 1 · Delivery -->
+                <section class="ck-step is-open" id="ck-s1" data-step="1" aria-labelledby="ck-s1-t">
+                    <button type="button" class="ck-step__head" data-open="1" aria-expanded="true">
+                        <i class="ck-step__n" id="ck-n1">1</i>
+                        <span class="ck-step__t"><b id="ck-s1-t">Delivery details</b><small id="ck-s1-sum">Who is receiving this order and where it goes.</small></span>
+                        <span class="ck-step__edit">Edit</span>
+                    </button>
+                    <div class="ck-step__body">
+                        <div class="ck-seg" role="radiogroup" aria-label="How do you want to get it?">
+                            <div class="choice"><input type="radio" name="fulfillment" id="delivery" value="delivery" checked><label for="delivery"><span class="ck-seg__ico" data-ico="truck"></span><strong>Delivery</strong><span>To your address</span></label></div>
+                            <div class="choice"><input type="radio" name="fulfillment" id="pickup" value="pickup"><label for="pickup"><span class="ck-seg__ico" data-ico="store"></span><strong>Store pickup</strong><span>Collect from the seller</span></label></div>
+                        </div>
+                        <div class="field-grid">
+                            <div class="field"><label for="fullName">Full name</label><input id="fullName" required autocomplete="name" placeholder="Your name"></div>
+                            <div class="field"><label for="phone">Phone number</label><input id="phone" type="tel" inputmode="tel" placeholder="+220 000 0000" required autocomplete="tel"></div>
+                            <div class="field full"><label for="email">Email</label><input id="email" type="email" inputmode="email" required autocomplete="email" placeholder="you@example.com"></div>
+                        </div>
+                        <div id="deliveryFields">
+                            <div class="field-grid">
+                                <div class="field"><label for="region">Region</label><select id="region" required autocomplete="address-level1"><option value="">Select region</option><option>Greater Banjul Area</option><option>West Coast Region</option><option>North Bank Region</option><option>Lower River Region</option><option>Central River Region</option><option>Upper River Region</option></select></div>
+                                <div class="field"><label for="area">Area / town</label><input id="area" required autocomplete="address-level2" placeholder="e.g. Serrekunda"></div>
+                                <div class="field full"><label for="address">Street / address</label><input id="address" required autocomplete="street-address" placeholder="House number, street"></div>
+                                <div class="field full"><label for="landmark">Nearest landmark <small>(optional)</small></label><input id="landmark" placeholder="Mosque, school, shop…"></div>
+                                <div class="field full"><label for="instructions">Note for the courier <small>(optional)</small></label><textarea id="instructions" rows="2" placeholder="Gate colour, who to call…"></textarea></div>
+                            </div>
+                            <label class="ck-remember"><input type="checkbox" id="rememberAddress" checked><span>Remember this address on this device</span></label>
+                        </div>
+                        <p class="checkout-note" id="pickupNote" hidden>The seller's pickup location is confirmed once they accept your order.</p>
+                    </div>
+                </section>
+
+                <!-- 2 · Payment -->
+                <section class="ck-step" id="ck-s2" data-step="2" aria-labelledby="ck-s2-t">
+                    <button type="button" class="ck-step__head" data-open="2" aria-expanded="false">
+                        <i class="ck-step__n" id="ck-n2">2</i>
+                        <span class="ck-step__t"><b id="ck-s2-t">Payment</b><small id="ck-s2-sum">Choose how you want to pay.</small></span>
+                        <span class="ck-step__edit">Edit</span>
+                    </button>
+                    <div class="ck-step__body">
+                        <p id="paymentAvailabilityNote" class="checkout-note">Cash on delivery depends on the seller's reserve. Online methods appear when they are switched on.</p>
+                        <div class="payment-grid">
+                            <div class="choice">
+                                <input type="radio" name="payment" id="cod" value="cash_on_delivery" checked>
+                                <label for="cod"><span class="ck-pay__ico" data-ico="wallet"></span><span class="ck-pay__t"><strong>Cash on delivery <span class="payment-availability-badge">Checking</span></strong><span>Pay the courier when your order arrives.</span><small id="codAvailabilityNote" class="checkout-note">Checking seller eligibility…</small></span></label>
+                            </div>
+                            <div class="choice">
+                                <input type="radio" name="payment" id="wave" value="wave" disabled aria-describedby="waveComingSoon">
+                                <label for="wave"><span class="ck-pay__ico ck-pay__ico--wave">W</span><span class="ck-pay__t"><strong>Wave <span class="payment-coming-soon-badge">Coming soon</span></strong><span id="waveComingSoon">Online payment is not available yet.</span></span></label>
+                            </div>
+                            <div class="choice">
+                                <input type="radio" name="payment" id="qmoney" value="qmoney" disabled aria-describedby="qmoneyComingSoon">
+                                <label for="qmoney"><span class="ck-pay__ico ck-pay__ico--q">Q</span><span class="ck-pay__t"><strong>QMoney <span class="payment-coming-soon-badge">Coming soon</span></strong><span id="qmoneyComingSoon">Online payment is not available yet.</span></span></label>
+                            </div>
+                            <div class="choice">
+                                <input type="radio" name="payment" id="afrimoney" value="afrimoney" disabled aria-describedby="afrimoneyComingSoon">
+                                <label for="afrimoney"><span class="ck-pay__ico ck-pay__ico--a">A</span><span class="ck-pay__t"><strong>Afrimoney <span class="payment-coming-soon-badge">Coming soon</span></strong><span id="afrimoneyComingSoon">Online payment is not available yet.</span></span></label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3 · Review: the summary card lives here on phones and in the side column on desktop -->
+                <aside class="ck-summary" id="ck-summary" aria-label="Order summary">
+                    <div class="ck-summary__head"><h2>Your order</h2><a href="cart.html" class="ck-editcart">Edit cart</a></div>
+                    <div id="summaryItems" class="summary-items"></div>
+
+                    <details class="ck-coupon" id="ck-coupon">
+                        <summary><span id="ck-coupon-ico"></span>Have a coupon?</summary>
+                        <div class="coupon-row"><input id="couponInput" placeholder="Enter coupon code" autocomplete="off" autocapitalize="characters"><button id="applyCouponBtn" type="button">Apply</button></div>
+                        <p id="couponMessage" class="checkout-note" aria-live="polite"></p>
+                    </details>
+
+                    <div class="total-box">
+                        <div class="total-row"><span>Subtotal</span><strong id="summarySubtotal">D 0</strong></div>
+                        <div class="total-row"><span>Delivery</span><strong id="summaryDelivery">D 0</strong></div>
+                        <div class="total-row" id="ck-discount-row" hidden><span>Discount</span><strong id="summaryDiscount">- D 0</strong></div>
+                        <div class="total-row final"><span>Total</span><strong id="summaryTotal">D 0</strong></div>
+                    </div>
+                    <button type="button" id="placeOrderBtn" class="place-order ck-primary">Continue to payment</button>
+                    <ul class="ck-assure">
+                        <li data-ico="shield">Prices, stock and coupons are re-checked by JulaDirect when you place the order.</li>
+                        <li data-ico="message">You can message the seller about this order any time afterwards.</li>
+                    </ul>
+                </aside>
+            </form>
+        </div>
+
+        <!-- Order confirmed -->
+        <section class="ck-done" id="orderSuccess" hidden aria-live="polite">
+            <div class="ck-done__card">
+                <div class="ck-done__tick" aria-hidden="true"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="m15 27 8 8 15-17"/></svg></div>
+                <h1>Order placed</h1>
+                <p class="ck-done__no">Order <strong id="successOrderNumber"></strong></p>
+                <p class="ck-done__lead" id="ck-done-lead">The seller has been notified and will confirm your order shortly.</p>
+                <div class="ck-done__thumbs" id="ck-done-thumbs"></div>
+                <dl class="ck-done__facts" id="ck-done-facts"></dl>
+                <ol class="ck-next" aria-label="What happens next">
+                    <li><b>The seller confirms</b><span>You will see the status change in My orders.</span></li>
+                    <li><b>Packed and handed to a courier</b><span>We assign a courier for delivery orders.</span></li>
+                    <li><b>On its way</b><span>You get a one-time handoff code to share only when it arrives.</span></li>
+                    <li><b>Delivered</b><span>Rate what you bought to help other buyers.</span></li>
+                </ol>
+                <div class="success-actions">
+                    <a id="viewOrderBtn" href="orders.html" class="primary-success">Track my order</a>
+                    <a href="explore.html" class="secondary-success">Keep shopping</a>
                 </div>
             </div>
         </section>
-    </div><aside class="checkout-section checkout-summary"><h2>Your order</h2><div id="summaryItems" class="summary-items"></div><div class="total-box"><div class="total-row"><span>Subtotal</span><strong id="summarySubtotal">D 0</strong></div><div class="total-row"><span>Delivery</span><strong id="summaryDelivery">D 0</strong></div><div class="total-row"><span>Discount</span><strong id="summaryDiscount">- D 0</strong></div><div class="total-row final"><span>Total</span><strong id="summaryTotal">D 0</strong></div></div><button type="submit" id="placeOrderBtn" class="place-order">Place Order</button><p class="checkout-note">Prices, stock, coupon validity, and totals are verified by the database transaction.</p></aside></div></form></main>
-    <div id="orderSuccess" class="success-screen"><div class="success-card"><div class="success-icon">OK</div><h2>Order placed</h2><p>Your order number is <strong id="successOrderNumber"></strong>.</p><div class="success-actions"><a id="viewOrderBtn" href="orders.html" class="primary-success">View Order</a><a href="explore.html" class="secondary-success">Continue Shopping</a></div></div></div>
-    <script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/auth-errors.js"></script><script src="js/auth-guard.js"></script><script src="js/affiliate.js"></script><script src="js/affiliate-tracking.js"></script><script src="js/checkout.js"></script>
+    </main>
+
+    <!-- phones: sticky action bar -->
+    <div class="ck-dock" id="ck-dock">
+        <div class="ck-dock__sum"><small>Total</small><strong id="ck-dock-total">D 0</strong></div>
+        <button type="button" class="ck-primary" id="ck-dock-btn">Continue to payment</button>
+    </div>
+
+    <script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/auth-errors.js"></script><script src="js/auth-guard.js"></script><script src="js/affiliate.js"></script><script src="js/affiliate-tracking.js"></script><script src="js/jd-core.js"></script><script src="js/checkout.js"></script>
     <script src="js/states.js"></script>
 </body>
 </html>

@@ -158,3 +158,12 @@ Both pages were rebuilt from scratch (`index.html`, `css/jd-home2.css`, `js/jd-h
 
 ## Home hero v4 (auto-sliding banner)
 The dark hero with the search box is replaced by a four-slide, auto-rotating campaign banner on desktop and phones (cash on delivery, just listed, under D1,000, sell with us). Product art in the slides is live data; slide 2's line uses live listing and seller counts. Native scroll-snap swipe, dots with a progress fill, prev/next on desktop, a pause button, and it pauses on hover, touch, focus, hidden tab, off-screen and with reduced motion. Phones also get a 4-up category grid, swipeable pill rows and a swipeable "how it works". Search lives in the sticky header (Search v2).
+
+## Buying journey v1 (cart → checkout → confirmed → orders)
+
+- `JD.flowSteps(n)` renders the shared 4-step stepper (Cart, Checkout, Confirmed, Track) on cart, checkout, the confirmation screen and the focused order on Orders.
+- Checkout is a guided accordion: Delivery → Payment → Review. Completed steps collapse to a one-line summary with Edit. Desktop keeps a sticky summary; phones get a sticky bottom dock with the total and the next action.
+- Quantities can be changed or items removed on checkout (`updateCartItem`/`removeCartItem`); totals, stock and coupons are still re-verified server side by `create_order`.
+- The delivery address can be remembered on the device (`jd-ck-addr`).
+- After placing an order the confirmation screen links to `orders.html?order=<uuid>&placed=1`. Orders highlights that order, shows a banner, and after ModemPay returns (`payment_return=1`) polls up to 8 times until the payment shows as paid.
+- Payment contract strings in `js/checkout.js` are covered by `tests/modempay-integration-contract.mjs`.

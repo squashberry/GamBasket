@@ -8,6 +8,7 @@
   const JD = window.JD;
   const root = document.getElementById("jd-cart");
   const sub = document.getElementById("jd-cart-sub");
+  { const f = document.getElementById("jd-cart-flow"); if (f && JD.flowSteps) f.innerHTML = JD.flowSteps(1); }
   const LOCAL_KEY = "gambasket_cart";
   const state = { items: [], auth: false };
 

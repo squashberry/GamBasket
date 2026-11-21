@@ -13,8 +13,8 @@
         // Supabase Client Key (CURRENT sb_publishable key from Supabase Settings → API Keys)
         SUPABASE_PUBLISHABLE_KEY: "sb_publishable_LYlQsw2QbUqUTPcrYiTAtg_6hwDQ92Z",
 
-        // Cloudinary unsigned uploads. Fill these from Cloudinary Dashboard after
-        // creating a restricted unsigned upload preset; never put an API secret here.
+        // Cloudinary signed product uploads. The API key and API secret stay in
+        // Supabase Edge Function secrets; only the public cloud name and preset are here.
         CLOUDINARY_CLOUD_NAME: "jx9bpjdb",
         CLOUDINARY_UPLOAD_PRESET: "juladirect_product_images",
 

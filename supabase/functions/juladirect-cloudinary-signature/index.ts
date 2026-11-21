@@ -61,22 +61,21 @@ Deno.serve(async (request) => {
     if (!accessToken) return jsonResponse({ error: "Sign in before uploading product photos." }, 401, origin);
 
     const supabaseUrl = readDefaultSecret("SUPABASE_URL");
-    const publishableKey = readDefaultSecret("SUPABASE_ANON_KEY") || readDefaultKeyMap("SUPABASE_PUBLISHABLE_KEYS");
-    const serviceRoleKey = readDefaultSecret("SUPABASE_SERVICE_ROLE_KEY") || readDefaultKeyMap("SUPABASE_SECRET_KEYS");
-    if (!supabaseUrl || !publishableKey || !serviceRoleKey) {
+    const publishableKey = request.headers.get("apikey") || "";
+    if (!supabaseUrl || !publishableKey) {
       return jsonResponse({ error: "The secure upload service is not configured." }, 503, origin);
     }
 
-    const authClient = createClient(supabaseUrl, publishableKey, {
+    // Use the caller's JWT and publishable key. The user_roles SELECT policy
+    // permits users to read their own roles, so no service-role key is needed.
+    const userClient = createClient(supabaseUrl, publishableKey, {
+      global: { headers: { Authorization: `Bearer ${accessToken}` } },
       auth: { persistSession: false, autoRefreshToken: false },
     });
-    const { data: authData, error: authError } = await authClient.auth.getUser(accessToken);
+    const { data: authData, error: authError } = await userClient.auth.getUser(accessToken);
     if (authError || !authData?.user) return jsonResponse({ error: "Your sign-in session is invalid or expired." }, 401, origin);
 
-    const adminClient = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data: roleRows, error: roleError } = await adminClient
+    const { data: roleRows, error: roleError } = await userClient
       .from("user_roles")
       .select("role_id")
       .eq("user_id", authData.user.id)

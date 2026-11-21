@@ -222,6 +222,39 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("Persistent navigation enables only the active page styles", async ({ page }) => {
+  await mockBackend(page, { products: [iphone], authenticated: true });
+  await page.goto("/index.html");
+
+  const media = href => page.locator('link[rel="stylesheet"][href*="' + href + '"]').getAttribute("media");
+
+  await expect.poll(() => media("jd-home2.css")).toBe("all");
+  await page.evaluate(() => window.JD.router.navigate("/explore.html"));
+  await expect(page).toHaveURL(/\/explore\.html$/);
+  await expect.poll(() => media("jd-home2.css")).toBe("not all");
+  await expect.poll(() => media("jd-explore2.css")).toBe("all");
+  await expect.poll(() => media("jd.css")).toBe("all");
+
+  await page.evaluate(() => window.JD.router.navigate("/product.html?id=" + IPHONE_ID));
+  await expect(page).toHaveURL(/\/product\.html\?id=/);
+  await expect.poll(() => media("jd-explore2.css")).toBe("not all");
+  await expect.poll(() => media("jd-pdp.css")).toBe("all");
+
+  await page.evaluate(() => window.JD.router.navigate("/cart.html"));
+  await expect(page).toHaveURL(/\/cart\.html$/);
+  await expect.poll(() => media("jd-pdp.css")).toBe("not all");
+  await expect.poll(() => media("jd.css")).toBe("all");
+
+  const sellerNames = await page.evaluate(() => ({
+    business: JD.sellerName({ seller_type: "business", business_name: "Awa Mobile Store", first_name: "Awa", last_name: "Jallow" }),
+    individual: JD.sellerName({ seller_type: "individual", business_name: null, first_name: "Awa", last_name: "Jallow" }),
+    individualWithLegacyBusinessName: JD.sellerName({ seller_type: "individual", business_name: "Old Store Label", first_name: "Awa", last_name: "Jallow" })
+  }));
+  expect(sellerNames.business).toBe("Awa Mobile Store");
+  expect(sellerNames.individual).toBe("Awa J.");
+  expect(sellerNames.individualWithLegacyBusinessName).toBe("Awa J.");
+});
+
 test("Explore shows only live approved database listings, not fabricated demo inventory", async ({ page }) => {
   await mockBackend(page, { products: [] });
   await page.goto("/explore.html");

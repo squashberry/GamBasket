@@ -22,7 +22,7 @@
     sub.textContent = items.length + (items.length === 1 ? " saved product" : " saved products");
     root.innerHTML =
       '<div class="jd-toolbar"><div class="jd-toolbar__count">' + items.length + (items.length === 1 ? " product" : " products") + "</div>" +
-      '<div class="jd-toolbar__right">' + (inStock.length ? '<button type="button" class="jd-btn jd-btn--primary jd-btn--sm" id="jd-add-all">' + JD.icon("cart", 16) + "Add all available to cart (" + inStock.length + ")</button>" : "") + "</div></div>" +
+      '<div class="jd-toolbar__right">' + (inStock.length ? '<button type="button" class="jd-btn jd-btn--primary jd-btn--sm" id="jd-add-all">' + JD.icon("cart", 16) + "Add all to cart (" + inStock.length + ")</button>" : "") + "</div></div>" +
       (gone.length ? '<div class="jd-callout jd-callout--warn" role="status"><span>' + JD.icon("help", 18) + " " + gone.length + (gone.length === 1 ? " saved item is" : " saved items are") + ' no longer available.</span><button type="button" class="jd-btn jd-btn--secondary jd-btn--sm" id="jd-clean">Remove unavailable</button></div>' : "") +
       (items.length ? '<div class="jd-grid" id="jd-wl-grid">' + items.map(r => JD.productCard(r.product)).join("") + "</div>" : JD.empty({ icon: "heart", title: "No available items", text: "The products you saved are no longer listed.", actions: '<a class="jd-btn jd-btn--primary" href="explore.html">Browse the marketplace</a>' }));
     const grid = document.getElementById("jd-wl-grid");

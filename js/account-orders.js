@@ -45,7 +45,7 @@
       return '<div class="od__item"><a href="product.html?id=' + encodeURIComponent(it.id || "") + '"><img src="' + esc(img) + '" alt="" loading="lazy"></a><div class="od__item__t"><b>' + esc(it.name) + "</b><small>Qty " + esc(it.quantity) + " &middot; " + esc(JD.money(it.price)) + " each</small></div><span class=\"od__item__p\">" + esc(JD.money(Number(it.price) * Number(it.quantity))) + "</span>" + rate + "</div>";
     }).join("");
     var acts = [];
-    if (o.status === "out_for_delivery") acts.push('<button type="button" class="jd-btn jd-btn--primary jd-btn--sm" data-act="code" data-order="' + esc(o.order_id) + '">Get handoff code</button>');
+    if (o.status === "out_for_delivery") acts.push('<button type="button" class="jd-btn jd-btn--primary jd-btn--sm" data-act="code" data-delivery-code data-order="' + esc(o.order_id) + '">Get handoff code</button>');
     if (["pending", "failed"].indexOf(o.payment_status) > -1 && ["wave", "qmoney", "afrimoney"].indexOf(o.payment_method) > -1 && !cancelled) acts.push('<button type="button" class="jd-btn jd-btn--primary jd-btn--sm" data-act="pay" data-order="' + esc(o.order_id) + '" data-method="' + esc(o.payment_method) + '">Continue secure payment</button>');
     if (o.payment_status === "paid" && !cancelled && !refunded[o.order_id]) acts.push('<button type="button" class="jd-btn jd-btn--secondary jd-btn--sm" data-act="refund" data-order="' + esc(o.order_id) + '" data-total="' + esc(Number(o.total_amount || 0)) + '">Request a refund</button>');
     if (o.status === "pending") acts.push('<button type="button" class="jd-btn jd-btn--ghost jd-btn--sm" data-act="cancel" data-number="' + esc(o.id) + '">Cancel order</button>');

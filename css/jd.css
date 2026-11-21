@@ -1010,3 +1010,17 @@ form:has(input[name="q"]:not(:placeholder-shown)) .sx-clear { width: 30px; heigh
   body.sx-open .jd-header__row .jd-actions { opacity: 0; pointer-events: none; }
   body.sx-open .jd-header__row { z-index: 130; }
 }
+
+/* phones: wishlist */
+@media (max-width: 820px) {
+  .jd-container:has(#jd-wl) .jd-breadcrumb { display: none; }
+  .jd-container:has(#jd-wl) .jd-page-head { padding: 4px 0 6px; }
+  .jd-container:has(#jd-wl) .jd-page-head h1 { font-size: 1.6rem !important; }
+  .jd-container:has(#jd-wl) .jd-page-head p { font-size: 13.5px; margin-top: 2px; }
+  #jd-wl .jd-toolbar { flex-wrap: nowrap; gap: 10px; position: sticky; top: 58px; z-index: 30; margin: 0 -16px 12px; padding: 8px 16px; background: rgba(243, 246, 252, .94); backdrop-filter: blur(10px); }
+  #jd-wl .jd-toolbar__right { flex: 1 1 auto; min-width: 0; justify-content: flex-end; }
+  #jd-wl .jd-toolbar__right .jd-btn { min-width: 0; max-width: 100%; white-space: nowrap; }
+  #jd-wl .jd-toolbar__count { white-space: nowrap; }
+  #jd-wl .jd-callout { padding: 12px 14px; gap: 8px; border-radius: 16px; font-size: 13.5px; }
+  #jd-wl .jd-grid { gap: 10px; }
+}

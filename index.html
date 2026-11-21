@@ -19,26 +19,60 @@
     <main id="jd-main">
         <section class="jd-takeover" id="jd-takeover" aria-label="Featured campaign"></section>
 
-        <!-- Hero: search first, live product deck beside it -->
-        <section class="hm-hero" aria-labelledby="hm-title">
-            <div class="jd-container hm-hero__grid">
-                <div class="hm-hero__copy">
-                    <p class="hm-eyebrow"><span></span>The digital marketplace of The Gambia</p>
-                    <h1 id="hm-title">Find it. Order it.<br><em>Pay when it arrives.</em></h1>
-                    <p class="hm-lead">Thousands of products from sellers across the country, delivered to your door with cash on delivery. Message sellers directly before you buy.</p>
-                    <form class="hm-search" data-sx="h" role="search" action="explore.html" method="get">
-                        <span class="hm-search__ico" id="hm-ico-search"></span>
-                        <span class="sx-field"><span class="sx-ghost" aria-hidden="true" hidden></span><label class="jd-sr" for="hm-q">What are you looking for?</label><input id="hm-q" name="q" type="search" placeholder="Search phones, fashion, solar, cars&hellip;" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="100"></span>
-                        <button type="button" class="sx-cam" data-image-search aria-label="Search by image"></button><button type="button" class="sx-clear" aria-label="Clear search"></button>
-                        <button type="submit" class="jd-btn jd-btn--primary">Search</button>
-                        <div class="sx-panel" role="listbox" hidden></div>
-                    </form>
-                    <div class="hm-trending" aria-label="Popular searches"><span>Popular:</span>
-                        <a href="explore.html?q=iPhone">iPhone</a><a href="explore.html?q=Samsung">Samsung</a><a href="explore.html?q=Solar">Solar</a><a href="explore.html?q=Toyota">Toyota</a><a href="explore.html?q=Sneakers">Sneakers</a>
+        <!-- Hero: auto-sliding campaign banner -->
+        <section class="hm-hero2" aria-roledescription="carousel" aria-label="Featured on JulaDirect">
+            <div class="jd-container">
+                <div class="hm-sl" id="hm-sl">
+                    <div class="hm-sl__track" id="hm-track" tabindex="0" aria-live="off">
+                        <article class="hm-slide" data-t="blue" aria-roledescription="slide" aria-label="1 of 4">
+                            <div class="hm-slide__copy">
+                                <span class="hm-chip" id="hm-ico-cod"></span>
+                                <h1 class="hm-slide__h">See it. Order it.<br><em>Pay when it arrives.</em></h1>
+                                <p class="hm-slide__lead">Shop thousands of products from sellers across The Gambia and pay cash only when the courier is at your door.</p>
+                                <div class="hm-slide__btns"><a class="hm-btn hm-btn--solid" href="explore.html">Start shopping</a><a class="hm-btn hm-btn--ghost" href="how-it-works.html">How it works</a></div>
+                            </div>
+                            <div class="hm-vis" data-vis="fan" data-feed="0" aria-hidden="true"><span class="hm-fl hm-fl--a" id="hm-fl-a"></span><span class="hm-fl hm-fl--b" id="hm-fl-b"></span></div>
+                        </article>
+                        <article class="hm-slide" data-t="navy" aria-roledescription="slide" aria-label="2 of 4">
+                            <div class="hm-slide__copy">
+                                <span class="hm-chip hm-chip--amber"><i class="hm-dot"></i>Just listed</span>
+                                <h2 class="hm-slide__h">Fresh finds, <em>added today.</em></h2>
+                                <p class="hm-slide__lead" id="hm-s2-lead">New listings land from verified sellers every day. Be the first to grab them.</p>
+                                <div class="hm-slide__btns"><a class="hm-btn hm-btn--amber" href="explore.html?sort=newest">See new arrivals</a></div>
+                            </div>
+                            <div class="hm-vis" data-vis="mosaic" data-feed="3" aria-hidden="true"></div>
+                        </article>
+                        <article class="hm-slide" data-t="sky" aria-roledescription="slide" aria-label="3 of 4">
+                            <div class="hm-slide__copy">
+                                <span class="hm-chip hm-chip--blue">Budget picks</span>
+                                <h2 class="hm-slide__h">Great stuff <em>under D1,000.</em></h2>
+                                <p class="hm-slide__lead">Phones, fashion, home and more at prices that are easy on the wallet, ready to deliver.</p>
+                                <div class="hm-slide__btns"><a class="hm-btn hm-btn--navy" href="explore.html?max=1000&amp;stock=1&amp;sort=price_asc">Shop the deals</a></div>
+                            </div>
+                            <div class="hm-vis" data-vis="stack" data-feed="cheap" aria-hidden="true"></div>
+                        </article>
+                        <article class="hm-slide" data-t="amber" aria-roledescription="slide" aria-label="4 of 4">
+                            <div class="hm-slide__copy">
+                                <span class="hm-chip hm-chip--navy">For sellers</span>
+                                <h2 class="hm-slide__h">Open your shop. <em>Free to list.</em></h2>
+                                <p class="hm-slide__lead">Reach buyers across the country, let us handle delivery, and earn a verified badge that builds trust.</p>
+                                <div class="hm-slide__btns"><a class="hm-btn hm-btn--navy" href="supplier/index.html">Start selling</a><a class="hm-btn hm-btn--outline" href="quick-sell.html">Quick sell</a></div>
+                            </div>
+                            <div class="hm-vis hm-vis--sell" aria-hidden="true">
+                                <div class="hm-shop"><span id="hm-ico-shop"></span><b>Your shop</b><small>Live in minutes</small></div>
+                                <span class="hm-fl hm-fl--a" id="hm-sf-a"></span><span class="hm-fl hm-fl--b" id="hm-sf-b"></span><span class="hm-fl hm-fl--c" id="hm-sf-c"></span>
+                            </div>
+                        </article>
                     </div>
-                    <div class="hm-stats" id="hm-stats" aria-live="polite" hidden></div>
+                    <div class="hm-sl__ui">
+                        <div class="hm-dots" id="hm-dots" role="tablist" aria-label="Choose a banner"></div>
+                        <button type="button" class="hm-sl__pp" id="hm-pp" aria-label="Pause banner rotation"></button>
+                        <div class="hm-sl__nav"><button type="button" id="hm-sl-prev" aria-label="Previous banner"></button><button type="button" id="hm-sl-next" aria-label="Next banner"></button></div>
+                    </div>
                 </div>
-                <div class="hm-deck" id="hm-deck" aria-label="Fresh on JulaDirect"></div>
+                <div class="hm-trending" aria-label="Popular searches"><span>Popular</span>
+                    <a href="explore.html?q=iPhone">iPhone</a><a href="explore.html?q=Samsung">Samsung</a><a href="explore.html?q=Solar">Solar</a><a href="explore.html?q=Toyota">Toyota</a><a href="explore.html?q=Sneakers">Sneakers</a>
+                </div>
             </div>
         </section>
 

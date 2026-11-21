@@ -12,18 +12,90 @@
   const errorState = (msg, key) => JD.empty({ icon: "bag", title: "We could not load this section", text: msg || "Please check your connection and try again.", actions: '<button type="button" class="jd-btn jd-btn--secondary" data-retry="' + key + '">Try again</button>' });
   const setGrid = (el, html, asGrid) => { el.classList.toggle("jd-grid", asGrid); el.innerHTML = html; };
 
-  /* ---------- hero deck: four real, fresh listings ---------- */
+  /* ---------- hero: live product art for the banner + the auto-slider ---------- */
   let newestP = null;
   const newest = () => (newestP = newestP || JD.data.list("newest", 8));
-  function deck(rows) {
-    const box = $("hm-deck");
-    const withImg = rows.filter(r => JD.safeUrl(r.main_image)).slice(0, 4);
-    if (!withImg.length) { box.className = "hm-deck hm-deck--empty"; box.innerHTML = "<div><strong>Fresh listings appear here</strong><br>Sellers add new products every day.</div>"; return; }
-    box.className = "hm-deck";
-    box.innerHTML = withImg.map((p, i) => '<a class="hm-tile" href="' + href(p) + '"><img src="' + JD.esc(img(p)) + '" alt="" ' + (i ? 'loading="lazy"' : 'fetchpriority="high"') + ' decoding="async"><span class="hm-tile__tag">' + (i === 0 ? "Just listed" : JD.esc(p.category_id || "New")) + '</span><span class="hm-tile__t"><b>' + JD.esc(JD.money(p.price, p.currency)) + "</b><span>" + JD.esc(p.title) + "</span></span></a>").join("");
+  const vc = (p, price) => '<a class="hm-vc" href="' + href(p) + '" tabindex="-1"><img src="' + JD.esc(img(p)) + '" alt="" loading="lazy" decoding="async">' + (price === false ? "" : "<b>" + JD.esc(JD.money(p.price, p.currency)) + "</b>") + "</a>";
+  function paintVis(vis, rows, n) {
+    const have = rows.filter(r => JD.safeUrl(r.main_image));
+    const pick = have.length ? have : rows;
+    if (!pick.length) { vis.querySelectorAll(".hm-vc").forEach(e => e.remove()); return; }
+    vis.querySelectorAll(".hm-vc").forEach(e => e.remove());
+    const parts = []; for (let k = 0; k < n; k++) parts.push(vc(pick[k % pick.length]));
+    vis.insertAdjacentHTML("afterbegin", parts.join(""));
   }
-  async function loadDeck() {
-    try { deck(await JD.swr("home:deck", newest, rows => deck(rows))); } catch (e) { console.warn("[JulaDirect] home deck", e && e.message); deck([]); }
+  async function loadHeroArt() {
+    const fan = document.querySelector('[data-vis="fan"]'), mos = document.querySelector('[data-vis="mosaic"]'), stk = document.querySelector('[data-vis="stack"]');
+    try {
+      const rows = await JD.swr("home:deck", newest, r => { paintVis(fan, r, 3); paintVis(mos, r.slice(3).concat(r), 4); });
+      paintVis(fan, rows, 3); paintVis(mos, rows.slice(3).concat(rows), 4);
+      let cheap = rows;
+      try { cheap = (await JD.data.search({ max: "1000", stock: true, sort: "price_asc", page: 1 })).rows; } catch (e) { /* fall back to newest */ }
+      if (!cheap.length) cheap = rows;
+      paintVis(stk, cheap.slice(0, 6), 3);
+    } catch (e) { console.warn("[JulaDirect] home hero art", e && e.message); }
+  }
+  function heroIcons() {
+    const set = (id, name, size, text) => { const el = $(id); if (el) el.innerHTML = (name ? "<i>" + JD.icon(name, size) + "</i>" : "") + (text || ""); };
+    const chip = $("hm-ico-cod"); if (chip) chip.innerHTML = JD.icon("wallet", 16) + "Cash on delivery";
+    set("hm-fl-a", "shield", 16, "Verified sellers"); set("hm-fl-b", "message", 16, "Message sellers first");
+    set("hm-sf-a", "tag", 16, "Free to list"); set("hm-sf-b", "shield", 16, "Verified badge"); set("hm-sf-c", "truck", 16, "Delivery handled");
+    const shop = $("hm-ico-shop"); if (shop) shop.innerHTML = JD.icon("store", 34);
+    const pp = $("hm-pp"); if (pp) pp.innerHTML = JD.icon("pause", 16);
+    $("hm-sl-prev").innerHTML = JD.icon("chevronRight", 20); $("hm-sl-next").innerHTML = JD.icon("chevronRight", 20);
+  }
+  function slider() {
+    const sl = $("hm-sl"), tr = $("hm-track"), dotsBox = $("hm-dots"), pp = $("hm-pp");
+    if (!sl || !tr) return;
+    const slides = JD.$$(".hm-slide", tr), len = slides.length, DUR = 5600;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let i = 0, timer = 0, userPaused = reduce, hold = false, visible = true, onScreen = true;
+    sl.style.setProperty("--dur", DUR + "ms");
+    dotsBox.innerHTML = slides.map((s, k) => '<button type="button" role="tab" aria-label="Banner ' + (k + 1) + ' of ' + len + '"><i></i></button>').join("");
+    const dots = JD.$$("button", dotsBox);
+    const w = () => tr.clientWidth || 1;
+    function mark() {
+      dots.forEach((d, k) => { d.classList.remove("is-on"); d.setAttribute("aria-selected", String(k === i)); });
+      void dotsBox.offsetWidth; dots[i].classList.add("is-on");
+      slides.forEach((s, k) => s.setAttribute("aria-hidden", String(k !== i)));
+      sl.setAttribute("data-ink", slides[i].getAttribute("data-t") === "sky" || slides[i].getAttribute("data-t") === "amber" ? "dark" : "light");
+    }
+    function schedule() {
+      clearTimeout(timer);
+      if (userPaused || hold || !visible || !onScreen) return;
+      timer = setTimeout(() => go(i + 1, true), DUR);
+    }
+    function go(n, smooth) {
+      i = (n + len) % len;
+      tr.scrollTo({ left: i * w(), behavior: smooth && !reduce ? "smooth" : "auto" });
+      mark(); schedule();
+    }
+    function setPaused(v) {
+      userPaused = v; sl.classList.toggle("is-paused", v);
+      pp.innerHTML = JD.icon(v ? "play" : "pause", 16); pp.setAttribute("aria-label", v ? "Resume banner rotation" : "Pause banner rotation");
+      if (v) clearTimeout(timer); else { mark(); schedule(); }
+    }
+    let st = 0;
+    tr.addEventListener("scroll", () => { clearTimeout(st); st = setTimeout(() => { const k = Math.round(tr.scrollLeft / w()); if (k !== i && k >= 0 && k < len) { i = k; mark(); schedule(); } }, 90); }, { passive: true });
+    dotsBox.addEventListener("click", e => { const d = e.target.closest("button"); if (d) go(dots.indexOf(d), true); });
+    $("hm-sl-prev").addEventListener("click", () => go(i - 1, true));
+    $("hm-sl-next").addEventListener("click", () => go(i + 1, true));
+    pp.addEventListener("click", () => setPaused(!userPaused));
+    const holdOn = () => { hold = true; sl.classList.add("is-hold"); clearTimeout(timer); };
+    const holdOff = () => { hold = false; sl.classList.remove("is-hold"); schedule(); };
+    sl.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") holdOn(); });
+    sl.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") holdOff(); });
+    sl.addEventListener("focusin", holdOn); sl.addEventListener("focusout", holdOff);
+    sl.addEventListener("touchstart", holdOn, { passive: true });
+    sl.addEventListener("touchend", () => setTimeout(holdOff, 1200), { passive: true });
+    tr.addEventListener("keydown", e => { if (e.key === "ArrowRight") { go(i + 1, true); e.preventDefault(); } else if (e.key === "ArrowLeft") { go(i - 1, true); e.preventDefault(); } });
+    document.addEventListener("visibilitychange", () => { visible = !document.hidden; visible ? schedule() : clearTimeout(timer); });
+    if ("IntersectionObserver" in window) new IntersectionObserver(es => { onScreen = es[es.length - 1].isIntersecting; onScreen ? schedule() : clearTimeout(timer); }, { threshold: .25 }).observe(sl);
+    window.addEventListener("jd:pane:hide", () => { visible = false; clearTimeout(timer); });
+    window.addEventListener("jd:pane:show", () => { visible = !document.hidden; schedule(); });
+    window.addEventListener("resize", () => { tr.scrollTo({ left: i * w(), behavior: "auto" }); });
+    if (reduce) setPaused(true); else { pp.innerHTML = JD.icon("pause", 16); }
+    mark(); schedule();
   }
 
   /* ---------- stats + categories ---------- */
@@ -33,8 +105,8 @@
     try {
       const s = await JD.data.categoryStats();
       if (s.total > 0) {
-        const st = $("hm-stats"); st.hidden = false;
-        st.innerHTML = "<div><strong>" + NF(s.total) + "</strong><span>Live listings</span></div><div><strong>" + NF(s.sellers) + "</strong><span>Active sellers</span></div><div><strong>" + NF(s.categories.length) + "</strong><span>Categories</span></div>";
+        const l2 = $("hm-s2-lead");
+        if (l2) l2.textContent = NF(s.total) + (s.total === 1 ? " live listing" : " live listings") + (s.sellers ? " from " + NF(s.sellers) + (s.sellers === 1 ? " active seller" : " active sellers") : "") + ", with new products landing every day.";
       }
       if (!s.categories.length) { $("hm-cats-sec").hidden = true; return; }
       let images = {}; try { images = await JD.data.categoryImages(); } catch (e) { images = {}; }
@@ -232,13 +304,10 @@
 
   JD.mountShell({ active: "home" });
   JD.bindProductActions(document);
-  $("hm-ico-search").innerHTML = JD.icon("search", 22);
-  JD.$$(".hm-search .sx-cam").forEach(b => { b.innerHTML = JD.icon("camera", 22); });
-  JD.$$(".hm-search .sx-clear").forEach(b => { b.innerHTML = JD.icon("close", 16); });
-  if (JD.loadSearch) JD.loadSearch();
+  heroIcons(); slider();
   [["hm-t1", "wallet"], ["hm-t2", "shield"], ["hm-t3", "truck"], ["hm-t4", "message"], ["hm-ico-work", "truck"]].forEach(p => { const el = $(p[0]); if (el) el.innerHTML = JD.icon(p[1], 24); });
   $("hm-prev").innerHTML = JD.icon("arrowRight", 20); $("hm-next").innerHTML = JD.icon("arrowRight", 20);
   JD.$$(".hm-arrow").forEach(el => { el.innerHTML = JD.icon("arrowRight", 16); });
   if (JD.isPhone()) { JD.takeover.set(null); } else bootBanner();
-  loadDeck(); loadStats(); loadPicks(); loadBest(); loadRecent(); loadSellers();
+  loadHeroArt(); loadStats(); loadPicks(); loadBest(); loadRecent(); loadSellers();
 })();

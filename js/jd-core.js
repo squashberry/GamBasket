@@ -87,6 +87,8 @@
   PATHS.list = '<path d="M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/>';
   PATHS.flag = '<path d="M5.5 21V4M5.5 4.5h12l-2.2 4 2.2 4h-12"/>';
   PATHS.expand = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
+  PATHS.pause = '<path d="M8 5v14M16 5v14"/>';
+  PATHS.play = '<path d="M8 5.5v13l11-6.5-11-6.5Z"/>';
   PATHS.camera = '<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.2-2h6.2l1.2 2h2.2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5v-9Z"/><circle cx="12" cy="13" r="3.4"/>';
   PATHS.clock = '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>';
   PATHS.trend = '<path d="m3.5 16.5 5.5-5.5 3.5 3.5 7.5-8M15 6.5h5.5V12"/>';

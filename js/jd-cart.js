@@ -76,7 +76,7 @@
   function render() {
     const items = state.items;
     if (!items.length) {
-      JD.paneClass("cart", "has-mobilebar", false);
+      JD.paneClass("cart", "has-cartbar", false);
       setSub("");
       root.innerHTML = JD.empty({
         icon: "cart", title: "Your cart is empty",
@@ -111,7 +111,7 @@
       '<button type="button" class="jd-btn jd-btn--primary jd-btn--lg jd-btn--block" data-checkout' + (blocked ? " disabled" : "") + ">" + ctaLabel + "</button>" +
       '<a class="jd-link" href="explore.html" style="justify-content:center">Continue shopping</a></aside></div>' +
       '<div class="jd-mobilebar"><div><small class="jd-muted">Subtotal</small><br><strong>' + JD.esc(JD.money(subtotal)) + '</strong></div><button type="button" class="jd-btn jd-btn--primary" data-checkout' + (blocked ? " disabled" : "") + ">" + (state.auth ? "Checkout" : "Sign in") + "</button></div>";
-    JD.paneClass("cart", "has-mobilebar", true);
+    JD.paneClass("cart", "has-cartbar", true);
     JD.syncCompare();
   }
 

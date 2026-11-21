@@ -41,7 +41,7 @@
   };
   const WARM_ROUTES = ["index", "explore", "wishlist", "cart", "compare"];
   /* Page-specific body classes are switched with the active pane. */
-  const MANAGED = new Set(["is-homepage", "has-mobilebar", "jd-pdp-page", "jd-legacy", "me-page", "messages-page", "settings-page"]);
+  const MANAGED = new Set(["is-homepage", "has-mobilebar", "has-cartbar", "jd-pdp-page", "jd-legacy", "me-page", "messages-page", "settings-page"]);
   /* Events that only make sense for the pane that registered them. */
   const POINTER = new Set(["click", "auxclick", "dblclick", "pointerdown", "pointerup", "mousedown", "mouseup", "touchstart", "touchend", "input", "change", "submit", "focusin", "focusout"]);
   const WHEN_ACTIVE = new Set(["keydown", "keyup", "keypress", "popstate", "hashchange", "DOMContentLoaded", "jd:pane:show", "jd:pane:hide"]);
@@ -272,7 +272,13 @@
     document.querySelectorAll(".jd-fnav__tab, .jd-fnav__fab").forEach(a => {
       const linkRoute = routeOf(a.getAttribute("href"));
       const on = active !== "" && (linkRoute === route || (active === "account" && linkRoute === "me"));
+      const was = a.hasAttribute("aria-current");
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      if (a.classList.contains("jd-fnav__fab") && on !== was) {
+        /* the cart button is absorbed into the pill (or pops back out) with a liquid pulse */
+        const nav = document.getElementById("jd-fnav");
+        if (nav) { nav.classList.remove("is-absorb", "is-release"); void nav.offsetWidth; nav.classList.add(on ? "is-absorb" : "is-release"); clearTimeout(nav._ab); nav._ab = setTimeout(() => nav.classList.remove("is-absorb", "is-release"), 800); }
+      }
     });
     const q = route === "explore" ? new URL(url.href).searchParams.get("q") || "" : "";
     ["jd-q", "jd-q-m"].forEach(id => { const el = document.getElementById(id); if (el) el.value = q; });

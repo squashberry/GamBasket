@@ -1960,7 +1960,7 @@
             .textContent =
             products.filter(
                 product =>
-                    product.status === "pending"
+                    ["pending", "pending_review"].includes(product.status)
             ).length;
 
         $("#productApproved")
@@ -1991,8 +1991,7 @@
         const pending =
             products.filter(
                 product =>
-                    product.status ===
-                    "pending"
+                    ["pending", "pending_review"].includes(product.status)
             );
 
 
@@ -2128,28 +2127,22 @@
         }
 
 
-        await request(
-            "products",
-            {
-                method:"PATCH",
+        try {
+            // Use the audited marketplace moderation RPC. A direct products
+            // PATCH skips the moderation activity log and can drift from
+            // the pending_review workflow used by current seller listings.
+            await rpc("moderate_product_listing", {
+                p_product_id: productId,
+                p_status: status,
+                p_reason: reason
+            });
 
-                query:{
-                    id:
-                        `eq.${productId}`
-                },
-
-                body:{
-                    status,
-                    rejection_reason:
-                        reason
-                }
-            }
-        );
-
-
-        await loadProducts();
-
-        renderProducts();
+            await loadProducts();
+            renderProducts();
+        } catch (error) {
+            console.error("[JulaDirect Admin] Product moderation failed:", error);
+            alert(error.message || "Could not update this product. Please try again.");
+        }
     }
 
 

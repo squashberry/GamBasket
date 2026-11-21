@@ -176,7 +176,7 @@
                             <div>
                                 <label style="display:block;font-size:11px;font-weight:750;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;">Product Photos (up to 8, each max 5MB)</label>
                                 <input type="file" id="pImageFile" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="seller-input" style="width:100%;padding:8px;">
-                                <small id="pImageStatus" style="display:block;margin-top:6px;color:var(--text-secondary);">Add several real photos to help buyers assess the item. Existing photos are retained when editing unless you choose new photos.</small>
+                                <small id="pImageStatus" style="display:block;margin-top:6px;color:var(--text-secondary);">Add up to 8 real photos. Photos are securely uploaded to Cloudinary. Pasted HTTPS photo links are imported before saving.</small>
                                 <input type="url" id="pImageUrl" class="seller-input" style="width:100%;margin-top:8px;" placeholder="Or paste a hosted photo URL (https://…)" maxlength="1200">
                             </div>
 
@@ -402,9 +402,25 @@
                     min_order_quantity: isSupplier && listingType.value !== "retail" ? Number(document.getElementById("minimumOrderQuantity").value || 1) : 1
                 };
 
-                if (!/^https?:\/\//i.test(payload.main_image)) throw new Error("Add at least one product photo or paste a valid hosted image URL.");
+                if (!/^https:\/\//i.test(payload.main_image)) throw new Error("Add at least one product photo or paste a valid HTTPS image URL.");
                 if (selectedImageUrls.length && payload.main_image !== selectedImageUrls[0]) selectedImageUrls = [payload.main_image, ...selectedImageUrls.filter(url => url !== payload.main_image)].slice(0, 8);
                 else if (!selectedImageUrls.length) selectedImageUrls = [payload.main_image];
+
+                const cloudinaryConfig = window.GAMBASKET_CONFIG || {};
+                if (!cloudinaryConfig.isCloudinaryConfigured?.()) throw new Error("Product photo hosting is not configured. Please contact JulaDirect support.");
+                const cloudinaryPrefix = `https://res.cloudinary.com/${cloudinaryConfig.CLOUDINARY_CLOUD_NAME}/image/upload/`;
+                const imageStatus = document.getElementById("pImageStatus");
+                if (imageStatus) imageStatus.textContent = "Optimizing and securing your product photos…";
+                const imageCandidates = [...new Set([payload.main_image, ...selectedImageUrls])].slice(0, 8);
+                selectedImageUrls = (await Promise.all(imageCandidates.map(imageUrl => {
+                    if (imageUrl.startsWith(cloudinaryPrefix)) return imageUrl;
+                    return window.GamBasketAuth.uploadImage(imageUrl, "products");
+                }))).filter(Boolean);
+                if (!selectedImageUrls.length) throw new Error("At least one product photo is required.");
+                payload.main_image = selectedImageUrls[0];
+                document.getElementById("pImageUrl").value = payload.main_image;
+                document.getElementById("prevImg").src = payload.main_image;
+                if (imageStatus) imageStatus.textContent = `${selectedImageUrls.length} Cloudinary photo(s) ready. Saving your listing…`;
 
                 const savedProduct = await window.GamBasketSellerProducts.save(payload);
                 const client = window.GamBasketAuth?.getClient?.();

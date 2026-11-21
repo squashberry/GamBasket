@@ -15,8 +15,8 @@
 
         // Cloudinary unsigned uploads. Fill these from Cloudinary Dashboard after
         // creating a restricted unsigned upload preset; never put an API secret here.
-        CLOUDINARY_CLOUD_NAME: "",
-        CLOUDINARY_UPLOAD_PRESET: "",
+        CLOUDINARY_CLOUD_NAME: "jx9bpjdb",
+        CLOUDINARY_UPLOAD_PRESET: "juladirect_product_images",
 
         isCloudinaryConfigured: function () {
             return Boolean(

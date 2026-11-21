@@ -1374,15 +1374,27 @@
         },
 
         uploadImage: async function (file, folder = "product-images") {
-            if (!file) throw new Error("No file selected.");
+            const isRemoteUrl = typeof file === "string";
+            let remoteUrl = "";
 
-            const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-            const contentType = String(file.type || "").toLowerCase();
-            if (!allowedTypes.includes(contentType)) {
-                throw new Error("Invalid image type. Please select a JPG, PNG, WEBP, or GIF image.");
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                throw new Error("Image file is too large. Maximum allowed size is 5MB.");
+            if (isRemoteUrl) {
+                try {
+                    const parsed = new URL(file.trim());
+                    if (parsed.protocol !== "https:" || !parsed.hostname) throw new Error();
+                    remoteUrl = parsed.href;
+                } catch {
+                    throw new Error("Enter a valid HTTPS image URL to import.");
+                }
+            } else {
+                if (!file) throw new Error("No file selected.");
+                const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+                const contentType = String(file.type || "").toLowerCase();
+                if (!allowedTypes.includes(contentType)) {
+                    throw new Error("Invalid image type. Please select a JPG, PNG, WEBP, or GIF image.");
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    throw new Error("Image file is too large. Maximum allowed size is 5MB.");
+                }
             }
 
             await this.ready();
@@ -1391,16 +1403,16 @@
             if (!session?.user || !client) throw new Error("Sign in before uploading product images.");
 
             const config = window.GAMBASKET_CONFIG || {};
-            if (config.isCloudinaryConfigured?.()) {
+            const imageFolder = String(folder || "product-images").trim().toLowerCase();
+            const isProductImage = imageFolder === "products" || imageFolder === "product-images";
+            if (config.isCloudinaryConfigured?.() && isProductImage) {
                 const cloudName = config.CLOUDINARY_CLOUD_NAME;
                 const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
-                const safeFolder = String(folder || "products")
-                    .replace(/[^a-zA-Z0-9/_-]/g, "")
-                    .replace(/^\/+|\/+$/g, "") || "products";
                 const payload = new FormData();
-                payload.append("file", file);
+                payload.append("file", isRemoteUrl ? remoteUrl : file);
                 payload.append("upload_preset", uploadPreset);
-                payload.append("folder", `gambasket/${safeFolder}`);
+                // The preset fixes all product uploads to juladirect/products.
+                // Do not accept a client-provided folder override.
                 const response = await fetch(
                     `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
                     { method: "POST", body: payload }
@@ -1410,12 +1422,15 @@
                 if (!response.ok || !result?.secure_url) {
                     throw new Error(result?.error?.message || `Image upload failed (HTTP ${response.status}).`);
                 }
-                return result.secure_url;
+                return result.secure_url.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
             }
 
-            // Default to the project's public Supabase Storage bucket. This works
-            // without an external media account and restricts uploads to the user's
-            // own UUID-prefixed folder through Storage RLS.
+            if (isRemoteUrl) {
+                throw new Error("Importing hosted image URLs requires Cloudinary to be configured.");
+            }
+
+            // Avatars, documents and other non-product uploads keep using the
+            // project's existing Supabase Storage bucket.
             const extensions = {
                 "image/jpeg": "jpg",
                 "image/png": "png",
@@ -1428,6 +1443,7 @@
                 .filter(Boolean)
                 .slice(0, 3)
                 .join("/") || "products";
+            const contentType = String(file.type || "").toLowerCase();
             const filename = `${Date.now()}_${crypto.randomUUID()}.${extensions[contentType]}`;
             const objectPath = `${session.user.id}/${safeFolder}/${filename}`;
             const { data, error } = await client.storage

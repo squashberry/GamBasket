@@ -34,14 +34,14 @@
         </div>
     </dialog>
 
-    <dialog class="jd-dialog" id="od-code" aria-labelledby="od-code-t">
+    <dialog class="jd-dialog" id="od-code" data-delivery-code data-fn="gambasket-delivery-proof" aria-labelledby="od-code-t">
         <div><h2 id="od-code-t" style="font-size:1.3rem">Your handoff code</h2><p class="jd-muted" style="margin-top:6px">Share this code with the assigned courier only when they arrive with your order.</p></div>
         <strong class="od-code" id="od-code-v" aria-live="polite">&middot;&middot;&middot;&middot;&middot;&middot;</strong>
         <p class="jd-muted" id="od-code-x" style="font-size:13px"></p>
         <div class="jd-dialog__actions" style="margin-top:18px"><button type="button" class="jd-btn jd-btn--primary" id="od-code-close">Done</button></div>
     </dialog>
 
-    <dialog class="jd-dialog" id="od-refund" aria-labelledby="od-refund-t">
+    <dialog class="jd-dialog" id="od-refund" data-fn="gambasket-modempay-refunds" aria-labelledby="od-refund-t">
         <form id="od-refund-form" novalidate>
             <div><h2 id="od-refund-t" style="font-size:1.3rem">Request a refund</h2><p class="jd-muted" id="od-refund-x" style="margin-top:6px"></p></div>
             <div class="od-field"><label for="od-refund-amt">Amount (GMD)</label><input class="jd-input" id="od-refund-amt" type="number" min="1" step="1" inputmode="numeric" required></div>

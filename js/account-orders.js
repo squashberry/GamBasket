@@ -102,7 +102,7 @@
     $("od-code-v").innerHTML = "&middot;&middot;&middot;&middot;&middot;&middot;"; $("od-code-x").textContent = "Creating your code\u2026";
     $("od-code").showModal();
     try {
-      var r = await fn("gambasket-delivery-proof", { action: "issue", order_id: orderId });
+      var r = await fn($("od-code").getAttribute("data-fn"), { action: "issue", order_id: orderId });
       if (r.error || !r.data || !r.data.code) throw new Error(msg(r, "Could not create the delivery code."));
       $("od-code-v").textContent = r.data.code;
       var t = new Date(r.data.expires_at);
@@ -157,7 +157,7 @@
     if (reason.length < 3 || reason.length > 80) { s.textContent = "Please give a reason of 3 to 80 characters."; s.classList.add("is-error"); return; }
     s.classList.remove("is-error"); s.textContent = "Submitting\u2026"; $("od-refund-go").disabled = true;
     try {
-      var r = await fn("gambasket-modempay-refunds", { action: "request", order_id: ctx.order, amount: amount, reason: reason });
+      var r = await fn($("od-refund").getAttribute("data-fn"), { action: "request", order_id: ctx.order, amount: amount, reason: reason });
       if (r.error || !r.data || !r.data.refund_case_id) throw new Error(msg(r, "Refund request failed."));
       refunded[ctx.order] = true; $("od-refund").close(); JD.toast("Refund request submitted for review", "ok"); render();
     } catch (e) { s.classList.add("is-error"); s.textContent = e.message || "Unable to submit refund request."; }

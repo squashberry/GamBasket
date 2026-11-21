@@ -1086,3 +1086,4 @@ form:has(input[name="q"]:not(:placeholder-shown)) .sx-clear { width: 30px; heigh
   body.has-cartbar .jd-mobilebar { left: 12px; right: 12px; bottom: calc(var(--jd-fnav-bottom) + 70px + env(safe-area-inset-bottom, 0px)); padding: 10px 10px 10px 18px; border-radius: 26px; background: #fff; border: 1px solid var(--jd-line); box-shadow: 0 12px 30px rgba(10, 26, 63, .16); }
   body.has-cartbar .jd-mobilebar .jd-btn { min-height: 48px; }
 }
+#jd-fnav:not(.has-items) .jd-fnav__fab { width: 0; margin-left: -10px; transform: translateX(-26px) scale(.15); opacity: 0; visibility: hidden; pointer-events: none; box-shadow: none; transition: width .5s cubic-bezier(.5, 0, .2, 1), margin .5s cubic-bezier(.5, 0, .2, 1), transform .5s cubic-bezier(.5, 0, .2, 1), opacity .25s ease, visibility 0s .5s; }

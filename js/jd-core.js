@@ -209,6 +209,13 @@
       }
     } catch (e) { n = 0; }
     JD.$$("[data-cart-count]").forEach(el => { el.textContent = n > 99 ? "99+" : String(n); el.hidden = n <= 0; });
+    /* the floating cart button only exists once something is in the cart */
+    const nav = document.getElementById("jd-fnav");
+    if (nav) {
+      const had = nav.classList.contains("has-items");
+      nav.classList.toggle("has-items", n > 0);
+      if (n > 0 && !had && !nav.querySelector('.jd-fnav__fab[aria-current="page"]')) { nav.classList.remove("is-release"); void nav.offsetWidth; nav.classList.add("is-release"); clearTimeout(nav._ab); nav._ab = setTimeout(() => nav.classList.remove("is-release"), 800); }
+    }
   }
   JD.refreshCartCount = refreshCartCount;
 

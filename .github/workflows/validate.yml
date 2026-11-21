@@ -161,6 +161,10 @@ jobs:
           assert 'doc.getElementById("jd-main") || doc.querySelector("main")' in router
           assert "runInlineScript(original.textContent, type)" in router
           assert 'new Event("DOMContentLoaded"' in router
+          assert "function applyRouteStyles(route)" in router
+          assert 'node.media = active ? (node.dataset.jdOriginalMedia || "all") : "not all";' in router
+          assert "await loadStyles(doc, route, url.href);" in router
+          assert "registerInlineStyles(route, wrapper);" in router
           for page in ("product.html", "me.html", "orders.html", "messages.html", "saved-searches.html", "settings.html", "security.html"):
               content = Path(page).read_text(encoding="utf-8")
               router_at = content.find('src="js/jd-router.js"')

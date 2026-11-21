@@ -1405,28 +1405,55 @@
             const config = window.GAMBASKET_CONFIG || {};
             const imageFolder = String(folder || "product-images").trim().toLowerCase();
             const isProductImage = imageFolder === "products" || imageFolder === "product-images";
-            if (config.isCloudinaryConfigured?.() && isProductImage) {
-                const cloudName = config.CLOUDINARY_CLOUD_NAME;
-                const uploadPreset = config.CLOUDINARY_UPLOAD_PRESET;
+            if (isProductImage) {
+                if (!config.isCloudinaryConfigured?.()) {
+                    throw new Error("Cloudinary product image hosting is not configured.");
+                }
+                if (isRemoteUrl && remoteUrl.startsWith("http://")) {
+                    throw new Error("Only HTTPS image URLs can be imported.");
+                }
+
+                // The server validates the signed-in seller and signs a fixed,
+                // short-lived Cloudinary upload payload. The API secret never
+                // reaches this browser or the public repository.
+                const signatureResponse = await fetch(
+                    `${config.SUPABASE_URL}/functions/v1/juladirect-cloudinary-signature`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${session.access_token}`,
+                            "apikey": config.SUPABASE_PUBLISHABLE_KEY,
+                            "Content-Type": "application/json"
+                        },
+                        body: "{}"
+                    }
+                );
+                let signed = null;
+                try { signed = await signatureResponse.json(); } catch {}
+                if (!signatureResponse.ok || !signed?.signature || !signed?.api_key || !signed?.timestamp) {
+                    throw new Error(signed?.error || `Secure image upload could not be authorized (HTTP ${signatureResponse.status}).`);
+                }
+
                 const payload = new FormData();
                 payload.append("file", isRemoteUrl ? remoteUrl : file);
-                payload.append("upload_preset", uploadPreset);
-                // The preset fixes all product uploads to juladirect/products.
-                // Do not accept a client-provided folder override.
-                const response = await fetch(
-                    `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
-                    { method: "POST", body: payload }
-                );
+                payload.append("api_key", signed.api_key);
+                payload.append("timestamp", String(signed.timestamp));
+                payload.append("signature", signed.signature);
+                payload.append("folder", signed.folder);
+                payload.append("public_id", signed.public_id);
+                payload.append("upload_preset", signed.upload_preset);
+                payload.append("overwrite", "false");
+                const response = await fetch(signed.upload_url, { method: "POST", body: payload });
                 let result = null;
                 try { result = await response.json(); } catch {}
                 if (!response.ok || !result?.secure_url) {
-                    throw new Error(result?.error?.message || `Image upload failed (HTTP ${response.status}).`);
+                    throw new Error(result?.error?.message || `Cloudinary image upload failed (HTTP ${response.status}).`);
                 }
                 return result.secure_url.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
             }
 
             if (isRemoteUrl) {
-                throw new Error("Importing hosted image URLs requires Cloudinary to be configured.");
+                throw new Error("Importing hosted image URLs is available for product photos only.");
             }
 
             // Avatars, documents and other non-product uploads keep using the

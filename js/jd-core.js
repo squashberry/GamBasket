@@ -244,8 +244,8 @@
     if (s.verified) flags.push('<span class="jd-badge jd-badge--verified">' + JD.icon("shield", 13) + "Verified</span>");
     if (p.delivery_available === true) flags.push('<span class="jd-badge jd-badge--delivery">' + JD.icon("truck", 14) + "Delivery</span>");
     return '<article class="jd-pcard">' +
-      '<a class="jd-pcard__media" href="' + href + '" tabindex="-1" aria-hidden="true"><img src="' + JD.esc(img) + '" alt="" loading="lazy" decoding="async">' +
-      (flags.length ? '<span class="jd-pcard__flags">' + flags.join("") + "</span>" : "") + "</a>" +
+      '<div class="jd-pcard__media" aria-hidden="true"><img src="' + JD.esc(img) + '" alt="" loading="lazy" decoding="async">' +
+      (flags.length ? '<span class="jd-pcard__flags">' + flags.join("") + "</span>" : "") + "</div>" +
       '<button class="jd-pcard__fav" type="button" data-wish="' + id + '" aria-pressed="false" aria-label="Save to wishlist">' + JD.icon("heart", 19) + "</button>" +
       '<button type="button" class="jd-pcard__cmp jd-pcard__cmp--float" data-compare="' + id + '" aria-pressed="false" aria-label="Add to comparison" title="Compare">' + JD.icon("scale", 17) + "</button>" +
       '<div class="jd-pcard__body">' +

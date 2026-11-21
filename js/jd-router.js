@@ -206,6 +206,7 @@
 
       node = document.importNode(source, true);
       node.href = href;
+      node.dataset.jdOriginalMedia = source.getAttribute("media") || "all";
       node.media = "not all";
       registerRouteStyle(node, route, href);
 

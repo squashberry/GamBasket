@@ -53,6 +53,42 @@
   let barTimer = 0;
   const htmlCache = new Map();
 
+  // A persistent page router must not leave a previously visited page's CSS
+  // active. Otherwise each navigation changes stylesheet cascade order and
+  // global selectors from old pages leak into the newly active page.
+  const routeStyleNodes = new Set();
+  const routeStylesheets = new Map();
+
+  function registerRouteStyle(node, route, href) {
+    if (!node || !route) return;
+    const routes = new Set(
+      String(node.dataset.jdRouteStyles || "").split("|").filter(Boolean)
+    );
+    routes.add(route);
+    node.dataset.jdRouteStyles = Array.from(routes).join("|");
+    if (!node.dataset.jdOriginalMedia) {
+      node.dataset.jdOriginalMedia = node.getAttribute("media") || "all";
+    }
+    routeStyleNodes.add(node);
+    if (href) routeStylesheets.set(href, node);
+  }
+
+  function applyRouteStyles(route) {
+    routeStyleNodes.forEach(node => {
+      if (!node.isConnected) {
+        routeStyleNodes.delete(node);
+        return;
+      }
+      const routes = String(node.dataset.jdRouteStyles || "").split("|");
+      const active = routes.includes(route);
+      node.media = active ? (node.dataset.jdOriginalMedia || "all") : "not all";
+    });
+  }
+
+  function registerInlineStyles(route, root) {
+    root.querySelectorAll("style").forEach(style => registerRouteStyle(style, route));
+  }
+
   function routeOf(u) {
     let url;
     try { url = u instanceof URL ? u : new URL(String(u), location.href); } catch (e) { return null; }
@@ -152,17 +188,40 @@
       document.body.appendChild(s);
     });
   }
-  function loadStyles(doc) {
-    const have = new Set(Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.href));
+  function loadStyles(doc, route, baseUrl) {
     const waits = [];
-    doc.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
-      const href = new URL(l.getAttribute("href"), location.href).href;
-      if (have.has(href)) return;
-      const n = document.createElement("link");
-      n.rel = "stylesheet";
-      n.href = href;
-      waits.push(new Promise(res => { n.onload = n.onerror = () => res(); setTimeout(res, 3000); }));
-      document.head.appendChild(n);
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(source => {
+      const href = new URL(source.getAttribute("href"), baseUrl || location.href).href;
+      let node = routeStylesheets.get(href);
+
+      if (!node || !node.isConnected) {
+        node = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+          .find(link => link.href === href) || null;
+      }
+
+      if (node) {
+        registerRouteStyle(node, route, href);
+        return;
+      }
+
+      node = document.importNode(source, true);
+      node.href = href;
+      node.media = "not all";
+      registerRouteStyle(node, route, href);
+
+      waits.push(new Promise(resolve => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve();
+        };
+        const timer = setTimeout(finish, 5000);
+        node.addEventListener("load", finish, { once: true });
+        node.addEventListener("error", finish, { once: true });
+        document.head.appendChild(node);
+      }));
     });
     return Promise.all(waits);
   }
@@ -193,8 +252,15 @@
     });
   }
 
-  function appendHeadStyles(wrapper, doc) {
-    doc.querySelectorAll("style").forEach(style => wrapper.appendChild(document.importNode(style, true)));
+  function appendHeadStyles(wrapper, doc, route) {
+    // Styles inside <main> arrive with the imported main element. Copy only
+    // styles outside it, then register all of them so hidden panes cannot
+    // continue applying their global selectors.
+    doc.querySelectorAll("style").forEach(style => {
+      if (style.closest("main")) return;
+      wrapper.appendChild(document.importNode(style, true));
+    });
+    registerInlineStyles(route, wrapper);
   }
 
   function runInlineScript(source, type) {
@@ -301,6 +367,7 @@
     setPaneIds(pane);
     if (pane.route === "product") pane.flags.add("jd-pdp-page");
     setFlags(pane);
+    applyRouteStyles(pane.route);
     if (pane.route === "index") {
       if (JD.takeover && JD.takeover.apply) JD.takeover.apply();
     } else {
@@ -341,7 +408,7 @@
     if (isSupplierRoute(route) && doc.querySelector(".seller-shell") && !document.querySelector(".seller-shell")) {
       throw new Error("supplier workspace shell is not mounted");
     }
-    await loadStyles(doc);
+    await loadStyles(doc, route, url.href);
     if (token !== navToken) return null;
 
     const wrapper = document.createElement("div");
@@ -349,7 +416,7 @@
     wrapper.setAttribute("data-route", route);
     wrapper.appendChild(document.importNode(main, true));
     if (!isSupplierRoute(route)) appendPageSupport(wrapper, doc.body, main, true);
-    appendHeadStyles(wrapper, doc);
+    appendHeadStyles(wrapper, doc, route);
 
     const flags = Array.from(doc.body.classList).filter(c => c !== "jd");
     if (isSupplierRoute(route) && !flags.includes("seller-page")) flags.push("seller-page");
@@ -508,6 +575,11 @@
     if (isSupplierRoute(route) && !flags.includes("seller-page")) flags.push("seller-page");
     const dm = document.querySelector('meta[name="description"]');
     const pane = makePane(route, wrapper, main, flags);
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      registerRouteStyle(link, route, link.href);
+    });
+    registerInlineStyles(route, document);
+    applyRouteStyles(route);
     if (isSupplierRoute(route)) {
       document.querySelectorAll("script[src]").forEach(script => {
         const src = new URL(script.getAttribute("src"), location.href);

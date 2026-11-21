@@ -26,11 +26,12 @@
                     <p class="hm-eyebrow"><span></span>The digital marketplace of The Gambia</p>
                     <h1 id="hm-title">Find it. Order it.<br><em>Pay when it arrives.</em></h1>
                     <p class="hm-lead">Thousands of products from sellers across the country, delivered to your door with cash on delivery. Message sellers directly before you buy.</p>
-                    <form class="hm-search" role="search" action="explore.html" method="get">
-                        <label class="jd-sr" for="hm-q">What are you looking for?</label>
+                    <form class="hm-search" data-sx="h" role="search" action="explore.html" method="get">
                         <span class="hm-search__ico" id="hm-ico-search"></span>
-                        <input id="hm-q" name="q" type="search" placeholder="Search phones, fashion, solar, cars&hellip;" autocomplete="off" maxlength="100">
+                        <span class="sx-field"><span class="sx-ghost" aria-hidden="true" hidden></span><label class="jd-sr" for="hm-q">What are you looking for?</label><input id="hm-q" name="q" type="search" placeholder="Search phones, fashion, solar, cars&hellip;" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="100"></span>
+                        <button type="button" class="sx-cam" data-image-search aria-label="Search by image"></button><button type="button" class="sx-clear" aria-label="Clear search"></button>
                         <button type="submit" class="jd-btn jd-btn--primary">Search</button>
+                        <div class="sx-panel" role="listbox" hidden></div>
                     </form>
                     <div class="hm-trending" aria-label="Popular searches"><span>Popular:</span>
                         <a href="explore.html?q=iPhone">iPhone</a><a href="explore.html?q=Samsung">Samsung</a><a href="explore.html?q=Solar">Solar</a><a href="explore.html?q=Toyota">Toyota</a><a href="explore.html?q=Sneakers">Sneakers</a>

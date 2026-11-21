@@ -87,6 +87,9 @@
   PATHS.list = '<path d="M8.5 6h11.5M8.5 12h11.5M8.5 18h11.5"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/>';
   PATHS.flag = '<path d="M5.5 21V4M5.5 4.5h12l-2.2 4 2.2 4h-12"/>';
   PATHS.expand = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
+  PATHS.camera = '<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.2-2h6.2l1.2 2h2.2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5v-9Z"/><circle cx="12" cy="13" r="3.4"/>';
+  PATHS.clock = '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>';
+  PATHS.trend = '<path d="m3.5 16.5 5.5-5.5 3.5 3.5 7.5-8M15 6.5h5.5V12"/>';
   PATHS.lock = '<rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>';
   JD.icon = (name, size) => {
     const s = size || 20;
@@ -271,6 +274,14 @@
     });
     return qvPromise;
   };
+  const SX_SRC = (document.currentScript && document.currentScript.src || "").replace(/jd-core\.js.*$/, "") + "jd-search.js";
+  JD.loadSearch = () => {
+    if (JD.search) { JD.search.mount(); return; }
+    if (document.querySelector("script[data-jd-search]")) return;
+    const s = document.createElement("script");
+    s.src = SX_SRC; s.async = true; s.setAttribute("data-jd-search", "");
+    document.head.appendChild(s);
+  };
   const CARD = ".jd-pcard, .jd-rrow";
   const cardId = card => {
     const el = card.querySelector("[data-wish],[data-add]");
@@ -351,14 +362,16 @@
       '<button class="jd-area" type="button" id="jd-area-btn" aria-haspopup="dialog"><span class="jd-roundbtn">' + JD.icon("pin", 22) + '</span><span class="jd-area__txt"><small>Shop in</small><strong id="jd-area-label">All Gambia</strong></span>' + JD.icon("chevronDown", 18) + "</button>" +
       '<div class="jd-mhead__actions"><a class="jd-roundbtn" href="cart.html" aria-label="Cart">' + JD.icon("cart", 22) + '<em class="jd-badge-count" data-cart-count hidden>0</em></a>' +
       '<a class="jd-roundbtn" href="me.html" aria-label="Account">' + JD.icon("user", 22) + "</a></div></div>" +
-      '<form class="jd-msearch" role="search" action="explore.html" method="get"><span class="jd-msearch__box">' + JD.icon("search", 20) + '<label class="jd-sr" for="jd-q-m">Search JulaDirect</label><input id="jd-q-m" name="q" type="search" placeholder="Search products, brands and sellers" autocomplete="off" maxlength="100"></span>' +
-      '<a class="jd-msearch__filter" href="explore.html#filters" aria-label="Open filters">' + JD.icon("filter", 22) + "</a></form></div>" +
+      '<div class="jd-msearch-wrap"><span class="jd-msearch-sentinel" aria-hidden="true"></span>' +
+      '<form class="jd-msearch" data-sx="m" role="search" action="explore.html" method="get"><span class="jd-msearch__box">' + JD.icon("search", 20) + '<span class="sx-field"><span class="sx-ghost" aria-hidden="true" hidden></span><label class="jd-sr" for="jd-q-m">Search JulaDirect</label><input id="jd-q-m" name="q" type="search" placeholder="Search products, brands and sellers" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" maxlength="100"></span>' +
+      '<button type="button" class="sx-cam" data-image-search aria-label="Search by image">' + JD.icon("camera", 21) + '</button><button type="button" class="sx-clear" aria-label="Clear search">' + JD.icon("close", 16) + "</button></span>" +
+      '<a class="jd-msearch__filter" href="explore.html#filters" aria-label="Open filters">' + JD.icon("filter", 22) + '</a><div class="sx-panel" role="listbox" hidden></div></form></div></div>' +
       /* desktop header */
       '<div class="jd-container jd-header__row">' +
       '<a class="jd-logo" href="index.html" aria-label="JulaDirect home"><span class="jd-logo__word"><b>Jula</b>Direct</span></a>' +
-      '<form class="jd-search" role="search" action="explore.html" method="get"><label class="jd-sr" for="jd-q">Search JulaDirect</label>' +
-      '<input id="jd-q" name="q" type="search" placeholder="Search" autocomplete="off" maxlength="100">' +
-      '<button class="jd-search__btn" type="submit" aria-label="Search">' + JD.icon("search", 20) + "</button></form>" +
+      '<form class="jd-search" data-sx="d" role="search" action="explore.html" method="get"><button class="jd-search__btn" type="submit" aria-label="Search">' + JD.icon("search", 20) + "</button>" +
+      '<span class="sx-field"><span class="sx-ghost" aria-hidden="true" hidden></span><label class="jd-sr" for="jd-q">Search JulaDirect</label><input id="jd-q" name="q" type="search" placeholder="Search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" maxlength="100"></span>' +
+      '<button type="button" class="sx-cam" data-image-search aria-label="Search by image">' + JD.icon("camera", 20) + '</button><button type="button" class="sx-clear" aria-label="Clear search">' + JD.icon("close", 16) + '</button><div class="sx-panel" role="listbox" hidden></div></form>' +
       '<nav class="jd-actions" aria-label="Orders, wishlist, cart and account">' +
       '<a class="jd-act jd-act--orders" href="orders.html">' + JD.icon("package", 20) + "<span>Orders</span></a>" +
       '<a class="jd-act jd-act--wish" href="wishlist.html">' + JD.icon("heart", 20) + "<span>Wishlist</span></a>" +
@@ -502,17 +515,20 @@
   }
 
   /* ---------- homepage takeover mode ---------- */
+  JD.isPhone = () => !!(window.matchMedia && window.matchMedia("(max-width: 820px)").matches);
   JD.takeover = {
     theme: undefined,
     set(theme) {
+      /* The full-screen campaign is a desktop thing: phones go straight into the app. */
+      if (JD.isPhone()) theme = null;
       this.theme = theme || null;
       try { sessionStorage.setItem("jd_to_hint", theme ? theme : "0"); } catch (e) { /* ignore */ }
       /* Only the homepage tab shows the takeover; other tabs keep the normal header. */
       if (!JD.router || JD.router.isActive("index")) this.apply();
     },
     apply() {
-      let t = this.theme;
-      if (t === undefined) {
+      let t = JD.isPhone() ? null : this.theme;
+      if (t === undefined && !JD.isPhone()) {
         try { const h = sessionStorage.getItem("jd_to_hint"); t = h === "light" || h === "dark" || h === "blue" ? h : null; } catch (e) { t = null; }
       }
       document.body.classList.toggle("jd-takeover-on", !!t);
@@ -520,7 +536,7 @@
     }
   };
   function applyTakeoverHint() {
-    if (!document.body.classList.contains("is-homepage")) return;
+    if (!document.body.classList.contains("is-homepage") || JD.isPhone()) return;
     try {
       const h = sessionStorage.getItem("jd_to_hint");
       if (h === "light" || h === "dark" || h === "blue") { document.body.classList.add("jd-takeover-on"); document.body.setAttribute("data-to-theme", h); }
@@ -698,6 +714,7 @@
     const qm = document.getElementById("jd-q-m");
     if (qm) qm.value = JD.params().get("q") || "";
     paintArea();
+    JD.loadSearch();
     applyTakeoverHint();
     bindTakeoverBar();
     bindInstantNav();

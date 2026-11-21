@@ -233,9 +233,12 @@
   JD.mountShell({ active: "home" });
   JD.bindProductActions(document);
   $("hm-ico-search").innerHTML = JD.icon("search", 22);
+  JD.$$(".hm-search .sx-cam").forEach(b => { b.innerHTML = JD.icon("camera", 22); });
+  JD.$$(".hm-search .sx-clear").forEach(b => { b.innerHTML = JD.icon("close", 16); });
+  if (JD.loadSearch) JD.loadSearch();
   [["hm-t1", "wallet"], ["hm-t2", "shield"], ["hm-t3", "truck"], ["hm-t4", "message"], ["hm-ico-work", "truck"]].forEach(p => { const el = $(p[0]); if (el) el.innerHTML = JD.icon(p[1], 24); });
   $("hm-prev").innerHTML = JD.icon("arrowRight", 20); $("hm-next").innerHTML = JD.icon("arrowRight", 20);
   JD.$$(".hm-arrow").forEach(el => { el.innerHTML = JD.icon("arrowRight", 16); });
-  bootBanner();
+  if (JD.isPhone()) { JD.takeover.set(null); } else bootBanner();
   loadDeck(); loadStats(); loadPicks(); loadBest(); loadRecent(); loadSellers();
 })();

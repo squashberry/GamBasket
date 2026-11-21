@@ -285,7 +285,7 @@
 
   JD.mountShell({ active: "explore" });
   JD.bindProductActions(document);
-  $("ex-ico-search").innerHTML = JD.icon("search", 20); $("ex-ico-filter").innerHTML = JD.icon("filter", 16); $("ex-ico-save").innerHTML = JD.icon("bookmark", 16); $("ex-q-clear").innerHTML = JD.icon("close", 16); $("ex-filters-close").innerHTML = JD.icon("close", 20);
+  $("ex-ico-search").innerHTML = JD.icon("search", 20); JD.$$("#ex-search .sx-cam").forEach(b => { b.innerHTML = JD.icon("camera", 21); }); $("ex-ico-filter").innerHTML = JD.icon("filter", 16); $("ex-ico-save").innerHTML = JD.icon("bookmark", 16); $("ex-q-clear").innerHTML = JD.icon("close", 16); $("ex-filters-close").innerHTML = JD.icon("close", 20);
   JD.$$("[data-view]")[0].innerHTML = JD.icon("grid", 19); JD.$$("[data-view]")[1].innerHTML = JD.icon("list", 19);
   try { const v = localStorage.getItem("jd-ex-view"); if (v === "list") setView("list"); } catch (e) { /* ignore */ }
   fillForm(); wire(); load(); loadRecent();
